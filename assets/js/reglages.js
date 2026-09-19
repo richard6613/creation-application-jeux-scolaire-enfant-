@@ -35,7 +35,16 @@ Jeu.Reglages = (function () {
     longueurSession: 8,     // nombre d'exercices par session
 
     // Séries de confusions mises de côté par le parent (par notion)
-    seriesDeCote: []
+    seriesDeCote: [],
+
+    // Le prénom de l'enfant, pour l'accueil. Vide = accueil neutre.
+    prenom: 'Julien',
+
+    // Code d'entrée de l'espace parent. Ce n'est pas un verrou de
+    // sécurité : rien de sensible ne se trouve derrière, et tout reste
+    // sur l'appareil. C'est un pas de côté pour que l'enfant n'aille
+    // pas modifier ses propres réglages sans le savoir.
+    codeParent: 'Julien'
   };
 
   var POLICES = {

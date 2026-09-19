@@ -202,8 +202,15 @@ ne sont pas d'actualité : elles ne sont alors plus proposées.
 
 ## L'espace parent
 
-Accessible par la roue dentée, derrière une multiplication simple — un
-pas de côté, pas un verrou de sécurité.
+Accessible par la roue dentée, derrière un code d'entrée — un pas de
+côté pour que l'enfant ne modifie pas ses propres réglages sans le
+savoir, **pas un verrou de sécurité** : tout reste sur l'appareil et
+rien de sensible ne se trouve derrière.
+
+Le code ignore la casse, les accents et les espaces en trop. « J'ai
+oublié le code » propose une multiplication en secours : un parent ne
+doit jamais se retrouver enfermé dehors. Code et prénom de l'enfant se
+changent depuis l'espace parent, section « Prénom et code ».
 
 On y trouve :
 

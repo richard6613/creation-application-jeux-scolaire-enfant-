@@ -41,11 +41,18 @@ Jeu.App = (function () {
 
   function accueil(z) {
     // Filou accueille l'enfant. Une image vaut mieux qu'une ligne de plus.
+    var prenom = (Jeu.Reglages.get('prenom') || '').trim();
+    var salut = prenom ? 'Bonjour ' + prenom + ' !' : 'Bonjour !';
+
     var bonjour = el('div', 'bulle-filou');
     bonjour.appendChild(Jeu.Compagnon.dessiner('salut', 84));
     var mot = el('div', 'ligne');
-    mot.appendChild(Jeu.Voix.bouton('Bonjour ! Choisis un jeu.', 'Écouter'));
-    mot.appendChild(el('p', null, 'Choisis un jeu.'));
+    mot.appendChild(Jeu.Voix.bouton(salut + ' Choisis un jeu.', 'Écouter'));
+    var texte = el('p', null, null);
+    texte.appendChild(el('strong', null, salut));
+    texte.appendChild(document.createElement('br'));
+    texte.appendChild(document.createTextNode('Choisis un jeu.'));
+    mot.appendChild(texte);
     bonjour.appendChild(mot);
     z.appendChild(bonjour);
 
