@@ -9,7 +9,7 @@
    récupérée en arrière-plan quand il y en a une.
    --------------------------------------------------------------- */
 
-var VERSION = 'mes-jeux-9dc6da26b0e4';
+var VERSION = 'mes-jeux-df514d6821a7';
 
 var FICHIERS = [
   './',
@@ -26,6 +26,7 @@ var FICHIERS = [
   './assets/js/compagnon.js',
   './assets/js/fete.js',
   './assets/js/collection.js',
+  './assets/js/parcours.js',
   './assets/js/glisser.js',
   './assets/js/data/lexique.js',
   './assets/js/data/notions.js',

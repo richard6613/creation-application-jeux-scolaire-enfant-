@@ -25,6 +25,7 @@ Jeu.App = (function () {
     b.hidden = true;
 
     if (ecran === 'accueil') { accueil(z); majBarre('Mes jeux', false); }
+    else if (ecran === 'tous') { tousLesJeux(z); majBarre('Tous les jeux', true); }
     else if (ecran === 'reglages') { reglagesEnfant(z); majBarre('Mon confort', true); }
     else if (ecran === 'parent') { Jeu.Parent.afficher(z); majBarre('Espace parent', true); }
     else if (ecran === 'jeu') { majBarre(donnee.nom, true); Jeu.Session.demarrer(donnee); }
@@ -40,20 +41,16 @@ Jeu.App = (function () {
   /* ------------------------- Accueil ------------------------- */
 
   function accueil(z) {
-    // Filou accueille l'enfant. Une image vaut mieux qu'une ligne de plus.
     var prenom = (Jeu.Reglages.get('prenom') || '').trim();
     var salut = prenom ? 'Bonjour ' + prenom + ' !' : 'Bonjour !';
 
     var bonjour = el('div', 'bulle-filou');
-    bonjour.appendChild(Jeu.Compagnon.dessiner('salut', 84));
     var mot = el('div', 'ligne');
-    mot.appendChild(Jeu.Voix.bouton(salut + ' Choisis un jeu.', 'Écouter'));
+    mot.appendChild(Jeu.Voix.bouton(salut + ' Touche le rond pour jouer.', 'Écouter'));
     var texte = el('p', null, null);
     texte.appendChild(el('strong', null, salut));
-    texte.appendChild(document.createElement('br'));
-    texte.appendChild(document.createTextNode('Choisis un jeu.'));
-    mot.appendChild(texte);
     bonjour.appendChild(mot);
+    mot.appendChild(texte);
     z.appendChild(bonjour);
 
     var etoiles = Jeu.Adaptatif.etoiles();
@@ -63,11 +60,6 @@ Jeu.App = (function () {
       et.setAttribute('aria-hidden', 'true');
       bandeau.appendChild(et);
       bandeau.appendChild(el('span', 'compte', String(etoiles)));
-      bandeau.appendChild(el('span', 'petit zone-sourdine',
-        etoiles > 1 ? 'étoiles gagnées' : 'étoile gagnée'));
-
-      // Les derniers autocollants, à portée de regard : la récompense
-      // ne doit pas obliger à descendre jusqu'en bas de l'écran.
       var derniers = Jeu.Collection.derniers(3);
       if (derniers.length) {
         var apercu = el('span', 'apercu-collection');
@@ -77,6 +69,30 @@ Jeu.App = (function () {
       }
       z.appendChild(bandeau);
     }
+
+    // Les jours joués de la semaine : ce qui est fait, jamais ce qui manque.
+    z.appendChild(Jeu.Parcours.semaine());
+
+    // Le chemin : l'élément principal de l'écran.
+    z.appendChild(Jeu.Parcours.dessiner(function (jeu) {
+      if (jeu) aller('jeu', jeu);
+    }));
+
+    var b = Jeu.Ui.vider(bas());
+    b.hidden = false;
+    b.appendChild(Jeu.Ui.bouton('Choisir un autre jeu', 'btn', function () {
+      aller('tous');
+    }));
+  }
+
+  /* La grille complète, pour choisir librement plutôt que de suivre
+     le chemin. Les deux doivent rester possibles : imposer un ordre
+     unique retire à l'enfant le peu de commandes qu'il a. */
+  function tousLesJeux(z) {
+    var intro = el('div', 'ligne');
+    intro.appendChild(Jeu.Voix.bouton('Choisis un jeu.', 'Écouter'));
+    intro.appendChild(el('p', null, 'Choisis un jeu.'));
+    z.appendChild(intro);
 
     var grille = el('div', 'grille-jeux');
     Jeu.Exercices.forEach(function (ex) {
@@ -97,16 +113,6 @@ Jeu.App = (function () {
     z.appendChild(grille);
 
     z.appendChild(coinCollection());
-
-    // Une reprise là où ça accroche, sans jamais le dire à l'enfant.
-    var suggere = jeuLePlusUtile();
-    if (suggere) {
-      var b = Jeu.Ui.vider(bas());
-      b.hidden = false;
-      b.appendChild(Jeu.Ui.bouton('Commencer', 'btn btn-principal', function () {
-        aller('jeu', suggere);
-      }));
-    }
   }
 
   /* La collection : ce qui donne envie de revenir demain.
@@ -214,7 +220,7 @@ Jeu.App = (function () {
     aller('accueil');
   }
 
-  return { aller: aller, demarrer: demarrer };
+  return { aller: aller, demarrer: demarrer, jeuLePlusUtile: jeuLePlusUtile };
 })();
 
 document.addEventListener('DOMContentLoaded', function () { Jeu.App.demarrer(); });

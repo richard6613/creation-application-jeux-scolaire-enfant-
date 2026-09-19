@@ -101,6 +101,24 @@ Une séance dure huit exercices par défaut et se termine toujours.
 
 ## Donner envie d'y revenir
 
+**Un chemin de progression.** L'accueil est un parcours d'étapes :
+celles franchies portent leur coche, l'étape du jour est plus grande
+et entourée d'un halo, Filou s'y tient. Tous les quatre pas, un
+coffre. On voit d'un coup d'œil où l'on en est et ce qui vient, sans
+lire une ligne, et la grille complète reste accessible pour choisir
+librement.
+
+Ce qui est emprunté aux jeux d'apprentissage s'arrête là. Pas de vies
+ni de cœurs à perdre : une erreur ne retire jamais rien. Pas de série
+de jours qui se brise : les jours joués s'ajoutent sur la semaine, ils
+ne s'effacent pas. Pas de classement ni de comparaison. On avance, on
+ne recule pas — c'est la règle qui tient tout le reste.
+
+Le halo de l'étape du jour respire, mais **le bouton lui-même ne bouge
+pas** : une cible qui se déplace sous le doigt est difficile à viser
+pour une main encore mal assurée.
+
+
 Une application bien faite mais austère ne sert à rien : un enfant qui
 la trouve triste n'y retourne pas. Trois choses répondent à ça, sans
 rien coûter à la lisibilité.
@@ -255,6 +273,7 @@ outils/
   generer-page-publiee.py     page sans doctype, pour publication en ligne
   generer-sw.py               régénère sw.js et sa liste de fichiers
 assets/js/
+  parcours.js                 le chemin de progression et les jours joués
   compagnon.js                Filou, le chat qui accompagne l'enfant
   fete.js                     confettis et étoiles de fin de séance
   collection.js               les autocollants à gagner
