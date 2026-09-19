@@ -384,6 +384,19 @@ Tout est enregistré dans le navigateur de l'appareil et n'en sort pas.
 Rien n'est envoyé sur internet. Effacer les données du navigateur efface
 les réglages et les résultats.
 
+Une mise à jour de l'application n'efface rien : le code et les progrès
+sont rangés séparément. Publier remplace les fichiers, jamais les
+données. Vérifié sur un serveur avec une publication simulée — étoiles,
+séances, autocollants, accessoires, réglages et position sur le chemin
+tous intacts après le changement de version du service worker.
+
+En revanche les progrès se perdent dans quatre cas : changer d'appareil,
+changer l'adresse du site, effacer les données du navigateur, et le
+ménage que fait Safari sur les sites laissés de côté plusieurs jours.
+L'espace parent permet donc d'enregistrer la progression dans un fichier
+et de la remettre en place ailleurs — un fichier de temps en temps met
+tout à l'abri.
+
 Conséquence à connaître : les réglages et les résultats appartiennent à
 **l'appareil** qui a servi à jouer. L'espace parent d'une tablette ne
 montre pas les séances faites sur une autre. Si l'enfant joue sur la

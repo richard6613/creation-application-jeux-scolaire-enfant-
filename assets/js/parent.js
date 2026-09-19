@@ -336,6 +336,8 @@ Jeu.Parent = (function () {
     carte.appendChild(el('p', 'petit zone-sourdine',
       'Tout est enregistré sur cet appareil uniquement. Rien n\'est envoyé sur internet.'));
 
+    carte.appendChild(sauvegarde());
+
     carte.appendChild(Jeu.Ui.bouton('Remettre les réglages par défaut', 'btn', function () {
       if (confirm('Remettre tous les réglages de confort et d\'aide par défaut ?')) {
         Jeu.Reglages.reinitialiser();
@@ -352,6 +354,78 @@ Jeu.Parent = (function () {
     }));
 
     return carte;
+  }
+
+  /* Emporter la progression, et la remettre en place.
+
+     Utile dans trois cas : changer de tablette, changer l'adresse du
+     site, ou se prémunir du ménage que fait Safari sur les sites
+     laissés de côté plusieurs jours. */
+  function sauvegarde() {
+    var d = el('div', 'reglage');
+    d.appendChild(el('div', 'intitule', 'Sauvegarder la progression'));
+
+    var ligne = el('div', 'ligne');
+
+    ligne.appendChild(Jeu.Ui.bouton('Enregistrer un fichier', 'btn', function () {
+      try {
+        var paquet = Jeu.Stockage.toutExporter();
+        var texte = JSON.stringify(paquet, null, 2);
+        var lien = document.createElement('a');
+        lien.href = URL.createObjectURL(new Blob([texte], { type: 'application/json' }));
+        var j = new Date();
+        lien.download = 'mes-jeux-' + j.getFullYear() + '-' +
+          String(j.getMonth() + 1).padStart(2, '0') + '-' +
+          String(j.getDate()).padStart(2, '0') + '.json';
+        document.body.appendChild(lien);
+        lien.click();
+        setTimeout(function () {
+          URL.revokeObjectURL(lien.href);
+          lien.remove();
+        }, 2000);
+      } catch (e) {
+        alert('L\'enregistrement n\'a pas fonctionné sur cet appareil.');
+      }
+    }));
+
+    var champ = document.createElement('input');
+    champ.type = 'file';
+    champ.accept = 'application/json,.json';
+    champ.style.display = 'none';
+    champ.addEventListener('change', function () {
+      var f = champ.files && champ.files[0];
+      if (!f) return;
+      var lecteur = new FileReader();
+      lecteur.onload = function () {
+        var paquet = null;
+        try { paquet = JSON.parse(lecteur.result); } catch (e) { paquet = null; }
+        if (!paquet) { alert('Ce fichier n\'est pas lisible.'); return; }
+        if (!confirm('Remplacer la progression de cet appareil par celle du fichier ?')) return;
+        if (Jeu.Stockage.toutImporter(paquet)) {
+          alert('Progression restaurée.');
+          location.reload();
+        } else {
+          alert('Ce fichier ne vient pas de cette application.');
+        }
+      };
+      lecteur.readAsText(f);
+      champ.value = '';
+    });
+    d.appendChild(champ);
+
+    ligne.appendChild(Jeu.Ui.bouton('Restaurer un fichier', 'btn', function () {
+      champ.click();
+    }));
+    d.appendChild(ligne);
+
+    d.appendChild(el('p', 'aide',
+      'Les progrès sont enregistrés dans le navigateur de cet appareil. Ils ' +
+      'survivent aux mises à jour de l\'application, mais pas à un changement ' +
+      'de tablette, à un effacement des données du navigateur, ni au ménage ' +
+      'que fait Safari sur les sites laissés de côté plusieurs jours. ' +
+      'Un fichier enregistré de temps en temps met tout à l\'abri.'));
+
+    return d;
   }
 
   function fermer() { ouvert = false; }
