@@ -992,3 +992,10 @@ html[data-animations="oui"] .bloc.brille { animation: bloc-brille 460ms ease-in-
   100% { opacity: 1; transform: scale(1) rotate(0); }
 }
 html[data-animations="oui"] .rang-signe { animation: rang-arrive 700ms ease-out both; }
+
+/* Partie laissée en plan : on la reprend là où elle s'est arrêtée. */
+.carte.reprise {
+  border-color: var(--accent);
+  border-width: 3px;
+  margin-bottom: 12px;
+}

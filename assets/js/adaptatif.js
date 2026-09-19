@@ -50,6 +50,7 @@ Jeu.Adaptatif = (function () {
   /* Enregistre une réponse.
      t = { notion, juste, typeErreur, ecoutes, ms, jeu, detail } */
   function enregistrer(t) {
+    var p = tout();
     var f = fiche(t.notion);
     var typeErreur = t.juste ? null : (t.typeErreur || 'notion');
 
@@ -65,6 +66,9 @@ Jeu.Adaptatif = (function () {
     if (t.juste) {
       f.justes += 1;
       f.serie += 1;
+      // L'étoile est acquise tout de suite. Si la tablette s'éteint au
+      // milieu d'une séance, rien de ce qui a été réussi n'est perdu.
+      p.etoiles = (p.etoiles || 0) + 1;
       f.maitrise = f.maitrise + (1 - f.maitrise) * 0.3;
       // Trois réussites d'affilée suffisent à monter : un enfant qui
       // trouve ça facile doit le sentir vite, sinon il s'ennuie.
@@ -85,7 +89,6 @@ Jeu.Adaptatif = (function () {
 
     // Journal des dernières erreurs, pour l'espace parent.
     if (!t.juste) {
-      var p = tout();
       if (!p.erreurs) p.erreurs = [];
       p.erreurs.unshift({
         notion: t.notion,
@@ -209,7 +212,7 @@ Jeu.Adaptatif = (function () {
       ms: infos.ms || 0        // enregistré pour information, jamais noté
     });
     p.sessions = p.sessions.slice(0, MAX_SESSIONS);
-    p.etoiles += infos.justes;
+    // Les étoiles ont déjà été créditées au fil des réponses.
     sauver();
   }
 
