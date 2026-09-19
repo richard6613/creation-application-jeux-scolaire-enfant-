@@ -1,0 +1,380 @@
+/* ---------------------------------------------------------------
+   composants.css — boutons, cartes, étiquettes, consignes
+   --------------------------------------------------------------- */
+
+/* ------------------------- Boutons ------------------------- */
+
+.btn {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
+  letter-spacing: inherit;
+  min-height: var(--cible-min);
+  padding: 12px 20px;
+  border-radius: var(--rayon);
+  border: 2px solid var(--bordure);
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+  text-align: left;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform var(--duree-anim), background var(--duree-anim);
+}
+.btn:active { transform: translateY(2px); box-shadow: none; }
+.btn[disabled] { opacity: 0.5; cursor: default; }
+
+.btn-principal {
+  background: var(--accent);
+  color: var(--accent-contraste);
+  border-color: var(--accent);
+  font-weight: 700;
+  justify-content: center;
+  width: 100%;
+}
+.btn-large { width: 100%; font-size: 1.1rem; min-height: 64px; }
+.btn-discret { background: transparent; box-shadow: none; }
+
+.btn-icone {
+  min-width: var(--cible-min);
+  min-height: var(--cible-min);
+  padding: 8px;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+/* Bouton haut-parleur : toujours la même forme, toujours au même endroit */
+.btn-son {
+  min-width: 64px;
+  min-height: 64px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  background: var(--accent-doux);
+  color: var(--accent);
+  font-size: 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex: 0 0 auto;
+  box-shadow: var(--ombre);
+}
+.btn-son:active { transform: translateY(2px); box-shadow: none; }
+.btn-son.parle { background: var(--accent); color: var(--accent-contraste); }
+.btn-son[hidden] { display: none; }
+
+/* Quand la lecture audio est coupée, plus aucun bouton de son n'apparaît. */
+html[data-audio="non"] .btn-son,
+html[data-audio="non"] .depend-audio { display: none; }
+
+/* ------------------------- Cartes ------------------------- */
+
+.carte {
+  background: var(--surface);
+  border: 2px solid var(--bordure);
+  border-radius: var(--rayon);
+  padding: 18px;
+  box-shadow: var(--ombre);
+}
+
+/* ------------------------- Consigne ------------------------- */
+
+.consigne {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--surface);
+  border: 2px solid var(--bordure);
+  border-left: 8px solid var(--accent);
+  border-radius: var(--rayon);
+  padding: 16px;
+  margin-bottom: 22px;
+}
+.consigne p {
+  margin: 0;
+  font-weight: 600;
+  font-style: normal;      /* jamais d'italique sur une consigne */
+  max-width: var(--largeur-ligne);
+}
+
+/* ------------------------- Choix de réponse ------------------------- */
+
+.choix {
+  display: grid;
+  gap: 14px;               /* réponses clairement espacées */
+  grid-template-columns: 1fr;
+}
+.choix.deux { grid-template-columns: repeat(2, 1fr); }
+
+.choix-btn {
+  font-family: inherit;
+  font-size: 1.25rem;
+  min-height: 78px;
+  padding: 14px 18px;
+  border-radius: var(--rayon);
+  border: 3px solid var(--bordure);
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  letter-spacing: inherit;
+  word-spacing: inherit;
+  transition: background var(--duree-anim), border-color var(--duree-anim);
+}
+.choix-btn .emoji { font-size: 2rem; line-height: 1; }
+.choix-btn.court { justify-content: center; font-size: 1.8rem; font-weight: 700; }
+.choix-btn:active { transform: translateY(2px); box-shadow: none; }
+.choix-btn.juste { background: var(--succes-doux); border-color: var(--succes); }
+.choix-btn.faux  { background: var(--attention-doux); border-color: var(--attention); }
+.choix-btn[disabled] { cursor: default; }
+.choix-btn.estompe { opacity: 0.45; }
+
+/* ------------------------- Étiquettes déplaçables ------------------------- */
+
+.etiquettes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0;
+  min-height: 70px;
+}
+
+.etiquette {
+  font-family: inherit;
+  font-size: 1.25rem;
+  letter-spacing: inherit;
+  padding: 12px 18px;
+  min-height: 62px;
+  border-radius: 14px;
+  border: 3px solid var(--bordure);
+  background: var(--surface-2);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: grab;
+  touch-action: none;       /* le glissé au doigt ne fait pas défiler la page */
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+}
+.etiquette.choisie {
+  border-color: var(--accent);
+  background: var(--accent-doux);
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.etiquette.fantome {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.92;
+  transform: scale(1.06);
+}
+.etiquette.posee { opacity: 0.35; cursor: default; }
+
+.cases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0;
+}
+.case-depot {
+  min-width: 78px;
+  min-height: 62px;
+  border-radius: 14px;
+  border: 3px dashed var(--bordure);
+  background: var(--surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+.case-depot.survol, .case-depot.cible {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-doux);
+}
+.case-depot.remplie { border-style: solid; background: var(--surface-2); }
+
+/* ------------------------- Texte à lire ------------------------- */
+
+.texte-lecture {
+  font-size: 1.45rem;
+  line-height: calc(var(--interligne) + 0.2);
+  max-width: var(--largeur-ligne);
+  background: var(--surface);
+  border: 2px solid var(--bordure);
+  border-radius: var(--rayon);
+  padding: 20px 18px;
+  position: relative;
+}
+.mot { padding: 2px 3px; border-radius: 6px; }
+.mot.actif { background: var(--attention-doux); box-shadow: 0 2px 0 var(--attention); }
+.mot.masque { visibility: hidden; }
+.syllabe { padding: 0 1px; border-radius: 4px; }
+.syllabe.paire { background: var(--accent-doux); }
+.mot-syllabe .syllabe + .syllabe::before {
+  content: "·";
+  opacity: 0.45;
+  padding: 0 2px;
+}
+
+/* Guide de lecture : une bande claire posée derrière la ligne en cours,
+   comme la règle que l'on glisse sous les lignes d'un livre. */
+.texte-lecture { z-index: 0; }
+.guide-regle {
+  position: absolute;
+  left: 6px; right: 6px;
+  z-index: -1;
+  background: var(--attention-doux);
+  border-bottom: 3px solid var(--attention);
+  border-radius: 6px;
+  pointer-events: none;
+  transition: top var(--duree-anim), height var(--duree-anim);
+}
+
+/* ------------------------- Progression ------------------------- */
+
+.progression {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.perle {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--bordure);
+  background: var(--surface);
+}
+.perle.reussie { background: var(--succes); border-color: var(--succes); }
+.perle.faite   { background: var(--surface-2); }
+.perle.en-cours { border-color: var(--accent); border-width: 4px; }
+
+.retour {
+  border-radius: var(--rayon);
+  padding: 16px;
+  margin-top: 20px;
+  border: 2px solid var(--bordure);
+}
+.retour.bravo { background: var(--succes-doux); border-color: var(--succes); }
+.retour.aide  { background: var(--attention-doux); border-color: var(--attention); }
+.retour p { margin: 0; font-weight: 600; }
+
+/* ------------------------- Réglages ------------------------- */
+
+.reglage {
+  padding: 14px 0;
+  border-bottom: 2px solid var(--bordure);
+}
+.reglage:last-child { border-bottom: 0; }
+.reglage > label, .reglage > .intitule {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.reglage .aide { color: var(--texte-doux); font-size: 0.85rem; margin: 4px 0 0; }
+
+input[type="range"] { width: 100%; height: 44px; accent-color: var(--accent); }
+
+.interrupteur {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: var(--cible-min);
+  cursor: pointer;
+}
+.interrupteur input { width: 30px; height: 30px; accent-color: var(--accent); flex: 0 0 auto; }
+
+.choix-puces { display: flex; flex-wrap: wrap; gap: 10px; }
+.puce {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 10px 16px;
+  min-height: 48px;
+  border-radius: 999px;
+  border: 2px solid var(--bordure);
+  background: var(--surface);
+  color: var(--texte);
+  cursor: pointer;
+}
+.puce[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-contraste);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.apercu {
+  margin-top: 12px;
+  padding: 16px;
+  border: 2px dashed var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface);
+}
+
+/* ------------------------- Tableau de bord parent ------------------------- */
+
+.barre-notion {
+  height: 14px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+  margin-top: 6px;
+}
+.barre-notion > span { display: block; height: 100%; background: var(--succes); }
+.barre-notion.fragile > span { background: var(--attention); }
+
+.fiche-notion { padding: 12px 0; border-bottom: 2px solid var(--bordure); }
+.fiche-notion:last-child { border-bottom: 0; }
+.fiche-notion .entete { display: flex; justify-content: space-between; gap: 10px; }
+
+.etiq {
+  display: inline-block;
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--bordure);
+}
+.etiq.lecture { background: var(--attention-doux); border-color: var(--attention); }
+.etiq.notion  { background: var(--accent-doux); border-color: var(--accent); }
+
+/* ------------------------- Grille d'accueil ------------------------- */
+
+.grille-jeux { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 560px) { .grille-jeux { grid-template-columns: 1fr 1fr; } }
+
+.carte-jeu {
+  font-family: inherit;
+  font-size: 1.05rem;
+  text-align: left;
+  padding: 18px;
+  border-radius: var(--rayon);
+  border: 3px solid var(--bordure);
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 92px;
+}
+.carte-jeu .emoji { font-size: 2.2rem; }
+.carte-jeu .nom { font-weight: 700; }
+.carte-jeu .quoi { font-size: 0.85rem; color: var(--texte-doux); }
+.carte-jeu:active { transform: translateY(2px); box-shadow: none; }
+
+/* ------------------------- Célébration ------------------------- */
+
+.etoiles { font-size: 2.6rem; letter-spacing: 6px; }
