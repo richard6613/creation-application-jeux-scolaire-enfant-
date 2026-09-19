@@ -26,6 +26,7 @@ Jeu.App = (function () {
 
     if (ecran === 'accueil') { accueil(z); majBarre('Mes jeux', false); }
     else if (ecran === 'tous') { tousLesJeux(z); majBarre('Tous les jeux', true); }
+    else if (ecran === 'filou') { garderobe(z); majBarre('Les affaires de Filou', true); }
     else if (ecran === 'reglages') { reglagesEnfant(z); majBarre('Mon confort', true); }
     else if (ecran === 'parent') { Jeu.Parent.afficher(z); majBarre('Espace parent', true); }
     else if (ecran === 'jeu') { majBarre(donnee.nom, true); Jeu.Session.demarrer(donnee); }
@@ -80,9 +81,85 @@ Jeu.App = (function () {
 
     var b = Jeu.Ui.vider(bas());
     b.hidden = false;
-    b.appendChild(Jeu.Ui.bouton('Choisir un autre jeu', 'btn', function () {
-      aller('tous');
+    b.appendChild(Jeu.Ui.bouton('Autre jeu', 'btn', function () { aller('tous'); }));
+    b.appendChild(Jeu.Ui.bouton('Filou 🎩', 'btn', function () { aller('filou'); }));
+  }
+
+  /* La boutique de Filou : ce que l'enfant achète avec ses pièces.
+     Aucun texte n'est nécessaire pour comprendre — une image, un prix,
+     et ce qu'on peut s'offrir se voit tout de suite. */
+  function garderobe(z) {
+    var intro = el('div', 'bulle-filou');
+    intro.appendChild(Jeu.Compagnon.habille('salut', 96));
+    var mot = el('div', 'ligne');
+    mot.appendChild(Jeu.Voix.bouton('Habille Filou avec tes pièces.', 'Écouter'));
+    mot.appendChild(el('p', null, 'Habille Filou.'));
+    intro.appendChild(mot);
+    z.appendChild(intro);
+
+    var bourse = el('div', 'bandeau-etoiles');
+    var piece = el('span', 'etoile-fixe', '🪙');
+    piece.setAttribute('aria-hidden', 'true');
+    bourse.appendChild(piece);
+    bourse.appendChild(el('span', 'compte', String(Jeu.Garderobe.pieces())));
+    bourse.appendChild(el('span', 'petit zone-sourdine', 'pièces'));
+    z.appendChild(bourse);
+
+    var grille = el('div', 'etagere');
+
+    // Rien du tout : une option à part entière, pas un manque.
+    grille.appendChild(caseArticle(null, z));
+    Jeu.Garderobe.ARTICLES.forEach(function (a) {
+      grille.appendChild(caseArticle(a, z));
+    });
+    z.appendChild(grille);
+
+    var b = Jeu.Ui.vider(bas());
+    b.hidden = false;
+    b.appendChild(Jeu.Ui.bouton('Retour au chemin', 'btn btn-principal', function () {
+      aller('accueil');
     }));
+  }
+
+  function caseArticle(a, z) {
+    var possede = a ? Jeu.Garderobe.possede(a.cle) : true;
+    var portee = a ? (Jeu.Garderobe.porte() === a.cle) : !Jeu.Garderobe.porte();
+    var abordable = a ? Jeu.Garderobe.pieces() >= a.prix : true;
+
+    var c = el('button', 'article' + (portee ? ' portee' : '') + (possede ? '' : ' a-acheter'));
+    c.type = 'button';
+
+    var signe = el('span', 'signe', a ? a.signe : '🚫');
+    signe.setAttribute('aria-hidden', 'true');
+    c.appendChild(signe);
+
+    if (!a) {
+      c.appendChild(el('span', 'prix', 'Rien'));
+      c.setAttribute('aria-label', 'Filou ne porte rien');
+    } else if (possede) {
+      c.appendChild(el('span', 'prix', portee ? 'Porté' : a.nom));
+      c.setAttribute('aria-label', a.nom + (portee ? ', porté' : ', à porter'));
+    } else {
+      var p = el('span', 'prix', '🪙 ' + a.prix);
+      if (!abordable) p.classList.add('trop-cher');
+      c.appendChild(p);
+      c.setAttribute('aria-label', a.nom + ', ' + a.prix + ' pièces' +
+        (abordable ? '' : ', pas encore assez'));
+    }
+
+    c.addEventListener('click', function () {
+      if (!a) { Jeu.Garderobe.porter(''); aller('filou'); return; }
+      if (possede) { Jeu.Garderobe.porter(a.cle); aller('filou'); return; }
+      if (Jeu.Garderobe.acheter(a.cle)) {
+        Jeu.Fete.depuis(c, 36);
+        Jeu.Voix.dire('Bravo ! ' + a.nom + ' est à toi.');
+        aller('filou');
+      } else {
+        c.classList.add('refuse');
+        setTimeout(function () { c.classList.remove('refuse'); }, 500);
+      }
+    });
+    return c;
   }
 
   /* La grille complète, pour choisir librement plutôt que de suivre

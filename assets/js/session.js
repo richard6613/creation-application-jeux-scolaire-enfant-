@@ -28,7 +28,9 @@ Jeu.Session = (function () {
       resultats: [],
       reprises: {},        // notion -> déjà reprogrammée une fois ?
       debut: Date.now(),
-      debutItem: 0
+      debutItem: 0,
+      // Le but de la séance, visible dès la première seconde.
+      scene: Jeu.Scene.creer(programme.length)
     };
     afficherItem();
   }
@@ -50,8 +52,9 @@ Jeu.Session = (function () {
     var bas = Jeu.Ui.vider(zoneBas());
     bas.hidden = true;
 
+    // La scène en haut : elle se remplit à mesure des réussites.
+    zone.appendChild(s.scene.noeud);
     zone.appendChild(Jeu.Ui.barreSeance(s.programme.length, s.index, s.resultats));
-    zone.appendChild(Jeu.Ui.perles(s.programme.length, s.index, s.resultats));
 
     if (Jeu.Reglages.get('chrono')) zone.appendChild(chronoDoux());
 
@@ -124,6 +127,11 @@ Jeu.Session = (function () {
     });
 
     s.resultats[s.index] = !!reponse.juste;
+
+    // La récompense est immédiate : un élément de plus dans la scène,
+    // tout de suite, sous ses yeux — pas à la fin de la séance.
+    if (reponse.juste && s.scene) s.scene.ajouter();
+
     if (!reponse.juste) programmerReprise(s.programme[s.index]);
 
     montrerRetour(reponse, typeErreur);
@@ -160,7 +168,7 @@ Jeu.Session = (function () {
 
     // Filou réagit : content, ou rassurant. Jamais déçu.
     var ligne = Jeu.Ui.el('div', 'bulle-filou');
-    ligne.appendChild(Jeu.Compagnon.dessiner(reponse.juste ? 'bravo' : 'courage', 64));
+    ligne.appendChild(Jeu.Compagnon.habille(reponse.juste ? 'bravo' : 'courage', 64));
     var dit = Jeu.Ui.el('div', 'ligne');
     dit.appendChild(Jeu.Voix.bouton(function () {
       return texte + (reponse.bonneReponse ? '. ' + reponse.bonneReponse : '');
@@ -220,11 +228,18 @@ Jeu.Session = (function () {
     });
 
     var zone = Jeu.Ui.vider(zoneJeu());
+
+    // La scène terminée est le vrai trophée : on la montre en grand.
+    if (s.scene) {
+      zone.appendChild(s.scene.noeud);
+      s.scene.feter();
+    }
+
     var carte = Jeu.Ui.el('div', 'carte pile');
 
     var haut = Jeu.Ui.el('div', 'bulle-filou');
     haut.style.justifyContent = 'center';
-    haut.appendChild(Jeu.Compagnon.dessiner('fete', 92));
+    haut.appendChild(Jeu.Compagnon.habille('fete', 92));
     carte.appendChild(haut);
 
     var etoiles = Jeu.Ui.el('div', 'etoiles-gagnees');
@@ -242,8 +257,24 @@ Jeu.Session = (function () {
     carte.appendChild(ligne);
 
     carte.appendChild(Jeu.Ui.el('p', 'petit zone-sourdine',
-      'Tu as gagné ' + Jeu.Ui.accord(justes, 'étoile') +
-      '. Total : ' + Jeu.Adaptatif.etoiles() + '.'));
+      'Tu as gagné ' + Jeu.Ui.accord(justes, 'pièce') +
+      '. Tu en as ' + Jeu.Garderobe.pieces() + ' pour les affaires de Filou.'));
+
+    // Ce qui est maintenant à portée : une raison concrète de recommencer.
+    var suivant = Jeu.Garderobe.prochain();
+    if (suivant) {
+      var manque = suivant.prix - Jeu.Garderobe.pieces();
+      var envie = Jeu.Ui.el('div', 'ligne');
+      envie.style.justifyContent = 'center';
+      var sg = Jeu.Ui.el('span', null, suivant.signe);
+      sg.style.fontSize = '2rem';
+      sg.setAttribute('aria-hidden', 'true');
+      envie.appendChild(sg);
+      envie.appendChild(Jeu.Ui.el('span', 'petit',
+        manque > 0 ? 'Encore ' + Jeu.Ui.accord(manque, 'pièce') + ' pour ' + suivant.nom.toLowerCase()
+                   : suivant.nom + ' est à toi !'));
+      carte.appendChild(envie);
+    }
 
     zone.appendChild(carte);
 
