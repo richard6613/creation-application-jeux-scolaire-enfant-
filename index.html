@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Mes jeux">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icone-apple-180.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/base.css">
@@ -60,5 +61,19 @@
 <script src="assets/js/exercices/calcul.js"></script>
 <script src="assets/js/parent.js"></script>
 <script src="assets/js/app.js"></script>
+
+<script>
+  // Met l'application en réserve sur l'appareil, pour pouvoir jouer sans
+  // connexion. Sans effet quand la page est ouverte directement depuis un
+  // fichier local : le navigateur l'interdit, et l'application n'en a pas
+  // besoin dans ce cas puisque tout est déjà sur place.
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {
+        /* sans réserve, l'application fonctionne quand même, il faut juste du réseau */
+      });
+    });
+  }
+</script>
 </body>
 </html>
