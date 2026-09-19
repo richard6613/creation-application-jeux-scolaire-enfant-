@@ -1,0 +1,45 @@
+# Publie l'application sur GitHub Pages à chaque modification.
+#
+# configure-pages avec « enablement: true » active GitHub Pages sur le
+# dépôt si ce n'est pas déjà fait : il n'y a donc aucun réglage à aller
+# chercher dans les menus du site.
+
+name: Publier l'application
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Activer et configurer Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Préparer le contenu
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Déployer
+        id: deploiement
+        uses: actions/deploy-pages@v4
