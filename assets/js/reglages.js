@@ -61,10 +61,18 @@ Jeu.Reglages = (function () {
 
   function charger() {
     var sauve = Jeu.Stockage.lire(CLE, {});
+    var premiereFois = !sauve || Object.keys(sauve).length === 0;
     etat = {};
     Object.keys(DEFAUTS).forEach(function (k) {
       etat[k] = (sauve && sauve[k] !== undefined) ? sauve[k] : DEFAUTS[k];
     });
+    // Premier lancement sur un appareil réglé en sombre : on suit l'appareil.
+    // Ensuite, c'est le choix fait dans l'application qui commande.
+    if (premiereFois && typeof window.matchMedia === 'function') {
+      try {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) etat.fond = 'sombre';
+      } catch (e) { /* rien */ }
+    }
     return etat;
   }
 

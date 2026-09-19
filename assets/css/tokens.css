@@ -45,7 +45,10 @@ html[data-animations="non"] *::after {
    entre 7:1 et 11:1 selon le fond.
    -------------------------------------------------------------------- */
 
-/* Crème — réglage par défaut */
+/* Crème — réglage par défaut. Défini sur :root nu pour qu'aucune couleur
+   ne dépende de la présence de l'attribut : la page ne peut pas s'afficher
+   sans couleurs, même une fraction de seconde. */
+:root,
 html[data-fond="creme"] {
   --fond: #faf3e6;
   --surface: #fffaf0;
@@ -55,6 +58,27 @@ html[data-fond="creme"] {
   --bordure: #ddd0b8;
   --ombre: 0 2px 0 rgba(90, 76, 54, 0.14);
 }
+/* Appareil en mode sombre, avant tout choix : on part du fond sombre
+   plutôt que d'éblouir. Dès qu'un fond est choisi, ce bloc ne joue plus. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --fond: #262b31;
+    --surface: #2f353d;
+    --surface-2: #3a424b;
+    --texte: #e8e4dc;
+    --texte-doux: #b2aea6;
+    --bordure: #4c545e;
+    --ombre: 0 2px 0 rgba(0, 0, 0, 0.3);
+    --succes: #7fcd9c;
+    --succes-doux: #2f4438;
+    --attention: #e3b76c;
+    --attention-doux: #443a29;
+    --accent: #8fbde8;
+    --accent-doux: #31414f;
+    --accent-contraste: #1f242a;
+  }
+}
+
 /* Sable */
 html[data-fond="sable"] {
   --fond: #f3e8d5;

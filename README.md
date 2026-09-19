@@ -155,6 +155,8 @@ assets/css/
   tokens.css                  variables de confort et fonds de lecture
   base.css                    mise en page, règles de lisibilité
   composants.css              boutons, cartes, étiquettes, consignes
+outils/
+  generer-page-publiee.py     page sans doctype, pour publication en ligne
 assets/js/
   stockage.js                 localStorage, avec repli en mémoire
   reglages.js                 réglages et application au document
@@ -189,6 +191,20 @@ lecture sont dans `assets/js/data/notions.js`.
 Pour ajouter un jeu, copier un fichier de `assets/js/exercices/`, garder
 les quatre fonctions attendues (`notions`, `creerItem`, `afficher` et les
 métadonnées), et ajouter la balise `<script>` dans `index.html`.
+
+### Publier l'application en ligne
+
+L'application est faite pour tourner en local, mais elle peut aussi être
+publiée telle quelle. Certaines plateformes fournissent elles-mêmes le
+doctype et l'en-tête de la page ; dans ce cas :
+
+```
+python3 outils/generer-page-publiee.py page-publiee.html
+```
+
+produit la page sans ces balises, à publier avec le dossier `assets/`
+tel quel. Le script lit `index.html`, il n'y a donc pas de seconde page
+à tenir à jour.
 
 ### Installer une police spécifique
 
