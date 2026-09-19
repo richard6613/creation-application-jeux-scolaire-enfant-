@@ -14,6 +14,7 @@ Jeu.Exercices.push({
   nom: 'Écoute et montre',
   quoi: 'Trouve le mot que tu entends',
   emoji: '👂',
+  teinte: '--jeu-ecoute',
   besoinAudio: true,
 
   notions: function () {
@@ -68,6 +69,7 @@ Jeu.Exercices.push({
       }
       ctx.repondre({
         juste: juste,
+        element: btn,
         // Se tromper entre deux mots proches, c'est exactement la
         // notion travaillée : la discrimination des sons.
         typeErreur: 'notion',

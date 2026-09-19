@@ -24,6 +24,7 @@ Jeu.Exercices.push({
   nom: 'Lis tranquillement',
   quoi: 'Une phrase à la fois, à ton rythme',
   emoji: '📖',
+  teinte: '--jeu-lecture',
 
   notions: function () {
     var vues = {};

@@ -29,6 +29,7 @@ Jeu.Exercices.push({
   nom: 'Construis le mot',
   quoi: 'Remets les syllabes dans l\'ordre',
   emoji: '🧩',
+  teinte: '--jeu-syllabes',
 
   notions: function () {
     var n = ['syllabes.deux'];
