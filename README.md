@@ -246,6 +246,26 @@ découvertes, le reste en terrain sûr.
 
 Il apprend les difficultés de cet enfant-là, à partir de ses résultats.
 
+**Le plafond doit être haut.** Un enfant qui dit « c'est facile » ne
+demande pas qu'on le ménage, il demande qu'on lui en donne plus. Cinq
+paliers par notion, une montée après trois réussites d'affilée, et un
+cran de plus offert après une séance sans faute : rester sur du déjà
+acquis est la meilleure façon de perdre un enfant.
+
+Le contenu suit vraiment. En calcul on passe de neuf à seize types
+d'opérations à mesure que le niveau monte — additions et soustractions
+à retenue, tables de 3 à 9, compléments à 100, partages. En syllabes,
+les mots de quatre syllabes s'ouvrent une fois les trois maîtrisées, et
+jusqu'à deux syllabes étrangères se glissent parmi les bonnes. En
+orthographe, le trou disparaît au palier 4 : le mot est écrit en entier
+de plusieurs façons et il faut reconnaître la bonne.
+
+**Le rang rend la montée visible.** Apprenti, Bâtisseur, Explorateur,
+Aventurier, Expert, Maître, Champion : il se gagne sur ce qui a été
+fait et sur le niveau atteint, si bien que travailler du difficile fait
+monter plus vite que répéter du facile. Il ne redescend jamais, même
+après une série d'erreurs — vérifié.
+
 Chaque notion porte un niveau de maîtrise entre 0 et 1, mis à jour à
 chaque réponse : une réussite rapproche de 1, une erreur de notion fait
 nettement reculer, une difficulté de lecture à peine.

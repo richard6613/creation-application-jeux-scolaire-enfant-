@@ -15,6 +15,7 @@ window.Jeu = window.Jeu || {};
 Jeu.Adaptatif = (function () {
   var CLE = 'profil';
   var MAX_SESSIONS = 80;
+  var PALIER_MAX = 5;
 
   var profil = null;
 
@@ -39,7 +40,7 @@ Jeu.Adaptatif = (function () {
         errNotion: 0,
         errLecture: 0,
         serie: 0,           // réussites d'affilée
-        palier: 1,          // 1 = découverte, 2 = consolidation, 3 = à l'aise
+        palier: 1,          // de 1 (découverte) à 5 (largement à l'aise)
         vuLe: 0
       };
     }
@@ -65,7 +66,9 @@ Jeu.Adaptatif = (function () {
       f.justes += 1;
       f.serie += 1;
       f.maitrise = f.maitrise + (1 - f.maitrise) * 0.3;
-      if (f.serie >= 4 && f.palier < 3) { f.palier += 1; f.serie = 0; }
+      // Trois réussites d'affilée suffisent à monter : un enfant qui
+      // trouve ça facile doit le sentir vite, sinon il s'ennuie.
+      if (f.serie >= 3 && f.palier < PALIER_MAX) { f.palier += 1; f.serie = 0; }
     } else {
       f.serie = 0;
       if (typeErreur === 'lecture') {
@@ -163,6 +166,15 @@ Jeu.Adaptatif = (function () {
     return t;
   }
 
+  /* Le niveau moyen atteint, tous jeux confondus : sert au grade. */
+  function niveauMoyen() {
+    var p = tout();
+    var cles = Object.keys(p.notions).filter(function (n) { return p.notions[n].vues >= 2; });
+    if (!cles.length) return 1;
+    var somme = cles.reduce(function (t, n) { return t + p.notions[n].palier; }, 0);
+    return somme / cles.length;
+  }
+
   /* Notions les plus fragiles, pour l'espace parent et pour les révisions. */
   function fragiles(combien) {
     var p = tout();
@@ -170,6 +182,21 @@ Jeu.Adaptatif = (function () {
       .filter(function (n) { return p.notions[n].vues >= 3; })
       .sort(function (a, b) { return p.notions[a].maitrise - p.notions[b].maitrise; })
       .slice(0, combien || 5);
+  }
+
+  /* Une séance sans la moindre erreur : on pousse d'un cran de plus
+     les notions qui viennent d'être vues. Rester sur du trop facile
+     est la meilleure façon de perdre un enfant. */
+  function accelerer(notions) {
+    var p = tout();
+    notions.forEach(function (n) {
+      var f = p.notions[n];
+      if (f && f.palier < PALIER_MAX && f.maitrise > 0.8) {
+        f.palier += 1;
+        f.serie = 0;
+      }
+    });
+    sauver();
   }
 
   function terminerSession(infos) {
@@ -224,6 +251,9 @@ Jeu.Adaptatif = (function () {
     choisirNotions: choisirNotions,
     fragiles: fragiles,
     terminerSession: terminerSession,
+    accelerer: accelerer,
+    niveauMoyen: niveauMoyen,
+    PALIER_MAX: PALIER_MAX,
     statistiques: statistiques,
     reinitialiser: reinitialiser,
     melanger: melanger,

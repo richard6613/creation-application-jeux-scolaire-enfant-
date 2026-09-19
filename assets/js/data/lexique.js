@@ -76,7 +76,14 @@ Jeu.Data.lexique = [
   { mot: 'tournesol', syl: ['tour', 'ne', 'sol'],  img: '🌻', theme: 'nature' },
   { mot: 'parapluie', syl: ['pa', 'ra', 'pluie'],  img: '☂️', theme: 'objets' },
   { mot: 'koala',     syl: ['ko', 'a', 'la'],      img: '🐨', theme: 'animaux' },
-  { mot: 'crocodile', syl: ['cro', 'co', 'dile'],  img: '🐊', theme: 'animaux' }
+  { mot: 'crocodile', syl: ['cro', 'co', 'dile'],  img: '🐊', theme: 'animaux' },
+
+  { mot: 'ordinateur',  syl: ['or', 'di', 'na', 'teur'],   img: '💻', theme: 'objets' },
+  { mot: 'hélicoptère', syl: ['hé', 'li', 'cop', 'tère'],  img: '🚁', theme: 'objets' },
+  { mot: 'anniversaire', syl: ['an', 'ni', 'ver', 'saire'], img: '🎂', theme: 'fêtes' },
+  { mot: 'calculatrice', syl: ['cal', 'cu', 'la', 'trice'], img: '🧮', theme: 'école' },
+  { mot: 'aspirateur',  syl: ['as', 'pi', 'ra', 'teur'],   img: '🧹', theme: 'objets' },
+  { mot: 'thermomètre', syl: ['ther', 'mo', 'mè', 'tre'],  img: '🌡️', theme: 'objets' }
 ];
 
 /* Regroupement par nombre de syllabes : sert aux paliers. */

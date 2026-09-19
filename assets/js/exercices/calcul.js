@@ -69,9 +69,60 @@ Jeu.Exercices = Jeu.Exercices || [];
       var a = hasard(2, palier >= 2 ? 10 : 5);
       return { enonce: '5 × ' + a, dit: '5 fois ' + a, reponse: 5 * a, etendue: 20 };
     },
-    'calc.suite': function () {
-      var pas = [2, 5, 10][hasard(0, 2)];
-      var debut = hasard(1, 12) * pas;
+    /* ---- À partir d'ici, ce qui dépasse le simple comptage ----
+       Additions et soustractions à retenue, tables jusqu'à 9,
+       compléments à 100, partages. De quoi tenir la promesse faite à
+       un enfant qui trouve le début facile. */
+
+    'calc.sommeRetenue': function (palier) {
+      var haut = palier >= 4 ? 89 : (palier >= 2 ? 59 : 39);
+      var a, b;
+      do {
+        a = hasard(12, haut);
+        b = hasard(8, Math.min(49, 99 - a));
+      } while ((a % 10) + (b % 10) < 10);      // on veut une vraie retenue
+      return { enonce: a + ' + ' + b, dit: a + ' plus ' + b, reponse: a + b, etendue: 20 };
+    },
+    'calc.differenceRetenue': function (palier) {
+      var haut = palier >= 4 ? 99 : (palier >= 2 ? 69 : 45);
+      var a, b;
+      do {
+        a = hasard(22, haut);
+        b = hasard(7, a - 5);
+      } while ((a % 10) >= (b % 10));          // il faut emprunter
+      return { enonce: a + ' − ' + b, dit: a + ' moins ' + b, reponse: a - b, etendue: 20 };
+    },
+    'calc.complement100': function () {
+      var a = hasard(1, 19) * 5;
+      return { enonce: a + ' + ? = 100', dit: a + ' plus combien font 100 ?',
+               reponse: 100 - a, etendue: 25 };
+    },
+    'calc.table3': function (palier) {
+      var a = hasard(2, palier >= 3 ? 10 : 6);
+      return { enonce: '3 × ' + a, dit: '3 fois ' + a, reponse: 3 * a, etendue: 12 };
+    },
+    'calc.table4': function (palier) {
+      var a = hasard(2, palier >= 3 ? 10 : 6);
+      return { enonce: '4 × ' + a, dit: '4 fois ' + a, reponse: 4 * a, etendue: 14 };
+    },
+    'calc.tablesHautes': function (palier) {
+      var t = [6, 7, 8, 9][hasard(0, palier >= 4 ? 3 : 1)];
+      var a = hasard(2, palier >= 3 ? 10 : 7);
+      return { enonce: t + ' × ' + a, dit: t + ' fois ' + a, reponse: t * a, etendue: 22 };
+    },
+    'calc.partage': function (palier) {
+      var d = [2, 3, 4, 5][hasard(0, palier >= 3 ? 3 : 1)];
+      var q = hasard(2, palier >= 3 ? 10 : 6);
+      return { enonce: (d * q) + ' ÷ ' + d, dit: (d * q) + ' partagé en ' + d,
+               reponse: q, etendue: 8 };
+    },
+    'calc.suite': function (palier) {
+      // Les pas irréguliers et les suites descendantes arrivent plus tard
+      var choix = palier >= 4 ? [2, 3, 4, 5, 10, -5, -10]
+                : palier >= 2 ? [2, 5, 10, 3]
+                : [2, 5, 10];
+      var pas = choix[hasard(0, choix.length - 1)];
+      var debut = pas > 0 ? hasard(1, 12) * pas : hasard(8, 14) * Math.abs(pas);
       var suite = [debut, debut + pas, debut + 2 * pas];
       return {
         enonce: suite.join(' , ') + ' , ?',
@@ -89,7 +140,28 @@ Jeu.Exercices = Jeu.Exercices || [];
     emoji: '🔢',
   teinte: '--jeu-calcul',
 
-    notions: function () { return Object.keys(GENERATEURS); },
+    /* On n'ouvre les calculs les plus durs qu'une fois les premiers
+       bien en place : un enfant doit rencontrer du neuf sans être
+       jeté dans le grand bain. */
+    notions: function () {
+      var base = ['calc.somme10', 'calc.somme20', 'calc.complement10',
+                  'calc.difference', 'calc.double', 'calc.moitie',
+                  'calc.table2', 'calc.table5', 'calc.suite'];
+
+      var niveau = Jeu.Adaptatif.niveauMoyen();
+      var ouvertes = base.slice();
+
+      if (niveau >= 2) {
+        ouvertes = ouvertes.concat(['calc.sommeRetenue', 'calc.table3', 'calc.table4']);
+      }
+      if (niveau >= 2.6) {
+        ouvertes = ouvertes.concat(['calc.differenceRetenue', 'calc.partage']);
+      }
+      if (niveau >= 3.2) {
+        ouvertes = ouvertes.concat(['calc.complement100', 'calc.tablesHautes']);
+      }
+      return ouvertes;
+    },
 
     creerItem: function (notion, palier) {
       var gen = GENERATEURS[notion] || GENERATEURS['calc.somme10'];

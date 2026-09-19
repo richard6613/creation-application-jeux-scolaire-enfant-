@@ -227,6 +227,10 @@ Jeu.Session = (function () {
       ms: Date.now() - s.debut
     });
 
+    // Sans faute : on monte d'un cran supplémentaire. Ce qui est déjà
+    // acquis ne doit pas revenir tel quel la fois suivante.
+    if (justes === total) Jeu.Adaptatif.accelerer(s.programme);
+
     var zone = Jeu.Ui.vider(zoneJeu());
 
     // La scène terminée est le vrai trophée : on la montre en grand.
@@ -283,6 +287,11 @@ Jeu.Session = (function () {
     Jeu.Fete.allumerEtoiles(etoiles, Math.max(1, Math.min(6, justes)), function () {
       var neufs = Jeu.Collection.recolter();
       if (neufs.length) montrerAutocollants(carte, neufs);
+
+      // Un nouveau rang se fête franchement : c'est ce qui donne envie
+      // d'aller chercher le suivant.
+      var rang = Jeu.Grade.nouveauRang();
+      if (rang) montrerRang(carte, rang);
     });
 
     Jeu.Voix.dire('Séance terminée. ' + phrase);
@@ -294,6 +303,24 @@ Jeu.Session = (function () {
       Jeu.App.aller('accueil');
     }));
     courante = null;
+  }
+
+  /* Un rang de plus : le moment le plus gratifiant de l'application. */
+  function montrerRang(carte, rang) {
+    var bloc = Jeu.Ui.el('div', 'retour bravo nouveau-rang');
+    bloc.setAttribute('role', 'status');
+    bloc.style.textAlign = 'center';
+    bloc.style.setProperty('--grade', rang.couleur);
+
+    var signe = Jeu.Ui.el('div', 'rang-signe', rang.signe);
+    signe.setAttribute('aria-hidden', 'true');
+    bloc.appendChild(signe);
+
+    bloc.appendChild(Jeu.Ui.el('p', null, 'Tu es ' + rang.nom + ' !'));
+    carte.appendChild(bloc);
+
+    Jeu.Fete.confettis({ combien: 60 });
+    Jeu.Voix.enchainer('Bravo ! Tu es maintenant ' + rang.nom + ' !');
   }
 
   /* Un autocollant gagné : on le montre en grand, sans un mot de trop. */

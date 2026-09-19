@@ -349,6 +349,7 @@ Jeu.Parent = (function () {
       if (confirm('Effacer l\'historique des séances, des erreurs et les autocollants ? Les réglages seront conservés.')) {
         Jeu.Adaptatif.reinitialiser();
         Jeu.Collection.reinitialiser();
+        Jeu.Grade.reinitialiser();
         Jeu.App.aller('parent');
       }
     }));
