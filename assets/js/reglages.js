@@ -23,7 +23,9 @@ Jeu.Reglages = (function () {
 
     // Aides, réglables une par une
     audio: true,            // lecture audio des consignes et des mots
-    vitesseVoix: 0.85,      // voix posée par défaut
+    vitesseVoix: 0.9,       // voix posée, sans être traînante
+    hauteurVoix: 1,         // 0.8 = plus grave, 1.2 = plus claire
+    voix: '',               // voix choisie par le parent ; vide = la meilleure trouvée
     aideVisuelle: true,     // repères, images, couleurs d'appui
     syllabes: true,         // découpage syllabique quand c'est pertinent
     guideLecture: false,    // bandeau qui isole la ligne en cours

@@ -23,15 +23,49 @@ Jeu.Voix = (function () {
 
   function disponible() { return !!synth; }
 
+  function attendre(ms) {
+    return new Promise(function (r) { setTimeout(r, ms); });
+  }
+
+  /* Toutes les voix françaises de l'appareil, pour que le parent puisse
+     choisir celle qui passe le mieux. Elles varient énormément d'un
+     appareil à l'autre : c'est l'oreille de l'enfant qui tranche. */
+  function voixFrancaises() {
+    if (!synth) return [];
+    return (synth.getVoices() || []).filter(function (v) {
+      return /^fr/i.test(v.lang || '');
+    });
+  }
+
+  /* Une voix de meilleure facture se reconnaît à son nom : les systèmes
+     marquent les versions soignées « amélioré », « premium », « enhanced ».
+     Elles sonnent nettement plus naturelles que les voix compactes. */
+  function qualite(v) {
+    var nom = (v.name || '') + ' ' + (v.voiceURI || '');
+    var points = 0;
+    if (/enhanced|premium|amélior|ameliore|neural|natural|siri/i.test(nom)) points += 3;
+    if (/compact|eloquence|espeak/i.test(nom)) points -= 3;
+    if (v.localService) points += 1;          // pas de réseau, pas d'attente
+    if (/^fr-FR/i.test(v.lang || '')) points += 1;
+    return points;
+  }
+
   function choisirVoix() {
     if (!synth) return null;
-    var liste = synth.getVoices() || [];
-    if (!liste.length) return null;
-    var fr = liste.filter(function (v) { return /^fr/i.test(v.lang || ''); });
+    var fr = voixFrancaises();
     if (!fr.length) return null;
-    // On préfère une voix installée sur l'appareil : pas de réseau, pas d'attente.
-    var locale = fr.filter(function (v) { return v.localService; });
-    voixFr = (locale[0] || fr[0]);
+
+    // Le choix du parent l'emporte, tant que la voix existe encore.
+    var voulue = Jeu.Reglages.get('voix');
+    if (voulue) {
+      var trouvee = fr.filter(function (v) {
+        return v.voiceURI === voulue || v.name === voulue;
+      })[0];
+      if (trouvee) { voixFr = trouvee; return voixFr; }
+    }
+
+    var triees = fr.slice().sort(function (a, b) { return qualite(b) - qualite(a); });
+    voixFr = triees[0];
     return voixFr;
   }
 
@@ -89,6 +123,10 @@ Jeu.Voix = (function () {
     file = file.then(function () {
       if (mien !== generation) return null;   // une coupure est passée par là
       return parler(String(texte), options, mien);
+    }).then(function () {
+      // Une courte respiration : deux phrases collées l'une à l'autre
+      // s'entendent comme un seul bloc, difficile à suivre.
+      return attendre(320);
     });
     return file;
   }
@@ -99,8 +137,8 @@ Jeu.Voix = (function () {
       u.lang = 'fr-FR';
       if (!voixFr) choisirVoix();
       if (voixFr) u.voice = voixFr;
-      u.rate = options.vitesse || Jeu.Reglages.get('vitesseVoix') || 0.85;
-      u.pitch = 1;
+      u.rate = options.vitesse || Jeu.Reglages.get('vitesseVoix') || 0.9;
+      u.pitch = Jeu.Reglages.get('hauteurVoix') || 1;
       u.volume = 1;
 
       if (options.bouton) {
@@ -109,6 +147,8 @@ Jeu.Voix = (function () {
       }
 
       var termine = false;
+      var demarre = false;
+
       function fini() {
         if (termine) return;
         termine = true;
@@ -116,25 +156,38 @@ Jeu.Voix = (function () {
         if (boutonActif === options.bouton) boutonActif = null;
         resoudre();
       }
+      u.onstart = function () { demarre = true; };
       u.onend = fini;
       u.onerror = fini;
 
       try { synth.speak(u); } catch (e) { fini(); return; }
 
-      // Filet de sécurité : certains navigateurs n'émettent jamais onend.
-      // On ne rend la main que si plus rien ne parle.
-      var limite = Math.max(2500, texte.length * 150) + 1500;
+      /* Filet de sécurité, pour les navigateurs qui n'émettent jamais
+         onend. Le piège est au démarrage : la voix met souvent 300 à
+         600 ms à s'engager, et pendant ce temps « speaking » vaut
+         encore false. Conclure là revient à couper la phrase dès son
+         premier mot — c'est ce qui rendait la lecture hachée. On ne
+         rend donc la main qu'après avoir vu la voix parler pour de
+         bon, ou passé un délai de grâce. */
+      var GRACE = 2000;
+      var limite = Math.max(3000, texte.length * 160) + 2000;
       var t0 = Date.now();
       var veille = setInterval(function () {
         if (termine) { clearInterval(veille); return; }
         if (gen !== generation) { clearInterval(veille); fini(); return; }
+
         var parleEncore = false;
         try { parleEncore = synth.speaking || synth.pending; } catch (e) { /* rien */ }
+        if (parleEncore) { demarre = true; return; }
+
+        // Silencieux : soit ce n'est pas encore parti, soit c'est terminé.
+        if (!demarre && Date.now() - t0 < GRACE) return;
+
         if (!parleEncore || Date.now() - t0 > limite) {
           clearInterval(veille);
           fini();
         }
-      }, 250);
+      }, 200);
     });
   }
 
@@ -148,10 +201,6 @@ Jeu.Voix = (function () {
                    .then(function () { return attendre(200); });
     });
     return suite;
-  }
-
-  function attendre(ms) {
-    return new Promise(function (r) { setTimeout(r, ms); });
   }
 
   /* Compteur de réécoutes : sert à distinguer une difficulté de lecture
@@ -179,6 +228,8 @@ Jeu.Voix = (function () {
 
   return {
     disponible: disponible,
+    voixFrancaises: voixFrancaises,
+    choisirVoix: choisirVoix,
     dire: dire,
     enchainer: enchainer,
     direSyllabes: direSyllabes,

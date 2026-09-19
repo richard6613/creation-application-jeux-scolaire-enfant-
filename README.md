@@ -131,6 +131,15 @@ l'appareil est réglé sur « moins d'animations ».
 Ces décisions structurent le code ; elles ne sont pas des options
 ajoutées après coup.
 
+**Une voix qui ne hache pas.** Les lectures s'enchaînent dans une file
+et attendent réellement la fin de la précédente : la voix met souvent
+300 à 600 ms à s'engager, et conclure pendant ce délai revient à couper
+la phrase dès son premier mot. Une respiration sépare deux prises de
+parole. La voix se choisit dans l'espace parent parmi celles installées
+sur l'appareil — leur qualité varie beaucoup — et à défaut de choix,
+c'est la plus soignée qui est retenue. Vitesse et hauteur sont
+réglables.
+
 **Lire le moins possible pour pouvoir jouer.** Une consigne courte à la
 fois, jamais deux à l'écran. Un bouton haut-parleur toujours au même
 endroit, de la même forme, qui relit autant de fois que nécessaire. La
