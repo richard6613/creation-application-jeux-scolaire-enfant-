@@ -18,27 +18,86 @@ Jeu.Parent = (function () {
 
   function el(b, c, t) { return Jeu.Ui.el(b, c, t); }
 
-  /* Petite porte : une multiplication que l'on pose rarement en CE2.
-     Ce n'est pas un verrou de sécurité, juste un pas de côté. */
+  /* Comparaison indulgente : ni la casse, ni les accents, ni un espace
+     de trop ne doivent empêcher un parent d'entrer chez lui. */
+  function normaliser(t) {
+    return String(t || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
+  /* La porte de l'espace parent.
+
+     Ce n'est pas un verrou de sécurité et il ne faut pas le présenter
+     comme tel : tout est enregistré sur l'appareil, rien de sensible
+     ne se trouve derrière. C'est un pas de côté, pour que l'enfant ne
+     modifie pas ses propres réglages sans s'en rendre compte.
+
+     En secours, une multiplication : un parent qui a oublié son code
+     ne doit jamais se retrouver enfermé dehors. */
   function porte(zone, apres) {
-    var a = 6 + Math.floor(Math.random() * 4);   // 6 à 9
-    var b = 6 + Math.floor(Math.random() * 4);
     var carte = el('div', 'carte pile');
     carte.appendChild(el('h2', null, 'Espace parent'));
+
+    var code = Jeu.Reglages.get('codeParent');
+
+    if (code) {
+      carte.appendChild(el('p', null, 'Entrez le code.'));
+
+      var champ = document.createElement('input');
+      champ.type = 'text';
+      champ.autocapitalize = 'none';
+      champ.autocomplete = 'off';
+      champ.spellcheck = false;
+      champ.setAttribute('aria-label', 'Code de l\'espace parent');
+      habiller(champ, '14ch');
+      carte.appendChild(champ);
+
+      var msg = el('p', 'petit zone-sourdine', '');
+      carte.appendChild(msg);
+
+      var essais = 0;
+      function tenter() {
+        if (normaliser(champ.value) === normaliser(code)) { ouvert = true; apres(); return; }
+        essais += 1;
+        msg.textContent = essais >= 2
+          ? 'Code incorrect. Utilisez « J\'ai oublié le code ».'
+          : 'Code incorrect.';
+      }
+      champ.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter') { ev.preventDefault(); tenter(); }
+      });
+      carte.appendChild(Jeu.Ui.bouton('Entrer', 'btn btn-principal', tenter));
+      carte.appendChild(Jeu.Ui.bouton('J\'ai oublié le code', 'btn btn-discret', function () {
+        Jeu.Ui.vider(zone);
+        porteCalcul(zone, apres);
+      }));
+
+      zone.appendChild(carte);
+      champ.focus();
+      return;
+    }
+
+    zone.appendChild(carte);
+    porteCalcul(zone, apres, carte);
+  }
+
+  /* Secours : une multiplication qu'on pose rarement en CE2. */
+  function porteCalcul(zone, apres, dans) {
+    var carte = dans || el('div', 'carte pile');
+    if (!dans) carte.appendChild(el('h2', null, 'Espace parent'));
+
+    var a = 6 + Math.floor(Math.random() * 4);   // 6 à 9
+    var b = 6 + Math.floor(Math.random() * 4);
     carte.appendChild(el('p', null, 'Combien font ' + a + ' × ' + b + ' ?'));
 
     var champ = document.createElement('input');
     champ.type = 'number';
     champ.inputMode = 'numeric';
     champ.setAttribute('aria-label', 'Résultat de ' + a + ' fois ' + b);
-    champ.style.fontSize = '1.2rem';
-    champ.style.padding = '12px';
-    champ.style.minHeight = '56px';
-    champ.style.borderRadius = '14px';
-    champ.style.border = '2px solid var(--bordure)';
-    champ.style.background = 'var(--surface)';
-    champ.style.color = 'var(--texte)';
-    champ.style.width = '10ch';
+    habiller(champ, '10ch');
     carte.appendChild(champ);
 
     var msg = el('p', 'petit zone-sourdine', '');
@@ -49,8 +108,20 @@ Jeu.Parent = (function () {
       else msg.textContent = 'Ce n\'est pas le bon résultat.';
     }));
 
-    zone.appendChild(carte);
+    if (!dans) zone.appendChild(carte);
     champ.focus();
+  }
+
+  function habiller(champ, largeur) {
+    champ.style.fontSize = '1.2rem';
+    champ.style.fontFamily = 'inherit';
+    champ.style.padding = '12px';
+    champ.style.minHeight = '56px';
+    champ.style.borderRadius = '14px';
+    champ.style.border = '2px solid var(--bordure)';
+    champ.style.background = 'var(--surface)';
+    champ.style.color = 'var(--texte)';
+    champ.style.width = largeur;
   }
 
   function afficher(zone) {
@@ -70,6 +141,9 @@ Jeu.Parent = (function () {
 
     zone.appendChild(el('h2', null, 'Ce qui est proposé'));
     zone.appendChild(Jeu.Panneau.series());
+
+    zone.appendChild(el('h2', null, 'Prénom et code'));
+    zone.appendChild(prenomEtCode());
 
     zone.appendChild(zoneDanger());
   }
@@ -221,6 +295,39 @@ Jeu.Parent = (function () {
       return new Date(ms).toLocaleDateString('fr-FR',
         { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     } catch (e) { return ''; }
+  }
+
+  /* Prénom affiché à l'accueil, et code d'entrée de cet espace. */
+  function prenomEtCode() {
+    var carte = el('div', 'carte');
+
+    carte.appendChild(champTexte('Prénom de l\'enfant', 'prenom',
+      'Affiché sur l\'écran d\'accueil. Laissez vide pour un accueil sans prénom.'));
+
+    carte.appendChild(champTexte('Code de cet espace', 'codeParent',
+      'Ni la casse ni les accents ne comptent. Laissez vide pour revenir à la ' +
+      'multiplication. Ce code n\'est pas une protection : tout reste sur cet ' +
+      'appareil, et « J\'ai oublié le code » permet toujours d\'entrer.'));
+
+    return carte;
+  }
+
+  function champTexte(titre, cle, aide) {
+    var d = el('div', 'reglage');
+    d.appendChild(el('label', 'intitule', titre));
+    var champ = document.createElement('input');
+    champ.type = 'text';
+    champ.value = Jeu.Reglages.get(cle) || '';
+    champ.autocapitalize = 'words';
+    champ.autocomplete = 'off';
+    champ.setAttribute('aria-label', titre);
+    habiller(champ, '100%');
+    champ.addEventListener('change', function () {
+      Jeu.Reglages.set(cle, champ.value.trim());
+    });
+    d.appendChild(champ);
+    if (aide) d.appendChild(el('p', 'aide', aide));
+    return d;
   }
 
   function zoneDanger() {
