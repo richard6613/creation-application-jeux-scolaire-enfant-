@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr" data-fond="creme" data-animations="oui">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mes jeux</title>
+<meta name="description" content="Jeux de lecture, d'orthographe et de calcul pour le CE1 et le CE2.">
+<meta name="theme-color" content="#faf3e6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mes jeux">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/composants.css">
+</head>
+<body>
+
+<div class="appli">
+
+  <header class="barre-haut">
+    <button type="button" id="btn-retour" class="btn btn-icone" aria-label="Revenir aux jeux" hidden>
+      <span aria-hidden="true">←</span>
+    </button>
+    <h1 class="titre-ecran" id="titre-ecran">Mes jeux</h1>
+    <button type="button" id="btn-confort" class="btn btn-icone" aria-label="Régler mon confort de lecture" title="Mon confort">
+      <span aria-hidden="true">Aa</span>
+    </button>
+    <button type="button" id="btn-parent" class="btn btn-icone" aria-label="Espace parent" title="Espace parent">
+      <span aria-hidden="true">⚙️</span>
+    </button>
+  </header>
+
+  <main class="ecran" id="zone-jeu"></main>
+
+</div>
+
+<div class="barre-bas" id="barre-bas" hidden></div>
+
+<noscript>
+  <p style="padding:20px">Cette application a besoin que JavaScript soit activé.</p>
+</noscript>
+
+<script src="assets/js/stockage.js"></script>
+<script src="assets/js/reglages.js"></script>
+<script src="assets/js/voix.js"></script>
+<script src="assets/js/adaptatif.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/glisser.js"></script>
+<script src="assets/js/data/lexique.js"></script>
+<script src="assets/js/data/notions.js"></script>
+<script src="assets/js/libelles.js"></script>
+<script src="assets/js/panneau-reglages.js"></script>
+<script src="assets/js/session.js"></script>
+<script src="assets/js/exercices/ecoute.js"></script>
+<script src="assets/js/exercices/confusions.js"></script>
+<script src="assets/js/exercices/syllabes.js"></script>
+<script src="assets/js/exercices/phrase.js"></script>
+<script src="assets/js/exercices/lecture.js"></script>
+<script src="assets/js/exercices/calcul.js"></script>
+<script src="assets/js/parent.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

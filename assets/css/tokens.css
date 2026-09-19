@@ -1,0 +1,114 @@
+/* ---------------------------------------------------------------
+   tokens.css — réglages de confort de lecture
+   Toutes les valeurs réglables par l'enfant ou le parent passent
+   par ces variables. Aucun composant ne fixe une taille en dur.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Réglables depuis l'espace parent / les réglages rapides */
+  --taille-texte: 20px;          /* 16 → 30 */
+  --interligne: 1.8;             /* 1.4 → 2.4 */
+  --espace-lettres: 0.04em;      /* 0 → 0.14em */
+  --espace-mots: 0.18em;         /* 0 → 0.5em */
+  --largeur-ligne: 34ch;         /* lignes courtes : 30 à 55 caractères */
+  --police: Verdana, Geneva, "DejaVu Sans", sans-serif;
+
+  /* Rythme visuel */
+  --rayon: 16px;
+  --gap: 16px;
+  --cible-min: 56px;             /* surface tactile confortable */
+  --duree-anim: 220ms;
+
+  /* Couleurs fonctionnelles, communes à tous les fonds */
+  --succes: #2f7d50;
+  --succes-doux: #d9efe0;
+  --attention: #9a6212;
+  --attention-doux: #f8ebd4;
+  --accent: #2f5d8a;
+  --accent-doux: #dbe8f4;
+  --accent-contraste: #ffffff;
+}
+
+/* Animations coupées : réglage parent ou préférence système */
+html[data-animations="non"] * ,
+html[data-animations="non"] *::before,
+html[data-animations="non"] *::after {
+  animation-duration: 0.001ms !important;
+  transition-duration: 0.001ms !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* ------------------------- Fonds de lecture -------------------------
+   Jamais de noir pur sur blanc éclatant : contraste confortable,
+   entre 7:1 et 11:1 selon le fond.
+   -------------------------------------------------------------------- */
+
+/* Crème — réglage par défaut */
+html[data-fond="creme"] {
+  --fond: #faf3e6;
+  --surface: #fffaf0;
+  --surface-2: #f2e8d6;
+  --texte: #37312a;
+  --texte-doux: #6a6157;
+  --bordure: #ddd0b8;
+  --ombre: 0 2px 0 rgba(90, 76, 54, 0.14);
+}
+/* Sable */
+html[data-fond="sable"] {
+  --fond: #f3e8d5;
+  --surface: #fbf2e2;
+  --surface-2: #e9dbc2;
+  --texte: #3a3128;
+  --texte-doux: #6d6153;
+  --bordure: #d4c3a4;
+  --ombre: 0 2px 0 rgba(90, 76, 54, 0.16);
+}
+/* Bleu très pâle */
+html[data-fond="bleu"] {
+  --fond: #e9f1f7;
+  --surface: #f5fafd;
+  --surface-2: #d9e6f0;
+  --texte: #2c343c;
+  --texte-doux: #5c6773;
+  --bordure: #c1d3e2;
+  --ombre: 0 2px 0 rgba(44, 66, 88, 0.14);
+}
+/* Vert pâle */
+html[data-fond="vert"] {
+  --fond: #e9f2e8;
+  --surface: #f5faf4;
+  --surface-2: #d8e7d6;
+  --texte: #2e352c;
+  --texte-doux: #5d6a5a;
+  --bordure: #c2d6bf;
+  --ombre: 0 2px 0 rgba(44, 70, 44, 0.14);
+}
+/* Gris doux */
+html[data-fond="gris"] {
+  --fond: #ececea;
+  --surface: #f6f6f4;
+  --surface-2: #dedddb;
+  --texte: #32312f;
+  --texte-doux: #63615e;
+  --bordure: #cac8c4;
+  --ombre: 0 2px 0 rgba(60, 58, 55, 0.14);
+}
+/* Sombre confortable — gris anthracite, pas de noir pur */
+html[data-fond="sombre"] {
+  --fond: #262b31;
+  --surface: #2f353d;
+  --surface-2: #3a424b;
+  --texte: #e8e4dc;
+  --texte-doux: #b2aea6;
+  --bordure: #4c545e;
+  --ombre: 0 2px 0 rgba(0, 0, 0, 0.3);
+  --succes: #7fcd9c;
+  --succes-doux: #2f4438;
+  --attention: #e3b76c;
+  --attention-doux: #443a29;
+  --accent: #8fbde8;
+  --accent-doux: #31414f;
+  --accent-contraste: #1f242a;
+}
