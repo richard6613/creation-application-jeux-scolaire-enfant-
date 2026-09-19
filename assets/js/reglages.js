@@ -36,6 +36,10 @@ Jeu.Reglages = (function () {
     // Rythme
     longueurSession: 8,     // nombre d'exercices par session
 
+    // Ce qui se construit pendant une séance : 'chantiers' (blocs à
+    // empiler), 'paysages' (décors à remplir) ou 'melange'.
+    decors: 'melange',
+
     // Séries de confusions mises de côté par le parent (par notion)
     seriesDeCote: [],
 

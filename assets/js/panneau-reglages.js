@@ -207,6 +207,12 @@ Jeu.Panneau = (function () {
       'Une règle suit la ligne en cours pendant la lecture.'));
     carte.appendChild(interrupteur('Affichage mot par mot', 'motParMot',
       'Dans les lectures, la phrase se dévoile un mot après l\'autre.'));
+    carte.appendChild(puces('Ce qui se construit pendant une séance', 'decors', [
+      { cle: 'melange',   nom: 'Les deux' },
+      { cle: 'chantiers', nom: 'Constructions' },
+      { cle: 'paysages',  nom: 'Paysages' }
+    ], 'Les constructions se montent bloc par bloc, les paysages se remplissent ' +
+       'd\'animaux et de fleurs. À choisir selon ce qui lui parle le plus.'));
     carte.appendChild(interrupteur('Animations', 'animations',
       'À couper si les mouvements à l\'écran gênent la concentration.'));
     carte.appendChild(interrupteur('Exercices chronométrés', 'chrono',

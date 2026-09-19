@@ -66,6 +66,84 @@ Jeu.Scene = (function () {
     }
   ];
 
+  var COLONNES = 13;
+  var RANGEES = 9;
+
+  /* Un chantier : on pose des blocs et la construction monte.
+
+     Les premières étapes bâtissent la structure, les dernières
+     ajoutent le décor. Une séance qui n'est pas parfaite laisse donc
+     une maison finie mais sans ses arbres, jamais un mur à moitié
+     monté : l'enfant repart avec quelque chose de construit. */
+  function creerChantier(total) {
+    var plans = Jeu.Data.constructions;
+    var precedent = Jeu.Stockage.lire('dernierDecor', '');
+    var choix = plans.filter(function (p) { return p.cle !== precedent; });
+    var plan = choix[Math.floor(Math.random() * choix.length)];
+    Jeu.Stockage.ecrire('dernierDecor', plan.cle);
+
+    var boite = Jeu.Ui.el('div', 'scene scene-chantier');
+    boite.style.background =
+      'linear-gradient(to bottom, ' + plan.ciel[0] + ', ' + plan.ciel[1] + ')';
+    boite.setAttribute('role', 'img');
+    boite.setAttribute('aria-label', plan.phrase);
+
+    var compteur = Jeu.Ui.el('div', 'scene-compte', '0 / ' + total);
+    compteur.setAttribute('aria-hidden', 'true');
+    boite.appendChild(compteur);
+
+    function poserBloc(b, retard) {
+      var m = Jeu.Data.matieres[b[2]];
+      if (!m) return;
+      var e = Jeu.Ui.el('span', 'bloc');
+      e.style.left = (b[0] * 100 / COLONNES) + '%';
+      e.style.bottom = (b[1] * 100 / RANGEES) + '%';
+      e.style.width = (100 / COLONNES) + '%';
+      e.style.height = (100 / RANGEES) + '%';
+      e.style.background = m.haut;
+      e.setAttribute('aria-hidden', 'true');
+      boite.appendChild(e);
+      setTimeout(function () { e.classList.add('pose'); }, retard);
+    }
+
+    return {
+      noeud: boite,
+      decor: plan,
+      total: total,
+      places: 0,
+      etapesPosees: 0,
+
+      ajouter: function () {
+        if (this.places >= this.total) return;
+        this.places += 1;
+
+        // Les étapes du plan se répartissent sur les exercices
+        var voulu = Math.round(this.places * plan.etapes.length / this.total);
+        var retard = 0;
+        while (this.etapesPosees < voulu && this.etapesPosees < plan.etapes.length) {
+          plan.etapes[this.etapesPosees].forEach(function (b) {
+            poserBloc(b, retard);
+            retard += 55;
+          });
+          this.etapesPosees += 1;
+        }
+
+        compteur.textContent = this.places + ' / ' + this.total;
+        boite.setAttribute('aria-label',
+          plan.phrase + ' ' + this.places + ' sur ' + this.total + '.');
+      },
+
+      complete: function () { return this.places >= this.total; },
+
+      feter: function () {
+        if (!Jeu.Fete.autorisee()) return;
+        Array.prototype.forEach.call(boite.querySelectorAll('.bloc'), function (e, i) {
+          setTimeout(function () { e.classList.add('brille'); }, i * 18);
+        });
+      }
+    };
+  }
+
   /* Un décor différent d'une séance à l'autre, sans jamais reprendre
      celui de la fois précédente : la surprise fait partie du plaisir. */
   function tirerDecor() {
@@ -90,6 +168,13 @@ Jeu.Scene = (function () {
   }
 
   function creer(total) {
+    var gout = Jeu.Reglages.get('decors') || 'melange';
+    if (gout === 'chantiers') return creerChantier(total);
+    if (gout === 'melange' && Math.random() < 0.6) return creerChantier(total);
+    return creerPaysage(total);
+  }
+
+  function creerPaysage(total) {
     var decor = tirerDecor();
 
     var boite = Jeu.Ui.el('div', 'scene scene-' + decor.cle);
