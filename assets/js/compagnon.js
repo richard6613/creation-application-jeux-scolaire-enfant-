@@ -84,5 +84,31 @@ Jeu.Compagnon = (function () {
     return svg;
   }
 
-  return { dessiner: dessiner };
+  /* Filou avec ce qu'il porte. L'accessoire est posé par-dessus le
+     dessin plutôt qu'intégré au trait : on peut en ajouter sans
+     toucher au chat lui-même. */
+  function habille(humeur, taille) {
+    var t = taille || 76;
+    var boite = document.createElement('span');
+    boite.className = 'filou-boite';
+    boite.style.width = t + 'px';
+    boite.style.height = t + 'px';
+    boite.appendChild(dessiner(humeur, t));
+
+    var porte = (window.Jeu.Garderobe && Jeu.Garderobe.porte()) || '';
+    var a = porte && Jeu.Garderobe.article(porte);
+    if (a) {
+      var acc = document.createElement('span');
+      acc.className = 'filou-accessoire';
+      acc.textContent = a.signe;
+      acc.setAttribute('aria-hidden', 'true');
+      acc.style.fontSize = Math.round(t * a.taille) + 'px';
+      acc.style.top = (a.haut * t) + 'px';
+      acc.style.left = (a.gauche * 100) + '%';
+      boite.appendChild(acc);
+    }
+    return boite;
+  }
+
+  return { dessiner: dessiner, habille: habille };
 })();

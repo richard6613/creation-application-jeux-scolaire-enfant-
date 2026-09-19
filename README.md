@@ -101,6 +101,30 @@ Une séance dure huit exercices par défaut et se termine toujours.
 
 ## Donner envie d'y revenir
 
+Le retour d'un enfant de huit ans a été net : « c'est un peu nul ». Il
+avait raison, et le diagnostic était simple — une séance était une
+suite de questions. On répondait, on avait « bravo », et rien d'autre
+ne se passait. Un jeu, pour un enfant, est quelque chose qui **avance
+pendant qu'on joue**. Deux réponses à cela.
+
+**Une scène à remplir.** Chaque séance ouvre sur un décor vide —
+aquarium, jardin, espace, forêt, ferme — tiré au sort, jamais le même
+que la fois d'avant. Chaque bonne réponse y pose un élément, tout de
+suite, sous ses yeux. À la fin, la scène est complète : c'est le vrai
+trophée, et il se comprend sans lire un mot. La récompense n'attend
+plus la fin de la séance, elle arrive à chaque réussite.
+
+**Les affaires de Filou.** Chaque bonne réponse rapporte une pièce, et
+les pièces habillent Filou : casquette, nœud, lunettes, couronne,
+chapeau de pirate… Il les porte ensuite partout dans l'application. Le
+premier accessoire se gagne en une seule séance — un enfant qui repart
+les mains vides de sa première partie ne revient pas — puis les
+suivants s'espacent pour garder un but devant soi.
+
+Dépenser ne retire rien au total d'étoiles gagnées, qui sert à la
+collection d'autocollants : les deux progressions avancent ensemble et
+aucune ne recule.
+
 **Un chemin de progression.** L'accueil est un parcours d'étapes :
 celles franchies portent leur coche, l'étape du jour est plus grande
 et entourée d'un halo, Filou s'y tient. Tous les quatre pas, un
@@ -273,6 +297,8 @@ outils/
   generer-page-publiee.py     page sans doctype, pour publication en ligne
   generer-sw.py               régénère sw.js et sa liste de fichiers
 assets/js/
+  scene.js                    le décor qui se remplit pendant la séance
+  garderobe.js                les pièces et les affaires de Filou
   parcours.js                 le chemin de progression et les jours joués
   compagnon.js                Filou, le chat qui accompagne l'enfant
   fete.js                     confettis et étoiles de fin de séance

@@ -128,7 +128,9 @@ Jeu.Parcours = (function () {
 
       // Filou marche devant l'enfant, sur l'étape en cours
       if (etat === 'en-cours') {
-        var lui = Jeu.Compagnon.dessiner('salut', 54);
+        // Filou porte ce que l'enfant lui a acheté, ici comme ailleurs :
+        // un accessoire qu'on ne voit qu'à un seul endroit ne sert à rien.
+        var lui = Jeu.Compagnon.habille('salut', 54);
         lui.classList.add('filou-chemin');
         ligne.appendChild(lui);
       }
