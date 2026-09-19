@@ -77,6 +77,75 @@ Jeu.Panneau = (function () {
     return d;
   }
 
+  /* Choix de la voix de lecture.
+
+     Les voix installées varient beaucoup d'un appareil à l'autre, et
+     leur qualité aussi : certaines sont nettement plus naturelles que
+     d'autres. On les propose toutes, avec de quoi les essayer — c'est
+     l'oreille de l'enfant qui tranche, pas une règle générale. */
+  function choixVoix() {
+    var d = bloc('Voix de lecture', null);
+    var voix = Jeu.Voix.voixFrancaises();
+
+    if (!voix.length) {
+      d.appendChild(el('p', 'aide',
+        'Aucune voix française n\'est installée sur cet appareil. ' +
+        'Elle s\'ajoute dans les réglages du système, section synthèse vocale ' +
+        '(« Accessibilité », puis « Contenu énoncé »). Sans elle, les boutons ' +
+        'haut-parleur restent sans effet ; le reste de l\'application fonctionne.'));
+      return d;
+    }
+
+    var liste = document.createElement('select');
+    liste.setAttribute('aria-label', 'Voix de lecture');
+    liste.style.fontFamily = 'inherit';
+    liste.style.fontSize = '1rem';
+    liste.style.padding = '12px';
+    liste.style.minHeight = '56px';
+    liste.style.width = '100%';
+    liste.style.borderRadius = '14px';
+    liste.style.border = '2px solid var(--bordure)';
+    liste.style.background = 'var(--surface)';
+    liste.style.color = 'var(--texte)';
+
+    var auto = document.createElement('option');
+    auto.value = '';
+    auto.textContent = 'Automatique (la plus soignée)';
+    liste.appendChild(auto);
+
+    var choisie = Jeu.Reglages.get('voix') || '';
+    voix.forEach(function (v) {
+      var o = document.createElement('option');
+      o.value = v.voiceURI || v.name;
+      o.textContent = v.name + (v.localService ? '' : ' — par internet');
+      if (o.value === choisie) o.selected = true;
+      liste.appendChild(o);
+    });
+
+    var essai = 'Bonjour ! Écoute bien : le chat gris dort sur le tapis.';
+
+    liste.addEventListener('change', function () {
+      Jeu.Reglages.set('voix', liste.value);
+      Jeu.Voix.choisirVoix();
+      Jeu.Voix.dire(essai, { force: true });
+    });
+
+    d.insertBefore(liste, d.querySelector('.aide'));
+
+    var bouton = Jeu.Ui.bouton('Écouter cette voix', 'btn', function () {
+      Jeu.Voix.dire(essai, { force: true });
+    });
+    bouton.style.marginTop = '10px';
+    d.insertBefore(bouton, d.querySelector('.aide'));
+
+    d.appendChild(el('p', 'aide',
+      'Essayez-en plusieurs avec l\'enfant. Les voix marquées « amélioré » ' +
+      'ou « premium » sonnent plus naturellement ; elles se téléchargent ' +
+      'depuis les réglages du système.'));
+
+    return d;
+  }
+
   /* Aperçu vivant : la même phrase, avec les réglages en cours. */
   function apercu() {
     var d = el('div', 'apercu');
@@ -123,8 +192,13 @@ Jeu.Panneau = (function () {
 
     carte.appendChild(interrupteur('Lecture audio', 'audio',
       'Les consignes, les mots et les phrases peuvent être écoutés autant de fois que nécessaire.'));
+    carte.appendChild(choixVoix());
     carte.appendChild(curseur('Vitesse de la voix', 'vitesseVoix', 0.6, 1.2, 0.05, '',
-      'Une voix posée laisse le temps de suivre.'));
+      'Une voix posée laisse le temps de suivre. Trop lente, elle devient ' +
+      'métallique : c\'est souvent mieux de garder une vitesse normale et de ' +
+      'choisir une voix plus soignée.'));
+    carte.appendChild(curseur('Hauteur de la voix', 'hauteurVoix', 0.8, 1.2, 0.05, '',
+      'Plus grave ou plus claire, selon ce que l\'enfant écoute le plus volontiers.'));
     carte.appendChild(interrupteur('Aide visuelle', 'aideVisuelle',
       'Images et repères de couleur à côté des mots.'));
     carte.appendChild(interrupteur('Découpage en syllabes', 'syllabes',
