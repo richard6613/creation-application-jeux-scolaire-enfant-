@@ -9,6 +9,7 @@ Jeu.Libelles = (function () {
   var table = {
     'syllabes.deux':  'Construire un mot de 2 syllabes',
     'syllabes.trois': 'Construire un mot de 3 syllabes',
+    'syllabes.quatre': 'Construire un mot de 4 syllabes',
     'phrase.courte':  'Construire une phrase courte',
     'phrase.moyenne': 'Construire une phrase de 5 ou 6 mots',
     'phrase.longue':  'Construire une phrase longue',
@@ -22,7 +23,14 @@ Jeu.Libelles = (function () {
     'calc.moitie':       'Moitiés',
     'calc.table2':       'Table de 2',
     'calc.table5':       'Table de 5',
-    'calc.suite':        'Suites de nombres'
+    'calc.suite':        'Suites de nombres',
+    'calc.sommeRetenue':     'Additions avec retenue',
+    'calc.differenceRetenue': 'Soustractions avec retenue',
+    'calc.complement100':    'Compléments à 100',
+    'calc.table3':           'Table de 3',
+    'calc.table4':           'Table de 4',
+    'calc.tablesHautes':     'Tables de 6 à 9',
+    'calc.partage':          'Partages et divisions'
   };
 
   Jeu.Data.confusions.forEach(function (s) {

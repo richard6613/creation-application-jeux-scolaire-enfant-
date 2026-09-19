@@ -71,6 +71,9 @@ Jeu.App = (function () {
       z.appendChild(bandeau);
     }
 
+    // Le rang atteint : la preuve visible qu'il progresse.
+    z.appendChild(Jeu.Grade.badge());
+
     // Les jours joués de la semaine : ce qui est fait, jamais ce qui manque.
     z.appendChild(Jeu.Parcours.semaine());
 

@@ -13,13 +13,13 @@ Jeu.Exercices = Jeu.Exercices || [];
 (function () {
 
 /* Prend une syllabe d'un autre mot, qui ne figure pas dans celui-ci. */
-function syllabeEtrangere(m) {
+function syllabeEtrangere(m, dejaPrises) {
   var essais = 0;
-  while (essais < 30) {
+  while (essais < 40) {
     essais += 1;
     var autre = Jeu.Data.lexique[Math.floor(Math.random() * Jeu.Data.lexique.length)];
     var s = autre.syl[Math.floor(Math.random() * autre.syl.length)];
-    if (m.syl.indexOf(s) < 0) return s;
+    if (m.syl.indexOf(s) < 0 && (!dejaPrises || dejaPrises.indexOf(s) < 0)) return s;
   }
   return null;
 }
@@ -34,20 +34,28 @@ Jeu.Exercices.push({
   notions: function () {
     var n = ['syllabes.deux'];
     if (Jeu.Data.parSyllabes(3).length) n.push('syllabes.trois');
+    // Les mots de quatre syllabes n'arrivent qu'une fois les trois
+    // syllabes bien en place.
+    if (Jeu.Data.parSyllabes(4).length && Jeu.Adaptatif.palier('syllabes.trois') >= 3) {
+      n.push('syllabes.quatre');
+    }
     return n;
   },
 
   creerItem: function (notion, palier) {
-    var nb = (notion === 'syllabes.trois') ? 3 : 2;
+    var nb = notion === 'syllabes.quatre' ? 4
+           : notion === 'syllabes.trois' ? 3 : 2;
     var liste = Jeu.Data.parSyllabes(nb).filter(function (m) { return m.img; });
     if (!liste.length) liste = Jeu.Data.parSyllabes(nb);
     var m = liste[Math.floor(Math.random() * liste.length)];
 
     var etiquettes = m.syl.slice();
-    // Au palier 3 seulement : une syllabe étrangère se glisse parmi les bonnes.
-    if (palier >= 3) {
-      var intrus = syllabeEtrangere(m);
-      if (intrus) etiquettes.push(intrus);
+    // Une syllabe étrangère dès le palier 3, deux à partir du palier 5 :
+    // il faut lire vraiment le mot, plus seulement ordonner ce qu'on a.
+    var intrus = palier >= 5 ? 2 : (palier >= 3 ? 1 : 0);
+    for (var k = 0; k < intrus; k++) {
+      var e = syllabeEtrangere(m, etiquettes);
+      if (e) etiquettes.push(e);
     }
     return { m: m, melange: Jeu.Adaptatif.melanger(etiquettes) };
   },
