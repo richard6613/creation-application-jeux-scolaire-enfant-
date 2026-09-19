@@ -1,8 +1,12 @@
-# Publie l'application sur GitHub Pages à chaque modification.
+# Publie l'application sur GitHub Pages à chaque modification de main.
 #
-# configure-pages avec « enablement: true » active GitHub Pages sur le
-# dépôt si ce n'est pas déjà fait : il n'y a donc aucun réglage à aller
-# chercher dans les menus du site.
+# Prérequis, à faire une seule fois à la main : Settings → Pages →
+# Source → « GitHub Actions ». GitHub interdit à un workflow de créer
+# lui-même le site Pages (« Resource not accessible by integration »),
+# cette activation ne peut donc pas être automatisée.
+#
+# Une fois faite, plus rien n'est manuel : toute modification poussée
+# sur main se retrouve en ligne toute seule.
 
 name: Publier l'application
 
@@ -30,10 +34,8 @@ jobs:
       - name: Récupérer le dépôt
         uses: actions/checkout@v4
 
-      - name: Activer et configurer Pages
+      - name: Configurer Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Préparer le contenu
         uses: actions/upload-pages-artifact@v3
