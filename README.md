@@ -258,6 +258,36 @@ découvertes, le reste en terrain sûr.
 
 Il apprend les difficultés de cet enfant-là, à partir de ses résultats.
 
+**Une montée CE1 → CE2 → CM1, domaine par domaine.** Chaque notion est
+rattachée à un domaine (lecture, orthographe, calcul) et à un niveau
+indicatif. L'espace parent montre où en est chacun : être à l'aise en
+calcul CE2 et encore en lecture CE1 est fréquent avec une dyslexie, et
+l'application est faite pour que chaque domaine avance à son rythme.
+Ces repères situent le contenu proposé ; ils n'évaluent pas l'enfant et
+ne remplacent ni l'enseignant ni l'orthophoniste.
+
+**Ce qui bloque revient beaucoup plus souvent.** Une notion sous 0,35
+de maîtrise est programmée deux fois dans chaque séance, jusqu'à ce
+qu'elle se débloque — une notion revue une fois tous les quinze jours
+ne s'installe pas. La part de difficile ne dépasse jamais la moitié de
+la séance : un enfant qui passe une séance entière sur ce qu'il rate se
+décourage au lieu d'apprendre. Et deux exercices de la même notion ne
+se suivent jamais, même quand elle est programmée deux fois — vérifié
+sur cinq cents séances.
+
+**Le déchiffrage a son propre jeu.** « Lis et montre » affiche un mot
+et demande l'image correspondante : il n'y a pas d'autre moyen de
+répondre que de lire. Les soixante mots sont classés par ce qu'il faut
+savoir décoder, pas par leur longueur — syllabes simples, puis
+graphèmes courants (ou, on, an, in, ch, oi), puis moins fréquents (eau,
+ai, eu, gn, ill), puis complexes (eil, euil, ail, ien). Un niveau ne
+s'ouvre qu'une fois le précédent en place.
+
+Le bouton haut-parleur y épelle les syllabes au lieu de dire le mot :
+entendre « mou… ton » aide à décoder, entendre « mouton » donnerait la
+réponse et l'exercice ne travaillerait plus rien. L'aide reste entière,
+elle porte juste au bon endroit.
+
 **Le plafond doit être haut.** Un enfant qui dit « c'est facile » ne
 demande pas qu'on le ménage, il demande qu'on lui en donne plus. Cinq
 paliers par notion, une montée après trois réussites d'affilée, et un
@@ -344,6 +374,8 @@ outils/
   generer-page-publiee.py     page sans doctype, pour publication en ligne
   generer-sw.py               régénère sw.js et sa liste de fichiers
 assets/js/
+  niveaux.js                  repères CE1, CE2, CM1 par domaine
+  data/lecture.js             mots à déchiffrer, classés par difficulté
   scene.js                    le chantier ou le décor de la séance
   data/constructions.js       les plans de construction, bloc par bloc
   garderobe.js                les pièces et les affaires de Filou

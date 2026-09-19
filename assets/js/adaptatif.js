@@ -117,46 +117,98 @@ Jeu.Adaptatif = (function () {
     return !!p.notions[notion] && p.notions[notion].vues > 0;
   }
 
-  /* Choisit les notions d'une session.
-     On vise : ~2 fragiles, le reste en terrain sûr ou en découverte,
-     et jamais deux fois de suite la même notion. */
+  /* Choisit les notions d'une séance.
+
+     Trois familles, et la part de chacune dépend de ce qui accroche :
+
+     - ce qui bloque vraiment (maîtrise sous 0.35) revient à chaque
+       séance, deux fois plutôt qu'une, jusqu'à ce que ça se débloque.
+       C'est la demande la plus fréquente des parents, et la plus
+       juste : une notion vue une fois tous les quinze jours ne
+       s'installe pas ;
+     - ce qui hésite (sous 0.6) occupe une bonne part ;
+     - le reste en terrain sûr, pour que la séance demeure une suite
+       de réussites.
+
+     La part de difficile ne dépasse jamais la moitié : un enfant qui
+     passe une séance entière sur ce qu'il rate n'apprend pas, il se
+     décourage. */
   function choisirNotions(candidats, combien) {
     if (!candidats || !candidats.length) return [];
     var nouvelles = candidats.filter(function (n) { return !connue(n); });
     var vues = candidats.filter(function (n) { return connue(n); });
 
     vues.sort(function (a, b) { return maitrise(a) - maitrise(b); });
-    var fragiles = vues.filter(function (n) { return maitrise(n) < 0.6; });
-    var solides  = vues.filter(function (n) { return maitrise(n) >= 0.6; });
-
-    var quotaFragile = Math.min(fragiles.length, Math.max(1, Math.round(combien * 0.35)));
-    var quotaNouveau = Math.min(nouvelles.length, Math.max(1, Math.round(combien * 0.25)));
+    var bloquees = vues.filter(function (n) { return maitrise(n) < 0.35; });
+    var hesitantes = vues.filter(function (n) {
+      return maitrise(n) >= 0.35 && maitrise(n) < 0.6;
+    });
+    var solides = vues.filter(function (n) { return maitrise(n) >= 0.6; });
 
     var panier = [];
+    var plafondDur = Math.floor(combien * 0.5);
     var i;
-    for (i = 0; i < quotaFragile; i++) panier.push(fragiles[i]);
-    for (i = 0; i < quotaNouveau; i++) panier.push(nouvelles[i]);
-    // Le reste en terrain sûr : la session doit rester une suite de réussites.
-    var reste = combien - panier.length;
+
+    // Ce qui bloque revient deux fois dans la séance, tant que ça bloque.
+    for (i = 0; i < bloquees.length && panier.length + 2 <= plafondDur; i++) {
+      panier.push(bloquees[i]);
+      panier.push(bloquees[i]);
+    }
+    // Puis ce qui hésite, une fois chacune.
+    for (i = 0; i < hesitantes.length && panier.length < plafondDur; i++) {
+      panier.push(hesitantes[i]);
+    }
+    // Un peu de neuf, s'il y en a.
+    var quotaNouveau = Math.min(nouvelles.length, Math.max(1, Math.round(combien * 0.2)));
+    for (i = 0; i < quotaNouveau && panier.length < combien; i++) {
+      panier.push(nouvelles[i]);
+    }
+    // Le reste en terrain sûr.
     var sur = solides.length ? solides : candidats;
+    var reste = combien - panier.length;
     for (i = 0; i < reste; i++) panier.push(sur[i % sur.length]);
 
     melanger(panier);
-    return espacer(panier);
+    return espacer(panier.slice(0, combien));
   }
 
-  /* Évite deux items d'affilée sur la même notion : pas de série pesante. */
+  /* Évite deux items d'affilée sur la même notion, y compris quand une
+     notion bloquée a été inscrite deux fois dans la séance.
+
+     L'algorithme naïf — prendre le premier élément différent du
+     précédent — échoue en fin de liste : s'il ne reste que des
+     doublons d'une même notion, elles se retrouvent collées. On place
+     donc à chaque tour la notion qu'il reste le plus à caser, en
+     écartant celle qu'on vient de poser. C'est ce qui garantit
+     l'espacement maximal possible. */
   function espacer(liste) {
+    var restant = {};
+    liste.forEach(function (n) { restant[n] = (restant[n] || 0) + 1; });
+
     var sortie = [];
-    var restant = liste.slice();
-    while (restant.length) {
-      var idx = 0;
-      if (sortie.length) {
-        var dernier = sortie[sortie.length - 1];
-        var autre = restant.findIndex(function (n) { return n !== dernier; });
-        if (autre >= 0) idx = autre;
+    var dernier = null;
+
+    while (sortie.length < liste.length) {
+      var choisi = null;
+      var mieux = -1;
+
+      Object.keys(restant).forEach(function (n) {
+        if (restant[n] <= 0 || n === dernier) return;
+        if (restant[n] > mieux) { mieux = restant[n]; choisi = n; }
+      });
+
+      // Il ne reste que la notion qu'on vient de poser : on n'a pas le
+      // choix, mais c'est le seul cas où deux se suivent.
+      if (choisi === null) {
+        Object.keys(restant).forEach(function (n) {
+          if (restant[n] > 0 && choisi === null) choisi = n;
+        });
       }
-      sortie.push(restant.splice(idx, 1)[0]);
+      if (choisi === null) break;
+
+      sortie.push(choisi);
+      restant[choisi] -= 1;
+      dernier = choisi;
     }
     return sortie;
   }
