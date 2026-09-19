@@ -999,3 +999,22 @@ html[data-animations="oui"] .rang-signe { animation: rang-arrive 700ms ease-out 
   border-width: 3px;
   margin-bottom: 12px;
 }
+
+/* =================================================================
+   Lire et montrer : le mot est le seul élément à déchiffrer.
+   ================================================================= */
+
+.mot-a-lire {
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: calc(var(--espace-lettres) + 0.02em);
+  text-align: center;
+  padding: 10px 6px;
+}
+
+.choix-btn.choix-image {
+  justify-content: center;
+  min-height: 96px;
+}
+.image-choix { font-size: 3rem; line-height: 1; }

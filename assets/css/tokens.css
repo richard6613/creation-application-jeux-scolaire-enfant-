@@ -36,6 +36,7 @@
   --jeu-phrase: #e2725b;
   --jeu-lecture: #c9862f;
   --jeu-calcul: #3f9fa2;
+  --jeu-lire: #5a7fc4;
 
   /* Couleurs fonctionnelles, communes à tous les fonds */
   --succes: #2f7d50;
@@ -163,4 +164,5 @@ html[data-fond="sombre"] {
   --jeu-phrase: #ef8f7a;
   --jeu-lecture: #dda44f;
   --jeu-calcul: #5cbcbf;
+  --jeu-lire: #86a6e0;
 }

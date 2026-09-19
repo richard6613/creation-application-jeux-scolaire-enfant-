@@ -130,6 +130,7 @@ Jeu.Parent = (function () {
 
     var st = Jeu.Adaptatif.statistiques();
     zone.appendChild(resume(st));
+    zone.appendChild(positionScolaire());
     zone.appendChild(suivi(st));
     zone.appendChild(derniereErreurs(st));
 
@@ -187,6 +188,41 @@ Jeu.Parent = (function () {
     });
     carte.appendChild(bande);
     carte.appendChild(el('p', 'petit zone-sourdine', 'Les sept dernières séances.'));
+    return carte;
+  }
+
+  /* Où en est chaque domaine par rapport au programme. */
+  function positionScolaire() {
+    var carte = el('div', 'carte');
+    carte.appendChild(el('h2', null, 'Où il en est'));
+    carte.appendChild(el('p', 'petit zone-sourdine',
+      'Repères indicatifs, qui situent le contenu proposé. Ils n\'évaluent ' +
+      'pas l\'enfant et ne remplacent ni l\'enseignant ni l\'orthophoniste. ' +
+      'Être à l\'aise en calcul et encore en cours d\'acquisition en lecture ' +
+      'est fréquent avec une dyslexie : chaque domaine avance à son rythme.'));
+
+    Jeu.Niveaux.tout().forEach(function (e) {
+      var d = el('div', 'fiche-notion');
+      var entete = el('div', 'entete');
+      var g = el('strong', null, e.domaine.signe + '  ' + e.domaine.nom);
+      entete.appendChild(g);
+      entete.appendChild(el('span', 'etiq ' + (e.atteint ? 'notion' : ''),
+        e.vues ? 'en ' + e.enCours : 'pas encore commencé'));
+      d.appendChild(entete);
+
+      if (e.vues) {
+        var barre = el('div', 'barre-notion' + (e.part < 0.5 ? ' fragile' : ''));
+        var dedans = el('span');
+        dedans.style.width = Math.round(e.part * 100) + '%';
+        barre.appendChild(dedans);
+        d.appendChild(barre);
+        d.appendChild(el('p', 'petit zone-sourdine',
+          (e.atteint ? e.atteint + ' acquis. ' : '') +
+          e.acquises + ' notion' + (e.acquises > 1 ? 's' : '') + ' sur ' + e.vues +
+          ' en place au niveau ' + e.enCours + '.'));
+      }
+      carte.appendChild(d);
+    });
     return carte;
   }
 

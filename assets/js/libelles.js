@@ -13,6 +13,10 @@ Jeu.Libelles = (function () {
     'phrase.courte':  'Construire une phrase courte',
     'phrase.moyenne': 'Construire une phrase de 5 ou 6 mots',
     'phrase.longue':  'Construire une phrase longue',
+    'lire.niv1': 'Lire : syllabes simples',
+    'lire.niv2': 'Lire : ou, on, an, in, ch, oi',
+    'lire.niv3': 'Lire : eau, ai, eu, gn, ill',
+    'lire.niv4': 'Lire : eil, euil, ail, ien',
     'lecture.court':  'Lire une phrase courte',
     'lecture.moyen':  'Lire une phrase plus longue',
     'calc.somme10':      'Additions jusqu\'à 10',
@@ -49,6 +53,7 @@ Jeu.Libelles = (function () {
     syllabes: 'Construis le mot',
     phrase: 'Construis la phrase',
     lecture: 'Lis tranquillement',
+    lireMot: 'Lis et montre',
     calcul: 'Compte avec moi'
   };
   function nomJeu(id) { return jeux[id] || id; }
