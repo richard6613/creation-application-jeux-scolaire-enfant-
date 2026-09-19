@@ -46,5 +46,38 @@ Jeu.Stockage = (function () {
     } catch (e) { /* rien à faire */ }
   }
 
-  return { lire: lire, ecrire: ecrire, effacer: effacer, disponible: dispo };
+  /* ------------------------- Sauvegarde -------------------------
+     Les progrès vivent dans le navigateur de l'appareil. Ils
+     survivent aux mises à jour de l'application, mais pas à tout :
+     changer d'adresse, changer de tablette, effacer les données du
+     navigateur, ou le ménage que fait Safari sur les sites laissés
+     de côté plusieurs jours. D'où ces deux fonctions : de quoi
+     emporter la progression ailleurs et la remettre en place.
+     --------------------------------------------------------------- */
+
+  var MARQUE = 'mes-jeux-ce1ce2';
+
+  function toutExporter() {
+    var donnees = {};
+    ['reglages', 'profil', 'collection', 'garderobe', 'dernierDecor'].forEach(function (c) {
+      var v = lire(c, null);
+      if (v !== null && v !== undefined) donnees[c] = v;
+    });
+    return { marque: MARQUE, version: 1, date: new Date().toISOString(), donnees: donnees };
+  }
+
+  /* Remet une sauvegarde en place. Refuse tout fichier qui ne porte
+     pas notre marque, plutôt que d'écrire n'importe quoi. */
+  function toutImporter(paquet) {
+    if (!paquet || paquet.marque !== MARQUE || !paquet.donnees) return false;
+    var cles = Object.keys(paquet.donnees);
+    if (!cles.length) return false;
+    cles.forEach(function (c) { ecrire(c, paquet.donnees[c]); });
+    return true;
+  }
+
+  return {
+    lire: lire, ecrire: ecrire, effacer: effacer, disponible: dispo,
+    toutExporter: toutExporter, toutImporter: toutImporter
+  };
 })();
