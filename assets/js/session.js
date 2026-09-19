@@ -13,7 +13,66 @@
 window.Jeu = window.Jeu || {};
 
 Jeu.Session = (function () {
+  var CLE_REPRISE = 'seanceEnCours';
   var courante = null;
+
+  /* La séance est notée sur l'appareil après chaque réponse. Si la
+     tablette s'éteint, si l'application est fermée, si l'enfant est
+     appelé à table, on repart exactement d'où il s'était arrêté.
+
+     On n'enregistre que ce qui se recalcule : l'identifiant du jeu,
+     le programme, la position et les résultats. Le reste (la scène,
+     l'exercice) se reconstruit à la reprise. */
+  function noter() {
+    var s = courante;
+    if (!s) return;
+    Jeu.Stockage.ecrire(CLE_REPRISE, {
+      jeu: s.exercice.id,
+      programme: s.programme,
+      index: s.index,
+      resultats: s.resultats,
+      reprises: s.reprises,
+      quand: Date.now()
+    });
+  }
+
+  function oublier() { Jeu.Stockage.effacer(CLE_REPRISE); }
+
+  /* Y a-t-il une séance à reprendre ? On ne propose pas une partie
+     vieille de plusieurs jours : elle n'aurait plus de sens. */
+  function aReprendre() {
+    var e = Jeu.Stockage.lire(CLE_REPRISE, null);
+    if (!e || !e.programme || !e.programme.length) return null;
+    if (e.index >= e.programme.length) { oublier(); return null; }
+    if (Date.now() - (e.quand || 0) > 3 * 24 * 3600 * 1000) { oublier(); return null; }
+    var ex = Jeu.Exercices.filter(function (x) { return x.id === e.jeu; })[0];
+    if (!ex) { oublier(); return null; }
+    return { etat: e, exercice: ex };
+  }
+
+  function reprendre() {
+    var r = aReprendre();
+    if (!r) return false;
+    var e = r.etat;
+
+    courante = {
+      exercice: r.exercice,
+      programme: e.programme,
+      index: e.index,
+      resultats: e.resultats || [],
+      reprises: e.reprises || {},
+      debut: Date.now(),
+      debutItem: 0,
+      scene: Jeu.Scene.creer(e.programme.length)
+    };
+
+    // On remet dans la scène ce qui avait déjà été gagné.
+    var deja = (e.resultats || []).filter(Boolean).length;
+    for (var i = 0; i < deja; i++) courante.scene.ajouter();
+
+    afficherItem();
+    return true;
+  }
 
   function demarrer(exercice) {
     var reglages = Jeu.Reglages.tout();
@@ -32,6 +91,7 @@ Jeu.Session = (function () {
       // Le but de la séance, visible dès la première seconde.
       scene: Jeu.Scene.creer(programme.length)
     };
+    noter();
     afficherItem();
   }
 
@@ -127,6 +187,7 @@ Jeu.Session = (function () {
     });
 
     s.resultats[s.index] = !!reponse.juste;
+    noter();
 
     // La récompense est immédiate : un élément de plus dans la scène,
     // tout de suite, sous ses yeux — pas à la fin de la séance.
@@ -203,6 +264,7 @@ Jeu.Session = (function () {
       'btn btn-principal',
       function () {
         s.index += 1;
+        noter();
         afficherItem();
       }
     );
@@ -217,6 +279,7 @@ Jeu.Session = (function () {
 
   function terminer() {
     var s = courante;
+    oublier();
     var justes = s.resultats.filter(Boolean).length;
     var total = s.programme.length;
 
@@ -298,9 +361,16 @@ Jeu.Session = (function () {
 
     var bas = Jeu.Ui.vider(zoneBas());
     bas.hidden = false;
-    bas.appendChild(Jeu.Ui.bouton('Rejouer', 'btn', function () { demarrer(s.exercice); }));
-    bas.appendChild(Jeu.Ui.bouton('Mes jeux', 'btn btn-principal', function () {
+
+    // L'action principale enchaîne sur l'étape suivante du chemin :
+    // un enfant lancé ne doit pas avoir à refaire trois écrans pour
+    // continuer. Revenir au chemin reste possible, en second.
+    bas.appendChild(Jeu.Ui.bouton('Mes jeux', 'btn', function () {
       Jeu.App.aller('accueil');
+    }));
+    bas.appendChild(Jeu.Ui.bouton('Continuer', 'btn btn-principal', function () {
+      var suite = Jeu.Parcours.jeuDeLEtape(Jeu.Parcours.position()) || s.exercice;
+      Jeu.App.aller('jeu', suite);
     }));
     courante = null;
   }
@@ -355,5 +425,12 @@ Jeu.Session = (function () {
     courante = null;
   }
 
-  return { demarrer: demarrer, arreter: arreter, repondre: repondre };
+  return {
+    demarrer: demarrer,
+    arreter: arreter,
+    repondre: repondre,
+    aReprendre: aReprendre,
+    reprendre: reprendre,
+    oublier: oublier
+  };
 })();

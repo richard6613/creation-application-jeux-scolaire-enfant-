@@ -71,6 +71,10 @@ Jeu.App = (function () {
       z.appendChild(bandeau);
     }
 
+    // Une partie laissée en plan se reprend là où elle s'est arrêtée.
+    var enPlan = Jeu.Session.aReprendre();
+    if (enPlan) z.appendChild(offreReprise(enPlan));
+
     // Le rang atteint : la preuve visible qu'il progresse.
     z.appendChild(Jeu.Grade.badge());
 
@@ -193,6 +197,47 @@ Jeu.App = (function () {
     z.appendChild(grille);
 
     z.appendChild(coinCollection());
+  }
+
+  /* Reprendre la partie interrompue. Rien n'est perdu de toute façon —
+     les étoiles sont acquises au fil des réponses — mais finir ce
+     qu'on a commencé compte pour un enfant. */
+  function offreReprise(enPlan) {
+    var reste = enPlan.etat.programme.length - enPlan.etat.index;
+    var c = el('div', 'carte reprise');
+
+    var ligne = el('div', 'ligne');
+    var signe = el('span', 'pastille', enPlan.exercice.emoji);
+    signe.setAttribute('aria-hidden', 'true');
+    if (enPlan.exercice.teinte) {
+      signe.style.background = 'var(' + enPlan.exercice.teinte + ')';
+    }
+    ligne.appendChild(signe);
+
+    var txt = el('span', null);
+    txt.appendChild(el('span', 'nom', 'Ta partie t\'attend'));
+    txt.appendChild(document.createElement('br'));
+    txt.appendChild(el('span', 'quoi',
+      enPlan.exercice.nom + ' — encore ' + Jeu.Ui.accord(reste, 'exercice')));
+    ligne.appendChild(txt);
+    c.appendChild(ligne);
+
+    var boutons = el('div', 'ligne');
+    boutons.style.marginTop = '12px';
+    boutons.appendChild(Jeu.Ui.bouton('Reprendre', 'btn btn-principal', function () {
+      Jeu.Session.arreter();
+      ecranCourant = 'jeu';
+      majBarre(enPlan.exercice.nom, true);
+      Jeu.Ui.vider(zone());
+      Jeu.Ui.vider(bas()).hidden = true;
+      Jeu.Session.reprendre();
+    }));
+    boutons.appendChild(Jeu.Ui.bouton('Laisser', 'btn btn-discret', function () {
+      Jeu.Session.oublier();
+      aller('accueil');
+    }));
+    c.appendChild(boutons);
+    return c;
   }
 
   /* La collection : ce qui donne envie de revenir demain.

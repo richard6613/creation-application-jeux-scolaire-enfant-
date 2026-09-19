@@ -236,6 +236,18 @@ distinction, parce que les deux ne se travaillent pas de la même façon.
 revient une seule fois, trois exercices plus loin. Deux exercices de la
 même notion ne se suivent jamais.
 
+**Rien ne se perd à l'arrêt.** Chaque bonne réponse crédite son étoile
+immédiatement, et la séance en cours est notée sur l'appareil après
+chaque réponse. Tablette éteinte, application fermée, enfant appelé à
+table : à la réouverture, l'accueil propose de reprendre exactement là
+où il s'était arrêté, la scène déjà remplie de ce qui était gagné.
+Une partie laissée plus de trois jours n'est plus proposée : elle
+n'aurait plus de sens.
+
+À la fin d'une séance, l'action principale enchaîne directement sur la
+suivante. Un enfant lancé ne doit pas traverser trois écrans pour
+continuer.
+
 **Des séances courtes avec une majorité de réussites.** Le programme
 d'une séance mélange environ un tiers de notions fragiles, un quart de
 découvertes, le reste en terrain sûr.
