@@ -378,3 +378,209 @@ input[type="range"] { width: 100%; height: 44px; accent-color: var(--accent); }
 /* ------------------------- Célébration ------------------------- */
 
 .etoiles { font-size: 2.6rem; letter-spacing: 6px; }
+
+/* =================================================================
+   Plaisir de jeu — récompenses, compagnon, collection.
+
+   Tout ce qui suit s'anime uniquement à la réussite ou à la fin
+   d'une séance. Pendant un exercice, l'écran reste immobile : un
+   élément qui bouge pendant qu'on déchiffre, c'est une gêne.
+   ================================================================= */
+
+/* ------------------------- Filou, le compagnon ------------------------- */
+
+.filou { display: block; flex: 0 0 auto; }
+
+.bulle-filou {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+@keyframes filou-saute {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30%      { transform: translateY(-14px) rotate(-6deg); }
+  60%      { transform: translateY(-4px) rotate(4deg); }
+}
+@keyframes filou-penche {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-7deg); }
+}
+@keyframes filou-respire {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.04); }
+}
+
+html[data-animations="oui"] .filou-bravo,
+html[data-animations="oui"] .filou-fete { animation: filou-saute 700ms ease-out 2; }
+html[data-animations="oui"] .filou-courage { animation: filou-penche 900ms ease-in-out 2; }
+html[data-animations="oui"] .filou-salut { animation: filou-respire 3.2s ease-in-out infinite; }
+
+/* ------------------------- Confettis ------------------------- */
+
+.toile-fete {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* ------------------------- Étoiles de fin ------------------------- */
+
+.etoiles-gagnees {
+  display: flex;
+  flex-wrap: wrap;          /* huit étoiles doivent tenir dans la carte */
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  min-height: 56px;
+  max-width: 100%;
+}
+.etoile-gagnee {
+  font-size: 2rem;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0.3) rotate(-30deg);
+  transition: opacity 320ms ease-out, transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.etoile-gagnee.vue { opacity: 1; transform: scale(1) rotate(0deg); }
+
+/* ------------------------- Collection ------------------------- */
+
+.vitrine {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.autocollant {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  border-radius: 14px;
+  border: 2px solid var(--bordure);
+  background: var(--surface);
+}
+.autocollant.a-trouver {
+  color: var(--texte-doux);
+  opacity: 0.4;
+  font-size: 1.1rem;
+  background: var(--surface-2);
+  border-style: dashed;
+}
+
+@keyframes autocollant-arrive {
+  0%   { opacity: 0; transform: scale(0.2) rotate(-25deg); }
+  70%  { opacity: 1; transform: scale(1.18) rotate(6deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+.autocollant-neuf {
+  font-size: 3.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px; height: 84px;
+  border-radius: 20px;
+  border: 3px solid var(--succes);
+  background: var(--succes-doux);
+}
+html[data-animations="oui"] .autocollant-neuf { animation: autocollant-arrive 620ms ease-out both; }
+
+.jauge-collection {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+  margin-top: 8px;
+}
+.jauge-collection > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 500ms ease-out;
+}
+
+/* ------------------------- Cartes de jeu colorées ------------------------- */
+
+.carte-jeu {
+  position: relative;
+  overflow: hidden;
+  border-left: 10px solid var(--teinte, var(--bordure));
+}
+.carte-jeu .pastille {
+  width: 62px; height: 62px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background: var(--teinte, var(--surface-2));
+  flex: 0 0 auto;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.12);
+}
+.carte-jeu:active .pastille { transform: scale(0.94); }
+
+/* Arrivée en douceur des cartes, une fraction après l'autre.
+   Elles partent visibles : rien n'attend un défilement pour exister. */
+@keyframes carte-arrive {
+  from { opacity: 0.35; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+html[data-animations="oui"] .grille-jeux .carte-jeu {
+  animation: carte-arrive 380ms ease-out both;
+}
+html[data-animations="oui"] .grille-jeux .carte-jeu:nth-child(2) { animation-delay: 60ms; }
+html[data-animations="oui"] .grille-jeux .carte-jeu:nth-child(3) { animation-delay: 120ms; }
+html[data-animations="oui"] .grille-jeux .carte-jeu:nth-child(4) { animation-delay: 180ms; }
+html[data-animations="oui"] .grille-jeux .carte-jeu:nth-child(5) { animation-delay: 240ms; }
+html[data-animations="oui"] .grille-jeux .carte-jeu:nth-child(6) { animation-delay: 300ms; }
+
+/* ------------------------- Retour de réponse ------------------------- */
+
+@keyframes retour-arrive {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+html[data-animations="oui"] .retour { animation: retour-arrive 300ms ease-out both; }
+
+/* Le bouton juste touché se signale, brièvement */
+@keyframes juste-pulse {
+  0%   { box-shadow: 0 0 0 0 var(--succes); }
+  100% { box-shadow: 0 0 0 16px rgba(0, 0, 0, 0); }
+}
+html[data-animations="oui"] .choix-btn.juste { animation: juste-pulse 620ms ease-out; }
+
+/* Une perle qui vient d'être réussie se remplit avec un petit ressort */
+@keyframes perle-remplie {
+  0%   { transform: scale(0.5); }
+  70%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+html[data-animations="oui"] .perle.reussie { animation: perle-remplie 420ms ease-out both; }
+
+/* ------------------------- Compteur d'étoiles de l'accueil ------------------------- */
+
+.bandeau-etoiles {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--rayon);
+  background: var(--surface);
+  border: 2px solid var(--bordure);
+  box-shadow: var(--ombre);
+}
+.bandeau-etoiles .compte {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.bandeau-etoiles .etoile-fixe { font-size: 1.8rem; }
+.apercu-collection {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+  font-size: 1.5rem;
+}

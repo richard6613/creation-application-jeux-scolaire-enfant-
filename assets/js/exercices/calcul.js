@@ -87,6 +87,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     nom: 'Compte avec moi',
     quoi: 'Calculs courts et images',
     emoji: '🔢',
+  teinte: '--jeu-calcul',
 
     notions: function () { return Object.keys(GENERATEURS); },
 
@@ -125,6 +126,7 @@ Jeu.Exercices = Jeu.Exercices || [];
         }
         ctx.repondre({
           juste: juste,
+          element: btn,
           typeErreur: 'notion',
           detail: q.enonce + (juste ? '' : ' (a répondu ' + o.ref + ')'),
           bonneReponse: juste ? '' : q.enonce + ' fait ' + q.reponse

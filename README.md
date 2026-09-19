@@ -99,6 +99,33 @@ Une séance dure huit exercices par défaut et se termine toujours.
 
 ---
 
+## Donner envie d'y revenir
+
+Une application bien faite mais austère ne sert à rien : un enfant qui
+la trouve triste n'y retourne pas. Trois choses répondent à ça, sans
+rien coûter à la lisibilité.
+
+**Filou**, un chat qui accompagne l'enfant. Il salue à l'accueil, se
+réjouit quand c'est juste, rassure quand ça ne l'est pas — jamais déçu,
+jamais moqueur. Il n'apparaît **pas pendant l'exercice** : un personnage
+qui gigote pendant qu'on déchiffre, c'est une gêne, pas un cadeau.
+
+**Une vraie récompense.** Des confettis partent du bouton que l'enfant
+vient de toucher, les étoiles de fin de séance s'allument une par une.
+Rien ne bloque : on peut continuer pendant que ça retombe.
+
+**Une collection de 32 autocollants**, un tous les huit bonnes réponses.
+Les cases vides montrent ce qui reste à trouver. Rien à lire pour
+comprendre où on en est, et on ne perd jamais ce qu'on a gagné : c'est
+une raison de revenir demain, pas une pression.
+
+Chaque jeu a aussi sa couleur, portée par la pastille et le liseré de
+sa carte — jamais par le fond d'un texte, pour ne pas toucher au
+contraste.
+
+Tout cela s'arrête net si le parent coupe les animations, ou si
+l'appareil est réglé sur « moins d'animations ».
+
 ## Les choix tenus pour la dyslexie
 
 Ces décisions structurent le code ; elles ne sont pas des options
@@ -212,6 +239,9 @@ outils/
   generer-page-publiee.py     page sans doctype, pour publication en ligne
   generer-sw.py               régénère sw.js et sa liste de fichiers
 assets/js/
+  compagnon.js                Filou, le chat qui accompagne l'enfant
+  fete.js                     confettis et étoiles de fin de séance
+  collection.js               les autocollants à gagner
   stockage.js                 localStorage, avec repli en mémoire
   reglages.js                 réglages et application au document
   voix.js                     lecture audio, file d'attente, bouton haut-parleur

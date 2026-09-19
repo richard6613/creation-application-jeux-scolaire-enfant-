@@ -18,6 +18,7 @@ Jeu.Exercices.push({
   nom: 'Complète le mot',
   quoi: 'Choisis la bonne lettre',
   emoji: '🔤',
+  teinte: '--jeu-confusions',
 
   notions: function () {
     var misesDeCote = Jeu.Reglages.get('seriesDeCote') || [];
@@ -102,6 +103,7 @@ Jeu.Exercices.push({
       }
       ctx.repondre({
         juste: juste,
+        element: btn,
         typeErreur: 'notion',
         detail: serie.titre + ' — ' + it.mot + (juste ? '' : ' (a mis ' + o.ref + ')'),
         bonneReponse: juste ? '' : 'On écrit : ' + it.mot,

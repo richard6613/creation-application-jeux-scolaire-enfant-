@@ -237,8 +237,9 @@ Jeu.Parent = (function () {
     }));
 
     carte.appendChild(Jeu.Ui.bouton('Effacer les résultats', 'btn', function () {
-      if (confirm('Effacer l\'historique des séances et des erreurs ? Les réglages seront conservés.')) {
+      if (confirm('Effacer l\'historique des séances, des erreurs et les autocollants ? Les réglages seront conservés.')) {
         Jeu.Adaptatif.reinitialiser();
+        Jeu.Collection.reinitialiser();
         Jeu.App.aller('parent');
       }
     }));

@@ -157,11 +157,15 @@ Jeu.Session = (function () {
       texte = 'Pas tout à fait. Regarde la bonne réponse.';
     }
 
-    var ligne = Jeu.Ui.el('div', 'ligne');
-    ligne.appendChild(Jeu.Voix.bouton(function () {
+    // Filou réagit : content, ou rassurant. Jamais déçu.
+    var ligne = Jeu.Ui.el('div', 'bulle-filou');
+    ligne.appendChild(Jeu.Compagnon.dessiner(reponse.juste ? 'bravo' : 'courage', 64));
+    var dit = Jeu.Ui.el('div', 'ligne');
+    dit.appendChild(Jeu.Voix.bouton(function () {
       return texte + (reponse.bonneReponse ? '. ' + reponse.bonneReponse : '');
     }, 'Réécouter'));
-    ligne.appendChild(Jeu.Ui.el('p', null, texte));
+    dit.appendChild(Jeu.Ui.el('p', null, texte));
+    ligne.appendChild(dit);
     bloc.appendChild(ligne);
 
     if (!reponse.juste && reponse.bonneReponse) {
@@ -174,6 +178,13 @@ Jeu.Session = (function () {
     }
 
     zone.appendChild(bloc);
+
+    // La récompense part du geste de l'enfant : du bouton qu'il vient
+    // de toucher, ou de Filou à défaut.
+    if (reponse.juste) {
+      Jeu.Fete.depuis(reponse.element || bloc, 26);
+    }
+
     Jeu.Voix.enchainer(texte + (reponse.bonneReponse ? '. ' + reponse.bonneReponse : ''));
 
     var bas = Jeu.Ui.vider(zoneBas());
@@ -210,11 +221,16 @@ Jeu.Session = (function () {
     var zone = Jeu.Ui.vider(zoneJeu());
     var carte = Jeu.Ui.el('div', 'carte pile');
 
-    var etoiles = Jeu.Ui.el('div', 'etoiles', '⭐'.repeat(Math.max(1, Math.min(5, Math.ceil(justes / 2)))));
-    etoiles.setAttribute('aria-hidden', 'true');
+    var haut = Jeu.Ui.el('div', 'bulle-filou');
+    haut.style.justifyContent = 'center';
+    haut.appendChild(Jeu.Compagnon.dessiner('fete', 92));
+    carte.appendChild(haut);
+
+    var etoiles = Jeu.Ui.el('div', 'etoiles-gagnees');
     carte.appendChild(etoiles);
 
     var titre = Jeu.Ui.el('h2', null, 'Séance terminée');
+    titre.style.textAlign = 'center';
     carte.appendChild(titre);
 
     // On dit ce qui est réussi. On ne dit jamais ce qui est raté.
@@ -229,15 +245,50 @@ Jeu.Session = (function () {
       '. Total : ' + Jeu.Adaptatif.etoiles() + '.'));
 
     zone.appendChild(carte);
+
+    // Les étoiles s'allument une par une, puis les confettis partent.
+    // Rien n'attend l'enfant : il peut continuer pendant que ça retombe.
+    Jeu.Fete.allumerEtoiles(etoiles, Math.max(1, Math.min(6, justes)), function () {
+      var neufs = Jeu.Collection.recolter();
+      if (neufs.length) montrerAutocollants(carte, neufs);
+    });
+
     Jeu.Voix.dire('Séance terminée. ' + phrase);
 
     var bas = Jeu.Ui.vider(zoneBas());
     bas.hidden = false;
     bas.appendChild(Jeu.Ui.bouton('Rejouer', 'btn', function () { demarrer(s.exercice); }));
-    bas.appendChild(Jeu.Ui.bouton('Retour aux jeux', 'btn btn-principal', function () {
+    bas.appendChild(Jeu.Ui.bouton('Mes jeux', 'btn btn-principal', function () {
       Jeu.App.aller('accueil');
     }));
     courante = null;
+  }
+
+  /* Un autocollant gagné : on le montre en grand, sans un mot de trop. */
+  function montrerAutocollants(carte, neufs) {
+    var bloc = Jeu.Ui.el('div', 'retour bravo');
+    bloc.setAttribute('role', 'status');
+    bloc.style.textAlign = 'center';
+
+    var titre = Jeu.Ui.el('p', null,
+      neufs.length > 1 ? 'Nouveaux autocollants !' : 'Nouvel autocollant !');
+    bloc.appendChild(titre);
+
+    var rangee = Jeu.Ui.el('div', 'ligne');
+    rangee.style.justifyContent = 'center';
+    rangee.style.marginTop = '10px';
+    neufs.forEach(function (a) {
+      var e = Jeu.Ui.el('span', 'autocollant-neuf', a);
+      e.setAttribute('aria-hidden', 'true');
+      rangee.appendChild(e);
+    });
+    bloc.appendChild(rangee);
+    carte.appendChild(bloc);
+
+    Jeu.Fete.confettis({ combien: 44 });
+    Jeu.Voix.enchainer(neufs.length > 1
+      ? 'Tu as gagné de nouveaux autocollants !'
+      : 'Tu as gagné un nouvel autocollant !');
   }
 
   function arreter() {

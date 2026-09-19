@@ -14,6 +14,7 @@ Jeu.Exercices.push({
   nom: 'Construis la phrase',
   quoi: 'Remets les mots dans l\'ordre',
   emoji: '🧱',
+  teinte: '--jeu-phrase',
 
   notions: function () {
     var vues = {};

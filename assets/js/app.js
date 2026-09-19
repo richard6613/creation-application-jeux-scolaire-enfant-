@@ -40,22 +40,43 @@ Jeu.App = (function () {
   /* ------------------------- Accueil ------------------------- */
 
   function accueil(z) {
-    var bonjour = el('div', 'ligne');
-    bonjour.appendChild(Jeu.Voix.bouton('Bonjour ! Choisis un jeu.', 'Écouter'));
-    bonjour.appendChild(el('p', null, 'Choisis un jeu.'));
+    // Filou accueille l'enfant. Une image vaut mieux qu'une ligne de plus.
+    var bonjour = el('div', 'bulle-filou');
+    bonjour.appendChild(Jeu.Compagnon.dessiner('salut', 84));
+    var mot = el('div', 'ligne');
+    mot.appendChild(Jeu.Voix.bouton('Bonjour ! Choisis un jeu.', 'Écouter'));
+    mot.appendChild(el('p', null, 'Choisis un jeu.'));
+    bonjour.appendChild(mot);
     z.appendChild(bonjour);
 
     var etoiles = Jeu.Adaptatif.etoiles();
     if (etoiles > 0) {
-      z.appendChild(el('p', 'petit zone-sourdine',
-        'Tu as déjà gagné ' + Jeu.Ui.accord(etoiles, 'étoile') + '.'));
+      var bandeau = el('div', 'bandeau-etoiles');
+      var et = el('span', 'etoile-fixe', '⭐');
+      et.setAttribute('aria-hidden', 'true');
+      bandeau.appendChild(et);
+      bandeau.appendChild(el('span', 'compte', String(etoiles)));
+      bandeau.appendChild(el('span', 'petit zone-sourdine',
+        etoiles > 1 ? 'étoiles gagnées' : 'étoile gagnée'));
+
+      // Les derniers autocollants, à portée de regard : la récompense
+      // ne doit pas obliger à descendre jusqu'en bas de l'écran.
+      var derniers = Jeu.Collection.derniers(3);
+      if (derniers.length) {
+        var apercu = el('span', 'apercu-collection');
+        apercu.setAttribute('aria-hidden', 'true');
+        derniers.forEach(function (a) { apercu.appendChild(el('span', null, a)); });
+        bandeau.appendChild(apercu);
+      }
+      z.appendChild(bandeau);
     }
 
     var grille = el('div', 'grille-jeux');
     Jeu.Exercices.forEach(function (ex) {
       var c = el('button', 'carte-jeu');
       c.type = 'button';
-      var e = el('span', 'emoji', ex.emoji);
+      if (ex.teinte) c.style.setProperty('--teinte', 'var(' + ex.teinte + ')');
+      var e = el('span', 'pastille', ex.emoji);
       e.setAttribute('aria-hidden', 'true');
       c.appendChild(e);
       var txt = el('span', null);
@@ -68,6 +89,8 @@ Jeu.App = (function () {
     });
     z.appendChild(grille);
 
+    z.appendChild(coinCollection());
+
     // Une reprise là où ça accroche, sans jamais le dire à l'enfant.
     var suggere = jeuLePlusUtile();
     if (suggere) {
@@ -77,6 +100,36 @@ Jeu.App = (function () {
         aller('jeu', suggere);
       }));
     }
+  }
+
+  /* La collection : ce qui donne envie de revenir demain.
+     Aucune phrase à déchiffrer pour comprendre où on en est. */
+  function coinCollection() {
+    var carte = el('div', 'carte');
+    var titre = el('div', 'ligne');
+    titre.style.justifyContent = 'space-between';
+    titre.appendChild(el('h2', null, 'Mes autocollants'));
+    titre.appendChild(el('span', 'petit zone-sourdine',
+      Jeu.Collection.nombreGagnes() + ' / ' + Jeu.Collection.total()));
+    titre.querySelector('h2').style.margin = '0';
+    carte.appendChild(titre);
+
+    var jauge = el('div', 'jauge-collection');
+    var dedans = el('span');
+    dedans.style.width =
+      Math.round(Jeu.Collection.nombreGagnes() / Jeu.Collection.total() * 100) + '%';
+    jauge.appendChild(dedans);
+    carte.appendChild(jauge);
+
+    var reste = Jeu.Collection.resteAvantProchain();
+    if (reste > 0) {
+      carte.appendChild(el('p', 'petit zone-sourdine',
+        'Encore ' + Jeu.Ui.accord(reste, 'bonne réponse', 'bonnes réponses') +
+        ' pour le prochain.'));
+    }
+
+    carte.appendChild(Jeu.Collection.vitrine());
+    return carte;
   }
 
   /* Choisit le jeu qui travaille les notions les plus fragiles.

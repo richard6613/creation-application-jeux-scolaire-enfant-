@@ -19,6 +19,24 @@
   --cible-min: 56px;             /* surface tactile confortable */
   --duree-anim: 220ms;
 
+  /* Filou, le chat compagnon */
+  --filou-poil: #efa964;
+  --filou-oreille: #f6cfa4;
+  --filou-museau: #f9dcbb;
+  --filou-joue: #f2938c;
+  --filou-nez: #d97b74;
+  --filou-langue: #e08b85;
+  --filou-trait: #3d332a;
+
+  /* Une teinte par jeu : elle ne porte jamais de texte, seulement
+     la pastille et le liseré, pour ne pas toucher au contraste. */
+  --jeu-ecoute: #4a86c5;
+  --jeu-confusions: #9b6bbf;
+  --jeu-syllabes: #4f9d69;
+  --jeu-phrase: #e2725b;
+  --jeu-lecture: #c9862f;
+  --jeu-calcul: #3f9fa2;
+
   /* Couleurs fonctionnelles, communes à tous les fonds */
   --succes: #2f7d50;
   --succes-doux: #d9efe0;
@@ -135,4 +153,14 @@ html[data-fond="sombre"] {
   --accent: #8fbde8;
   --accent-doux: #31414f;
   --accent-contraste: #1f242a;
+  --filou-poil: #d9955a;
+  --filou-oreille: #e8bf95;
+  --filou-museau: #edd0ad;
+  --filou-trait: #2a2520;
+  --jeu-ecoute: #6fa6df;
+  --jeu-confusions: #b58ad6;
+  --jeu-syllabes: #6cba87;
+  --jeu-phrase: #ef8f7a;
+  --jeu-lecture: #dda44f;
+  --jeu-calcul: #5cbcbf;
 }
