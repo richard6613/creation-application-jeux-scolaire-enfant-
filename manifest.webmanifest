@@ -4,12 +4,36 @@
   "description": "Jeux de lecture, d'orthographe et de calcul pour le CE1 et le CE2.",
   "lang": "fr",
   "dir": "ltr",
-  "start_url": "index.html",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#faf3e6",
   "theme_color": "#faf3e6",
+  "categories": [
+    "education",
+    "kids"
+  ],
   "icons": [
+    {
+      "src": "assets/icone-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "assets/icone.svg",
       "sizes": "any",

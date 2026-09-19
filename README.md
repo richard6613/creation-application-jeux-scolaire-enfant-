@@ -13,16 +13,66 @@ et tout y reste.
 
 Double-cliquer sur `index.html`. C'est tout.
 
-Sur tablette, ouvrir le fichier puis « Ajouter à l'écran d'accueil » :
-l'application s'ouvre ensuite comme une application ordinaire.
-
-Pour la mettre sur un petit serveur local (utile sur certains iPad) :
+Pour la servir depuis un petit serveur local :
 
 ```
 python3 -m http.server 8000
 ```
 
 puis ouvrir `http://localhost:8000`.
+
+## L'installer comme une vraie application
+
+Mise en ligne sur une adresse en `https://`, l'application s'installe sur
+l'appareil : une icône sur l'écran d'accueil, une ouverture en plein
+écran sans barre de navigateur, et surtout **le fonctionnement sans
+connexion**. Une fois le premier passage fait, plus besoin de réseau :
+tout est en réserve sur la tablette.
+
+- **iPad, iPhone** — ouvrir l'adresse dans Safari, bouton Partager, puis
+  « Sur l'écran d'accueil ».
+- **Android** — ouvrir dans Chrome, menu à trois points, puis
+  « Installer l'application » ou « Ajouter à l'écran d'accueil ».
+- **Ordinateur** — Chrome ou Edge affichent une icône d'installation
+  dans la barre d'adresse.
+
+Cela repose sur `manifest.webmanifest` et sur `sw.js`, qui met les 29
+fichiers de l'application en réserve au premier passage et récupère les
+nouvelles versions en arrière-plan.
+
+Ouverte en local par double-clic, l'application fonctionne aussi, mais
+sans installation ni icône : les navigateurs réservent ces possibilités
+aux adresses `https://`.
+
+## La mettre en ligne pour la famille
+
+N'importe quel hébergement de fichiers statiques convient — il n'y a ni
+base de données ni serveur à faire tourner. Déposer le contenu du dépôt
+tel quel, `index.html` à la racine.
+
+Quelques voies, de la plus simple à la plus durable :
+
+- **Glisser-déposer** (Netlify Drop, Cloudflare Pages) : déposer le
+  dossier, récupérer une adresse en quelques secondes. Le dépôt peut
+  rester privé.
+- **GitHub Pages** : gratuit si le dépôt est public, à activer dans
+  Settings → Pages en choisissant la branche `main` et le dossier
+  racine.
+- **Hébergement personnel** : copier les fichiers dans un sous-dossier
+  du site, par FTP.
+
+Les chemins de l'application sont tous relatifs : elle fonctionne aussi
+bien à la racine d'un domaine que dans un sous-dossier.
+
+### Après chaque modification
+
+Si des fichiers ont été ajoutés ou modifiés, régénérer la réserve avant
+de publier, sinon les appareils qui ont déjà l'application garderont
+l'ancienne version :
+
+```
+python3 outils/generer-sw.py
+```
 
 Navigateurs testés : Chromium. La lecture audio utilise la voix de
 synthèse du système ; si aucune voix française n'est installée sur
@@ -151,12 +201,16 @@ On y trouve :
 ```
 index.html                    page unique
 manifest.webmanifest          ajout à l'écran d'accueil
+assets/
+  icone.svg, icone-192.png, icone-512.png, icone-apple-180.png
 assets/css/
   tokens.css                  variables de confort et fonds de lecture
   base.css                    mise en page, règles de lisibilité
   composants.css              boutons, cartes, étiquettes, consignes
+sw.js                         réserve hors ligne (généré)
 outils/
   generer-page-publiee.py     page sans doctype, pour publication en ligne
+  generer-sw.py               régénère sw.js et sa liste de fichiers
 assets/js/
   stockage.js                 localStorage, avec repli en mémoire
   reglages.js                 réglages et application au document
@@ -190,7 +244,9 @@ lecture sont dans `assets/js/data/notions.js`.
 
 Pour ajouter un jeu, copier un fichier de `assets/js/exercices/`, garder
 les quatre fonctions attendues (`notions`, `creerItem`, `afficher` et les
-métadonnées), et ajouter la balise `<script>` dans `index.html`.
+métadonnées), et ajouter la balise `<script>` dans `index.html`. Relancer
+ensuite `python3 outils/generer-sw.py` pour que le nouveau fichier entre
+dans la réserve hors ligne.
 
 ### Publier l'application en ligne
 
@@ -220,3 +276,8 @@ téléchargée par l'application, afin qu'elle fonctionne sans connexion.
 Tout est enregistré dans le navigateur de l'appareil et n'en sort pas.
 Rien n'est envoyé sur internet. Effacer les données du navigateur efface
 les réglages et les résultats.
+
+Conséquence à connaître : les réglages et les résultats appartiennent à
+**l'appareil** qui a servi à jouer. L'espace parent d'une tablette ne
+montre pas les séances faites sur une autre. Si l'enfant joue sur la
+tablette, c'est sur cette tablette qu'il faut consulter son suivi.
