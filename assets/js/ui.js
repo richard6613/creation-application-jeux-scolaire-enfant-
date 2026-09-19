@@ -93,6 +93,21 @@ Jeu.Ui = (function () {
     });
   }
 
+  /* Barre d'avancement de la séance : on voit combien il reste,
+     sans avoir à compter des perles une par une. */
+  function barreSeance(total, index, resultats) {
+    var d = el('div', 'barre-seance');
+    var piste = el('div', 'piste');
+    var avance = el('span', 'avance');
+    avance.style.width = Math.round(index / total * 100) + '%';
+    piste.appendChild(avance);
+    d.appendChild(piste);
+    d.appendChild(el('span', 'compte', (index + 1) + ' / ' + total));
+    d.setAttribute('role', 'img');
+    d.setAttribute('aria-label', 'Exercice ' + (index + 1) + ' sur ' + total);
+    return d;
+  }
+
   function perles(total, index, resultats) {
     var p = el('div', 'progression');
     p.setAttribute('aria-label', 'Exercice ' + (index + 1) + ' sur ' + total);
@@ -126,6 +141,7 @@ Jeu.Ui = (function () {
     choix: choix,
     figerChoix: figerChoix,
     perles: perles,
+    barreSeance: barreSeance,
     bouton: bouton
   };
 })();

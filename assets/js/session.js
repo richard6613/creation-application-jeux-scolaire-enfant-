@@ -50,6 +50,7 @@ Jeu.Session = (function () {
     var bas = Jeu.Ui.vider(zoneBas());
     bas.hidden = true;
 
+    zone.appendChild(Jeu.Ui.barreSeance(s.programme.length, s.index, s.resultats));
     zone.appendChild(Jeu.Ui.perles(s.programme.length, s.index, s.resultats));
 
     if (Jeu.Reglages.get('chrono')) zone.appendChild(chronoDoux());
