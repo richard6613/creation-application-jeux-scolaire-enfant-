@@ -31,7 +31,15 @@ Jeu.Garderobe = (function () {
     { cle: 'couronne',  nom: 'Couronne',    signe: '👑', prix: 55, haut: -0.30, gauche: 0.50, taille: 0.55 },
     { cle: 'pirate',    nom: 'Pirate',      signe: '🏴‍☠️', prix: 70, haut: -0.28, gauche: 0.50, taille: 0.58 },
     { cle: 'fleur',     nom: 'Fleur',       signe: '🌻', prix: 90, haut: -0.20, gauche: 0.22, taille: 0.45 },
-    { cle: 'etoiles',   nom: 'Étoiles',     signe: '✨', prix: 110, haut: -0.24, gauche: 0.20, taille: 0.50 }
+    { cle: 'etoiles',   nom: 'Étoiles',     signe: '✨', prix: 110, haut: -0.24, gauche: 0.20, taille: 0.50 },
+
+    // Panoplie du bâtisseur : ce qu'un enfant qui aime construire
+    // aura envie de viser en premier.
+    { cle: 'casque',    nom: 'Casque',      signe: '⛑️', prix: 16, haut: -0.30, gauche: 0.50, taille: 0.58 },
+    { cle: 'pioche',    nom: 'Pioche',      signe: '⛏️', prix: 26, haut:  0.10, gauche: 0.14, taille: 0.50 },
+    { cle: 'torche',    nom: 'Torche',      signe: '🔦', prix: 36, haut:  0.06, gauche: 0.86, taille: 0.46 },
+    { cle: 'diamant',   nom: 'Diamant',     signe: '💎', prix: 65, haut: -0.22, gauche: 0.78, taille: 0.44 },
+    { cle: 'bouclier',  nom: 'Bouclier',    signe: '🛡️', prix: 85, haut:  0.16, gauche: 0.14, taille: 0.52 }
   ];
 
   function etat() {

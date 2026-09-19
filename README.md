@@ -107,7 +107,22 @@ suite de questions. On répondait, on avait « bravo », et rien d'autre
 ne se passait. Un jeu, pour un enfant, est quelque chose qui **avance
 pendant qu'on joue**. Deux réponses à cela.
 
-**Une scène à remplir.** Chaque séance ouvre sur un décor vide —
+**Un chantier à bâtir.** L'enfant pour qui l'application est faite
+aime les jeux de construction. Chaque séance ouvre donc, le plus
+souvent, sur un chantier vide : maison, tour, pont ou fusée. Chaque
+bonne réponse pose une rangée de blocs et la construction monte,
+rangée après rangée, avec le relief des cubes.
+
+Les premières étapes bâtissent la structure, les dernières ajoutent le
+décor : une séance imparfaite laisse donc une maison finie mais sans
+ses arbres, jamais un mur à moitié monté. L'enfant repart toujours
+avec quelque chose de construit.
+
+Rien n'imite un jeu existant : ce sont des cubes, des couleurs et des
+formes simples. C'est le plaisir d'empiler qui est repris, pas
+l'habillage d'une marque.
+
+**Ou une scène à remplir.** Le reste du temps, un décor vide —
 aquarium, jardin, espace, forêt, ferme — tiré au sort, jamais le même
 que la fois d'avant. Chaque bonne réponse y pose un élément, tout de
 suite, sous ses yeux. À la fin, la scène est complète : c'est le vrai
@@ -297,7 +312,8 @@ outils/
   generer-page-publiee.py     page sans doctype, pour publication en ligne
   generer-sw.py               régénère sw.js et sa liste de fichiers
 assets/js/
-  scene.js                    le décor qui se remplit pendant la séance
+  scene.js                    le chantier ou le décor de la séance
+  data/constructions.js       les plans de construction, bloc par bloc
   garderobe.js                les pièces et les affaires de Filou
   parcours.js                 le chemin de progression et les jours joués
   compagnon.js                Filou, le chat qui accompagne l'enfant
