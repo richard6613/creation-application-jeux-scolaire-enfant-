@@ -147,6 +147,7 @@ Jeu.Parent = (function () {
     zone.appendChild(el('h2', null, 'Prénom et code'));
     zone.appendChild(prenomEtCode());
 
+    zone.appendChild(version());
     zone.appendChild(zoneDanger());
   }
 
@@ -365,6 +366,55 @@ Jeu.Parent = (function () {
     d.appendChild(champ);
     if (aide) d.appendChild(el('p', 'aide', aide));
     return d;
+  }
+
+  /* Le numéro de version, pour savoir sans deviner si l'appareil a
+     bien reçu la dernière publication. */
+  function version() {
+    var v = window.Jeu.Version || { numero: '?', date: 'inconnue' };
+    var carte = el('div', 'carte pile');
+    carte.appendChild(el('h2', null, 'Version'));
+
+    var ligne = el('div', 'ligne');
+    var num = el('span', 'compte', v.numero);
+    num.style.fontFamily = 'monospace';
+    ligne.appendChild(num);
+    ligne.appendChild(el('span', 'petit zone-sourdine', 'du ' + v.date));
+    carte.appendChild(ligne);
+
+    var msg = el('p', 'aide', 'Comparez ce numéro à celui annoncé pour la ' +
+      'dernière publication : s\'ils correspondent, l\'appareil est à jour.');
+    carte.appendChild(msg);
+
+    carte.appendChild(Jeu.Ui.bouton('Chercher une mise à jour', 'btn', function () {
+      msg.textContent = 'Recherche en cours…';
+      if (!('serviceWorker' in navigator)) {
+        msg.textContent = 'Cet appareil ne garde pas de réserve : la page est ' +
+          'toujours à jour au chargement.';
+        return;
+      }
+      navigator.serviceWorker.getRegistration().then(function (reg) {
+        if (!reg) {
+          msg.textContent = 'Aucune réserve installée : rechargez la page.';
+          return;
+        }
+        return reg.update().then(function () {
+          // Une version plus récente se signale par un worker en attente.
+          setTimeout(function () {
+            if (reg.waiting || reg.installing) {
+              msg.textContent = 'Une nouvelle version est prête. Fermez puis ' +
+                'rouvrez l\'application pour l\'installer.';
+            } else {
+              msg.textContent = 'Cet appareil a déjà la dernière version.';
+            }
+          }, 1800);
+        });
+      }).catch(function () {
+        msg.textContent = 'Vérification impossible : connexion indisponible.';
+      });
+    }));
+
+    return carte;
   }
 
   function zoneDanger() {
