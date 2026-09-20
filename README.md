@@ -21,23 +21,23 @@ python3 -m http.server 8000
 
 puis ouvrir `http://localhost:8000`.
 
-## Le son en voiture
+## Le son sur iPhone
 
-Sur iPhone, la voix de synthèse d'une page web est traitée comme un son
-système, au même titre qu'une notification — et les sons système
-sortent sur le haut-parleur du téléphone, sans suivre ni le Bluetooth
-ni CarPlay. C'est vrai dans Safari avec n'importe quel site, ce n'est
-pas propre à cette application.
+La voix de synthèse d'une page web passe, sur iPhone, par le canal
+d'accessibilité et non par le canal média. Trois conséquences, vérifiées
+à l'usage : les boutons de volume du téléphone ne la commandent pas,
+elle ne sort ni sur CarPlay ni en Bluetooth, et aucun code d'une page
+web ne peut y changer quoi que ce soit. C'est vrai sur n'importe quel
+site, pas seulement ici.
 
-Le réglage « Envoyer le son vers la voiture », dans l'espace parent,
-tente un contournement : maintenir une lecture média en cours — un
-silence numérique, d'amplitude mesurée à zéro — pour que l'appareil
-range l'application du côté des lecteurs de musique et fasse suivre la
-sortie choisie. Selon la version d'iOS et l'autoradio, cela fonctionne
-ou non ; rien ne permet de le garantir.
+Un contournement a été tenté — maintenir une lecture média en parallèle
+pour faire suivre la sortie — puis retiré : il ne fonctionne pas, et un
+réglage qui promet ce qu'il ne tient pas vaut moins que pas de réglage
+du tout.
 
-Il est désactivé par défaut, et doit le rester à la maison : une
-lecture média en cours interrompt la radio ou la musique.
+D'où le curseur « Volume de la voix » dans l'espace parent : c'est le
+seul moyen de la monter ou de la baisser. En voiture, un casque filaire
+branché sur le téléphone reste la solution la plus sûre.
 
 ## L'installer comme une vraie application
 
@@ -125,6 +125,7 @@ au clavier :
 | Compte avec moi | Additions, soustractions, doubles, moitiés, tables, suites |
 | Écris le nombre | Les nombres en lettres : traits d'union, s de vingts et cents |
 | Le bon signe | Point, interrogation, exclamation, virgule, deux-points, majuscule |
+| English | Les premiers mots d'anglais, de l'oreille vers la lecture |
 
 Une séance dure huit exercices par défaut et se termine toujours.
 
@@ -285,6 +286,23 @@ découvertes, le reste en terrain sûr.
 
 ---
 
+## L'anglais
+
+Soixante mots, classés comme on les aborde à l'école : les couleurs et
+les nombres d'abord, puis les animaux, la nourriture, la famille et le
+corps, l'école et la maison. Un thème ne s'ouvre qu'une fois le
+précédent su.
+
+Le même mot se travaille de trois façons, qui arrivent l'une après
+l'autre : écouter le mot et montrer l'image, puis voir l'image et
+choisir le mot écrit, puis lire le mot sans l'entendre. L'oreille
+d'abord, la lecture ensuite.
+
+On ne passe jamais par le français écrit : pour un enfant dyslexique,
+ce serait ajouter une difficulté de lecture par-dessus l'anglais.
+L'image tient lieu de sens. Le bouton haut-parleur parle anglais, avec
+une voix anglaise lorsque l'appareil en a une installée.
+
 ## Suivre la classe
 
 Deux jeux reprennent des leçons telles qu'elles sont travaillées en
@@ -420,6 +438,7 @@ outils/
   generer-page-publiee.py     page sans doctype, pour publication en ligne
   generer-sw.py               régénère sw.js et sa liste de fichiers
 assets/js/
+  data/anglais.js             soixante mots d'anglais avec leur image
   data/nombres.js             écriture des nombres en lettres, et ses pièges
   data/ponctuation.js         phrases de la leçon et mots de la dictée
   niveaux.js                  repères CE1, CE2, CM1 par domaine

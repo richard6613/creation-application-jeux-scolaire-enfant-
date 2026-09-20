@@ -50,6 +50,22 @@ Jeu.Voix = (function () {
     return points;
   }
 
+  /* Les voix d'une langue donnée, présentes sur l'appareil. */
+  function voixDe(prefixe) {
+    if (!synth) return [];
+    return (synth.getVoices() || []).filter(function (v) {
+      return new RegExp('^' + prefixe, 'i').test(v.lang || '');
+    });
+  }
+
+  /* La meilleure voix pour une langue autre que le français : sert à
+     l'anglais, où le parent n'a rien à régler. */
+  function voixPourLangue(code) {
+    var liste = voixDe(code.slice(0, 2));
+    if (!liste.length) return null;
+    return liste.slice().sort(function (a, b) { return qualite(b) - qualite(a); })[0];
+  }
+
   function choisirVoix() {
     if (!synth) return null;
     var fr = voixFrancaises();
@@ -137,9 +153,23 @@ Jeu.Voix = (function () {
       u.lang = 'fr-FR';
       if (!voixFr) choisirVoix();
       if (voixFr) u.voice = voixFr;
+      // Une autre langue que le français, pour l'anglais.
+      if (options.langue) {
+        u.lang = options.langue;
+        var autre = voixPourLangue(options.langue);
+        if (autre) u.voice = autre;
+      }
+
       u.rate = options.vitesse || Jeu.Reglages.get('vitesseVoix') || 0.9;
       u.pitch = Jeu.Reglages.get('hauteurVoix') || 1;
-      u.volume = 1;
+
+      /* Le volume se règle ici et nulle part ailleurs. Sur iPhone, la
+         voix d'une page web passe par le canal d'accessibilité, que
+         les boutons de volume du téléphone ne commandent pas : sans ce
+         réglage, il n'y aurait aucun moyen de la monter ou de la
+         baisser. */
+      var vol = Jeu.Reglages.get('volumeVoix');
+      u.volume = (typeof vol === 'number') ? Math.max(0, Math.min(1, vol)) : 1;
 
       if (options.bouton) {
         boutonActif = options.bouton;
@@ -211,7 +241,7 @@ Jeu.Voix = (function () {
 
   /* Bouton haut-parleur, identique partout : même forme, même icône,
      toujours à gauche de ce qu'il lit. */
-  function bouton(texteAdire, etiquette) {
+  function bouton(texteAdire, etiquette, options) {
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'btn-son';
@@ -221,7 +251,10 @@ Jeu.Voix = (function () {
     b.addEventListener('click', function () {
       compterEcoute();
       var t = (typeof texteAdire === 'function') ? texteAdire() : texteAdire;
-      dire(t, { bouton: b, force: true });
+      var o = { bouton: b, force: true };
+      if (options && options.langue) o.langue = options.langue;
+      if (options && options.vitesse) o.vitesse = options.vitesse;
+      dire(t, o);
     });
     return b;   // sa visibilité suit le réglage audio, via le CSS
   }
@@ -229,6 +262,7 @@ Jeu.Voix = (function () {
   return {
     disponible: disponible,
     voixFrancaises: voixFrancaises,
+    voixPourLangue: voixPourLangue,
     choisirVoix: choisirVoix,
     dire: dire,
     enchainer: enchainer,

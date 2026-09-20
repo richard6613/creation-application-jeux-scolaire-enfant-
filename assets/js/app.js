@@ -359,7 +359,6 @@ Jeu.App = (function () {
     Jeu.Reglages.charger();
     Jeu.Reglages.appliquer();
     Jeu.Adaptatif.charger();
-    Jeu.SortieAudio.installer();
 
     document.getElementById('btn-retour').addEventListener('click', function () {
       if (ecranCourant === 'parent') Jeu.Parent.fermer();

@@ -197,15 +197,14 @@ Jeu.Panneau = (function () {
       'Une voix posée laisse le temps de suivre. Trop lente, elle devient ' +
       'métallique : c\'est souvent mieux de garder une vitesse normale et de ' +
       'choisir une voix plus soignée.'));
+    carte.appendChild(curseur('Volume de la voix', 'volumeVoix', 0, 1, 0.05, '',
+      'Sur iPhone, la voix d\'une page web passe par le canal d\'accessibilité : ' +
+      'les boutons de volume du téléphone ne la commandent pas, et elle ne sort ' +
+      'ni sur CarPlay ni en Bluetooth. C\'est une limite d\'iOS, la même sur ' +
+      'n\'importe quel site. Ce curseur est donc le seul moyen de la régler. ' +
+      'En voiture, un casque filaire reste la solution la plus sûre.'));
     carte.appendChild(curseur('Hauteur de la voix', 'hauteurVoix', 0.8, 1.2, 0.05, '',
       'Plus grave ou plus claire, selon ce que l\'enfant écoute le plus volontiers.'));
-    carte.appendChild(interrupteur('Envoyer le son vers la voiture', 'sonVoiture',
-      'À essayer en voiture, avec CarPlay ou le Bluetooth. Sur iPhone, la voix ' +
-      'd\'une page web est normalement traitée comme un son système et reste sur ' +
-      'le haut-parleur du téléphone : ce réglage maintient une lecture en cours ' +
-      'pour tenter de faire suivre la sortie de la voiture. Selon la version ' +
-      'd\'iOS et l\'autoradio, cela fonctionne ou non. À laisser désactivé à la ' +
-      'maison : une lecture en cours interrompt la radio.'));
     carte.appendChild(interrupteur('Aide visuelle', 'aideVisuelle',
       'Images et repères de couleur à côté des mots.'));
     carte.appendChild(interrupteur('Découpage en syllabes', 'syllabes',
