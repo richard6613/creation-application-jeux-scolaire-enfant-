@@ -21,6 +21,24 @@ python3 -m http.server 8000
 
 puis ouvrir `http://localhost:8000`.
 
+## Le son en voiture
+
+Sur iPhone, la voix de synthèse d'une page web est traitée comme un son
+système, au même titre qu'une notification — et les sons système
+sortent sur le haut-parleur du téléphone, sans suivre ni le Bluetooth
+ni CarPlay. C'est vrai dans Safari avec n'importe quel site, ce n'est
+pas propre à cette application.
+
+Le réglage « Envoyer le son vers la voiture », dans l'espace parent,
+tente un contournement : maintenir une lecture média en cours — un
+silence numérique, d'amplitude mesurée à zéro — pour que l'appareil
+range l'application du côté des lecteurs de musique et fasse suivre la
+sortie choisie. Selon la version d'iOS et l'autoradio, cela fonctionne
+ou non ; rien ne permet de le garantir.
+
+Il est désactivé par défaut, et doit le rester à la maison : une
+lecture média en cours interrompt la radio ou la musique.
+
 ## L'installer comme une vraie application
 
 Mise en ligne sur une adresse en `https://`, l'application s'installe sur
