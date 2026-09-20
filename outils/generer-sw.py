@@ -1,4 +1,4 @@
-"""Génère sw.js, le fichier qui permet de jouer sans connexion.
+"""Génère sw.js (la réserve hors ligne) et version.js (le numéro affiché).
 
 La liste des fichiers à mettre en réserve est extraite d'index.html
 plutôt qu'écrite à la main : ajouter un exercice et oublier de
@@ -9,7 +9,7 @@ casse hors ligne, une panne difficile à voir venir.
 
     python3 outils/generer-sw.py
 """
-import re, pathlib, hashlib
+import re, pathlib, hashlib, datetime
 
 racine = pathlib.Path(__file__).resolve().parent.parent
 html = (racine / 'index.html').read_text(encoding='utf-8')
@@ -20,17 +20,40 @@ fichiers += ['./' + s for s in re.findall(r'<script src="([^"]+)"', html)]
 fichiers += ['./assets/icone.svg', './assets/icone-192.png',
              './assets/icone-512.png', './assets/icone-apple-180.png']
 
-manquants = [f for f in fichiers if f != './' and not (racine / f[2:]).exists()]
+# version.js est contrôlé après coup : il est écrit plus bas par ce
+# même script, il peut donc manquer au premier passage.
+manquants = [f for f in fichiers
+             if f != './' and not f.endswith('version.js')
+             and not (racine / f[2:]).exists()]
 if manquants:
     raise SystemExit('fichiers introuvables : ' + ', '.join(manquants))
 
 # La version change dès qu'un fichier change : les appareils qui ont
 # déjà l'application en réserve reçoivent la nouvelle version.
+# version.js est exclu du calcul, sans quoi il se modifierait lui-même
+# à chaque passage et l'empreinte ne voudrait plus rien dire.
 empreinte = hashlib.sha256()
 for f in sorted(fichiers):
-    if f != './':
+    if f != './' and not f.endswith('version.js'):
         empreinte.update((racine / f[2:]).read_bytes())
 version = empreinte.hexdigest()[:12]
+
+# Le numéro affiché dans l'espace parent, pour vérifier d'un coup d'œil
+# que l'appareil a bien la dernière version.
+MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet',
+        'août', 'septembre', 'octobre', 'novembre', 'décembre']
+j = datetime.date.today()
+date_lisible = '%d %s %d' % (j.day, MOIS[j.month - 1], j.year)
+
+(racine / 'assets' / 'js' / 'version.js').write_text(
+    '''/* Généré par outils/generer-sw.py — ne pas modifier à la main.
+   Sert à vérifier, depuis l'espace parent, que l'appareil a bien
+   la dernière version publiée. */
+
+window.Jeu = window.Jeu || {};
+Jeu.Version = { numero: '%s', date: '%s' };
+''' % (version[:6], date_lisible), encoding='utf-8')
+print('version.js généré — %s du %s' % (version[:6], date_lisible))
 
 liste = ',\n  '.join("'" + f + "'" for f in fichiers)
 

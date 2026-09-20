@@ -64,6 +64,17 @@ Quelques voies, de la plus simple à la plus durable :
 Les chemins de l'application sont tous relatifs : elle fonctionne aussi
 bien à la racine d'un domaine que dans un sous-dossier.
 
+### Savoir si un appareil est à jour
+
+L'espace parent affiche un numéro de version et sa date, et propose de
+chercher une mise à jour. Le numéro est l'empreinte du contenu publié :
+il change dès qu'un fichier change, et ne change pas autrement. Il
+suffit de le comparer à celui annoncé pour la dernière publication.
+
+`outils/generer-sw.py` l'écrit dans `assets/js/version.js`, en même
+temps que la réserve hors ligne, pour que les deux ne puissent pas
+diverger.
+
 ### Après chaque modification
 
 Si des fichiers ont été ajoutés ou modifiés, régénérer la réserve avant
