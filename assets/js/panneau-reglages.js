@@ -199,6 +199,13 @@ Jeu.Panneau = (function () {
       'choisir une voix plus soignée.'));
     carte.appendChild(curseur('Hauteur de la voix', 'hauteurVoix', 0.8, 1.2, 0.05, '',
       'Plus grave ou plus claire, selon ce que l\'enfant écoute le plus volontiers.'));
+    carte.appendChild(interrupteur('Envoyer le son vers la voiture', 'sonVoiture',
+      'À essayer en voiture, avec CarPlay ou le Bluetooth. Sur iPhone, la voix ' +
+      'd\'une page web est normalement traitée comme un son système et reste sur ' +
+      'le haut-parleur du téléphone : ce réglage maintient une lecture en cours ' +
+      'pour tenter de faire suivre la sortie de la voiture. Selon la version ' +
+      'd\'iOS et l\'autoradio, cela fonctionne ou non. À laisser désactivé à la ' +
+      'maison : une lecture en cours interrompt la radio.'));
     carte.appendChild(interrupteur('Aide visuelle', 'aideVisuelle',
       'Images et repères de couleur à côté des mots.'));
     carte.appendChild(interrupteur('Découpage en syllabes', 'syllabes',

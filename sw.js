@@ -9,7 +9,7 @@
    récupérée en arrière-plan quand il y en a une.
    --------------------------------------------------------------- */
 
-var VERSION = 'mes-jeux-ee85126af7ee';
+var VERSION = 'mes-jeux-70d67a6ad17b';
 
 var FICHIERS = [
   './',
@@ -22,6 +22,7 @@ var FICHIERS = [
   './assets/js/stockage.js',
   './assets/js/reglages.js',
   './assets/js/voix.js',
+  './assets/js/sortie-audio.js',
   './assets/js/adaptatif.js',
   './assets/js/ui.js',
   './assets/js/compagnon.js',

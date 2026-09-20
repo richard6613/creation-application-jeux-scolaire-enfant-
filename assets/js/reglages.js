@@ -26,6 +26,7 @@ Jeu.Reglages = (function () {
     vitesseVoix: 0.9,       // voix posée, sans être traînante
     hauteurVoix: 1,         // 0.8 = plus grave, 1.2 = plus claire
     voix: '',               // voix choisie par le parent ; vide = la meilleure trouvée
+    sonVoiture: false,      // tenter d'envoyer le son vers l'autoradio
     aideVisuelle: true,     // repères, images, couleurs d'appui
     syllabes: true,         // découpage syllabique quand c'est pertinent
     guideLecture: false,    // bandeau qui isole la ligne en cours
