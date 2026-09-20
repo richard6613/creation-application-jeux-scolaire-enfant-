@@ -67,7 +67,15 @@ Jeu.Niveaux = (function () {
     'calc.table4':            { domaine: 'calcul', niveau: 'CE2' },
     'calc.complement100':     { domaine: 'calcul', niveau: 'CE2' },
     'calc.tablesHautes':      { domaine: 'calcul', niveau: 'CM1' },
-    'calc.partage':           { domaine: 'calcul', niveau: 'CM1' }
+    'calc.partage':           { domaine: 'calcul', niveau: 'CM1' },
+
+    // ---- Anglais ----
+    'en.couleurs':   { domaine: 'anglais', niveau: 'CE1' },
+    'en.nombres':    { domaine: 'anglais', niveau: 'CE1' },
+    'en.animaux':    { domaine: 'anglais', niveau: 'CE2' },
+    'en.nourriture': { domaine: 'anglais', niveau: 'CE2' },
+    'en.famille':    { domaine: 'anglais', niveau: 'CE2' },
+    'en.maison':     { domaine: 'anglais', niveau: 'CM1' }
   };
 
   // Les paires de sons relèvent toutes de l'écoute, au début de la lecture.
@@ -78,7 +86,8 @@ Jeu.Niveaux = (function () {
   var DOMAINES = [
     { cle: 'lecture',     nom: 'Lecture',     signe: '📖' },
     { cle: 'orthographe', nom: 'Orthographe', signe: '✏️' },
-    { cle: 'calcul',      nom: 'Calcul',      signe: '🔢' }
+    { cle: 'calcul',      nom: 'Calcul',      signe: '🔢' },
+    { cle: 'anglais',     nom: 'Anglais',     signe: '🇬🇧' }
   ];
 
   function infos(notion) { return TABLE[notion] || null; }
