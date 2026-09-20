@@ -59,6 +59,8 @@
 <script src="assets/js/data/notions.js"></script>
 <script src="assets/js/data/constructions.js"></script>
 <script src="assets/js/data/lecture.js"></script>
+<script src="assets/js/data/nombres.js"></script>
+<script src="assets/js/data/ponctuation.js"></script>
 <script src="assets/js/libelles.js"></script>
 <script src="assets/js/niveaux.js"></script>
 <script src="assets/js/panneau-reglages.js"></script>
@@ -70,6 +72,8 @@
 <script src="assets/js/exercices/lireMot.js"></script>
 <script src="assets/js/exercices/lecture.js"></script>
 <script src="assets/js/exercices/calcul.js"></script>
+<script src="assets/js/exercices/nombresLettres.js"></script>
+<script src="assets/js/exercices/ponctuation.js"></script>
 <script src="assets/js/parent.js"></script>
 <script src="assets/js/app.js"></script>
 
@@ -80,10 +84,43 @@
   // besoin dans ce cas puisque tout est déjà sur place.
   if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('sw.js').catch(function () {
+      navigator.serviceWorker.register('sw.js').then(function (reg) {
+        // La réserve répond avant le réseau, donc une nouvelle version
+        // ne s'affiche qu'au chargement suivant. Sans prévenir, on croit
+        // que rien n'a changé. On propose donc de recharger dès qu'une
+        // version est prête.
+        function surveiller(sw) {
+          if (!sw) return;
+          sw.addEventListener('statechange', function () {
+            if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+              annoncerVersion();
+            }
+          });
+        }
+        surveiller(reg.installing);
+        reg.addEventListener('updatefound', function () { surveiller(reg.installing); });
+        // On va aussi vérifier de nous-mêmes, sans attendre.
+        setTimeout(function () { reg.update().catch(function () {}); }, 1500);
+      }).catch(function () {
         /* sans réserve, l'application fonctionne quand même, il faut juste du réseau */
       });
     });
+  }
+
+  function annoncerVersion() {
+    if (document.getElementById('bandeau-version')) return;
+    var b = document.createElement('div');
+    b.id = 'bandeau-version';
+    b.className = 'bandeau-version';
+    b.setAttribute('role', 'status');
+    b.innerHTML = '<span>Une nouvelle version est prête.</span>';
+    var bouton = document.createElement('button');
+    bouton.type = 'button';
+    bouton.className = 'btn btn-principal';
+    bouton.textContent = 'Mettre à jour';
+    bouton.addEventListener('click', function () { location.reload(); });
+    b.appendChild(bouton);
+    document.body.appendChild(b);
   }
 </script>
 </body>

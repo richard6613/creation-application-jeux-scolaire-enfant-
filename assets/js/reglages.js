@@ -40,6 +40,10 @@ Jeu.Reglages = (function () {
     // empiler), 'paysages' (décors à remplir) ou 'melange'.
     decors: 'melange',
 
+    // Jeux mis en avant sur le chemin, pour coller à ce qui est
+    // travaillé en classe en ce moment. Vide = le moteur décide seul.
+    jeuxPrioritaires: [],
+
     // Séries de confusions mises de côté par le parent (par notion)
     seriesDeCote: [],
 

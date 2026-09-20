@@ -1018,3 +1018,58 @@ html[data-animations="oui"] .rang-signe { animation: rang-arrive 700ms ease-out 
   min-height: 96px;
 }
 .image-choix { font-size: 3rem; line-height: 1; }
+
+/* Une nouvelle version est en réserve : sans ce bandeau, on croit que
+   rien n'a changé, puisque l'ancienne s'affiche encore. */
+.bandeau-version {
+  position: fixed;
+  left: 12px; right: 12px;
+  bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--rayon);
+  background: var(--accent-doux);
+  border: 3px solid var(--accent);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+.bandeau-version span { flex: 1; font-weight: 600; }
+.bandeau-version .btn { width: auto; flex: 0 0 auto; }
+
+/* Nombres en lettres : les écritures sont longues, une par ligne. */
+.nombre-affiche {
+  font-size: 2.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+}
+.choix-btn.choix-long {
+  font-size: 1.15rem;
+  min-height: 64px;
+  line-height: 1.5;
+}
+
+/* Le bon signe : la phrase et son trou, puis les signes en grand. */
+.phrase-ponct {
+  font-size: 1.35rem;
+  line-height: calc(var(--interligne) + 0.1);
+  max-width: var(--largeur-ligne);
+  margin-top: 10px;
+}
+.trou-signe {
+  display: inline-block;
+  min-width: 34px;
+  text-align: center;
+  color: var(--accent);
+  font-weight: 700;
+  border-radius: 6px;
+}
+.choix-btn.choix-signe {
+  justify-content: center;
+  font-size: 2.4rem;
+  font-weight: 700;
+  min-height: 84px;
+  letter-spacing: normal;
+}

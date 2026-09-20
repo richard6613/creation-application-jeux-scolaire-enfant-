@@ -223,6 +223,42 @@ Jeu.Panneau = (function () {
     return carte;
   }
 
+  /* Les jeux à faire revenir en priorité, pour suivre la classe. */
+  function priorites() {
+    var carte = el('div', 'carte');
+    carte.appendChild(el('h3', null, 'Travailler en priorité'));
+    carte.appendChild(el('p', 'petit zone-sourdine',
+      'Cochez ce qui est travaillé en classe en ce moment : ces jeux ' +
+      'reviendront plus souvent sur le chemin. Une séance sur trois reste ' +
+      'consacrée au reste, pour ne pas laisser filer ce qui est acquis. ' +
+      'Rien de coché : le moteur choisit seul.'));
+
+    Jeu.Exercices.forEach(function (ex) {
+      var d = el('div', 'reglage');
+      var lab = el('label', 'interrupteur');
+      var g = el('span', null);
+      g.appendChild(el('span', null, ex.emoji + '  '));
+      g.appendChild(el('strong', null, ex.nom));
+      lab.appendChild(g);
+
+      var i = document.createElement('input');
+      i.type = 'checkbox';
+      i.checked = (Jeu.Reglages.get('jeuxPrioritaires') || []).indexOf(ex.id) >= 0;
+      i.setAttribute('aria-label', 'Travailler en priorité : ' + ex.nom);
+      i.addEventListener('change', function () {
+        var liste = (Jeu.Reglages.get('jeuxPrioritaires') || []).slice();
+        var k = liste.indexOf(ex.id);
+        if (i.checked && k < 0) liste.push(ex.id);
+        if (!i.checked && k >= 0) liste.splice(k, 1);
+        Jeu.Reglages.set('jeuxPrioritaires', liste);
+      });
+      lab.appendChild(i);
+      d.appendChild(lab);
+      carte.appendChild(d);
+    });
+    return carte;
+  }
+
   /* Séries de sons : le parent peut en mettre de côté. */
   function series() {
     var carte = el('div', 'carte');
@@ -263,5 +299,5 @@ Jeu.Panneau = (function () {
     return carte;
   }
 
-  return { confort: confort, aides: aides, series: series, apercu: apercu, interrupteur: interrupteur, curseur: curseur, puces: puces };
+  return { confort: confort, aides: aides, series: series, priorites: priorites, apercu: apercu, interrupteur: interrupteur, curseur: curseur, puces: puces };
 })();

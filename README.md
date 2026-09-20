@@ -93,7 +93,9 @@ au clavier :
 | Construis le mot | Remettre les syllabes dans l'ordre |
 | Construis la phrase | Remettre les mots dans l'ordre |
 | Lis tranquillement | Lire une phrase à son rythme, avec toutes les aides de lecture |
-| Compte avec moi | Additions, soustractions, doubles, moitiés, tables de 2 et 5, suites |
+| Compte avec moi | Additions, soustractions, doubles, moitiés, tables, suites |
+| Écris le nombre | Les nombres en lettres : traits d'union, s de vingts et cents |
+| Le bon signe | Point, interrogation, exclamation, virgule, deux-points, majuscule |
 
 Une séance dure huit exercices par défaut et se termine toujours.
 
@@ -254,6 +256,21 @@ découvertes, le reste en terrain sûr.
 
 ---
 
+## Suivre la classe
+
+Deux jeux reprennent des leçons telles qu'elles sont travaillées en
+classe. « Écris le nombre » suit la règle des traits d'union entre tous
+les mots, du s à « vingt » et à « cent » quand ils terminent le nombre,
+et de « mille » invariable ; les mauvaises écritures proposées ne sont
+pas quelconques, elles se trompent précisément sur ces règles. « Le bon
+signe » travaille les cinq signes du programme et la majuscule, sur des
+phrases qui reprennent le thème de la dictée en cours.
+
+L'espace parent permet de cocher **ce qui est travaillé en classe en ce
+moment** : ces jeux reviennent alors sept fois sur dix sur le chemin, et
+alternent équitablement entre eux. Une séance sur trois reste consacrée
+au reste, pour ne pas laisser filer ce qui est acquis.
+
 ## Le moteur adaptatif
 
 Il apprend les difficultés de cet enfant-là, à partir de ses résultats.
@@ -374,6 +391,8 @@ outils/
   generer-page-publiee.py     page sans doctype, pour publication en ligne
   generer-sw.py               régénère sw.js et sa liste de fichiers
 assets/js/
+  data/nombres.js             écriture des nombres en lettres, et ses pièges
+  data/ponctuation.js         phrases de la leçon et mots de la dictée
   niveaux.js                  repères CE1, CE2, CM1 par domaine
   data/lecture.js             mots à déchiffrer, classés par difficulté
   scene.js                    le chantier ou le décor de la séance

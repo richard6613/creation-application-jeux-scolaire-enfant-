@@ -34,7 +34,14 @@ Jeu.Libelles = (function () {
     'calc.table3':           'Table de 3',
     'calc.table4':           'Table de 4',
     'calc.tablesHautes':     'Tables de 6 à 9',
-    'calc.partage':          'Partages et divisions'
+    'calc.partage':          'Partages et divisions',
+    'nb.petits':     'Nombres en lettres jusqu\'à 69',
+    'nb.septante':   'Nombres en lettres de 70 à 99',
+    'nb.centaines':  'Nombres en lettres : les centaines',
+    'nb.milliers':   'Nombres en lettres : les milliers',
+    'ponct.fin':     'Point, point d\'interrogation, d\'exclamation',
+    'ponct.dedans':  'Virgule et deux-points',
+    'ponct.majuscule': 'Majuscule en début de phrase'
   };
 
   Jeu.Data.confusions.forEach(function (s) {
@@ -54,6 +61,8 @@ Jeu.Libelles = (function () {
     phrase: 'Construis la phrase',
     lecture: 'Lis tranquillement',
     lireMot: 'Lis et montre',
+    nombresLettres: 'Écris le nombre',
+    ponctuation: 'Le bon signe',
     calcul: 'Compte avec moi'
   };
   function nomJeu(id) { return jeux[id] || id; }
