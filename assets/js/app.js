@@ -274,6 +274,35 @@ Jeu.App = (function () {
      À défaut, celui qui a été le moins vu. */
   function jeuLePlusUtile() {
     if (!Jeu.Exercices.length) return null;
+
+    /* Ce que le parent a désigné passe devant : quand une leçon est
+       travaillée en classe, c'est elle qu'il faut voir revenir, pas
+       ce que le moteur trouverait le plus utile dans l'absolu. On
+       garde tout de même une séance sur trois pour le reste, afin de
+       ne pas laisser filer ce qui a été acquis. */
+    var voulus = (Jeu.Reglages.get('jeuxPrioritaires') || []).filter(function (id) {
+      return Jeu.Exercices.some(function (e) { return e.id === id; });
+    });
+    if (voulus.length && Math.random() < 0.7) {
+      // Entre plusieurs leçons cochées, on prend d'abord celle qui a
+      // été le moins vue : sinon la première accapare tout.
+      var st = Jeu.Adaptatif.statistiques();
+      var vues = {};
+      (st.sessions || []).forEach(function (x) { vues[x.jeu] = (vues[x.jeu] || 0) + 1; });
+
+      var moins = voulus[0];
+      voulus.forEach(function (id) {
+        if ((vues[id] || 0) < (vues[moins] || 0)) moins = id;
+      });
+      // À égalité, on tire au sort pour ne pas figer l'ordre.
+      var exAequo = voulus.filter(function (id) {
+        return (vues[id] || 0) === (vues[moins] || 0);
+      });
+      var id = exAequo[Math.floor(Math.random() * exAequo.length)];
+
+      var prio = Jeu.Exercices.filter(function (e) { return e.id === id; })[0];
+      if (prio) return prio;
+    }
     var fragiles = Jeu.Adaptatif.fragiles(6);
     if (fragiles.length) {
       var trouve = null;
