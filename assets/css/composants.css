@@ -226,6 +226,11 @@ html[data-audio="non"] .depend-audio { display: none; }
   opacity: 0.45;
   padding: 0 2px;
 }
+/* Une vraie espace du mot n'est pas une coupure de syllabe : « le
+   visage » ne doit jamais s'afficher « le·vi·sa·ge », ce serait
+   montrer le mot autrement qu'il ne s'écrit. */
+.mot-syllabe .syllabe.apres-espace::before { content: none; }
+.mot-syllabe .espace-mot-texte { display: inline-block; width: 0.5em; }
 
 /* Guide de lecture : une bande claire posée derrière la ligne en cours,
    comme la règle que l'on glisse sous les lignes d'un livre. */
@@ -1075,13 +1080,20 @@ html[data-animations="oui"] .rang-signe { animation: rang-arrive 700ms ease-out 
 }
 
 /* ---- Les mots de la dictée ----
-   Le mot est la seule chose à regarder : il est grand, aéré, et la
-   partie qui change d'une écriture à l'autre est soulignée pour
-   qu'on voie où se joue la différence. */
+   Règle tenue par tout ce bloc : rien de ce qui s'affiche n'est une
+   écriture fausse. Les cases ne reçoivent que le bon morceau, le trou
+   que la bonne lettre. */
 .mot-dictee {
   font-size: 1.9rem;
   font-weight: 700;
   line-height: 1.6;
+}
+.modele-mot {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--accent-doux);
+  text-align: center;
 }
 .part-qui-change {
   background: var(--succes-doux);
@@ -1108,11 +1120,29 @@ html[data-animations="oui"] .rang-signe { animation: rang-arrive 700ms ease-out 
   min-width: 0;
 }
 .trou-mot .mot-dictee { font-size: 1.35rem; }
+
+/* Le trou d'une lettre, dans un mot par ailleurs entier. */
+.trou-lettre {
+  display: inline-block;
+  min-width: 42px;
+  border-bottom: 4px solid var(--accent);
+  color: var(--succes);
+  text-align: center;
+}
+.trou-lettre.trou-rempli {
+  background: var(--succes-doux);
+  border-bottom-color: var(--succes);
+  border-radius: 6px;
+}
+.choix-btn.choix-lettre {
+  justify-content: center;
+  font-size: 2.1rem;
+  font-weight: 700;
+  min-height: 82px;
+  letter-spacing: normal;
+}
 /* Une écriture par ligne : deux mots proches côte à côte se
    confondent, surtout quand ils ne diffèrent que d'une lettre. */
-/* La taille suit la largeur de l'écran : « le chevalier » écrit en
-   grand avec l'espacement maximal ne doit pas déborder du bouton,
-   et couper un mot en deux serait le pire service à rendre ici. */
 .choix-btn.choix-mot {
   justify-content: center;
   font-size: clamp(1.05rem, 5.2vw, 1.5rem);
@@ -1125,4 +1155,65 @@ html[data-animations="oui"] .rang-signe { animation: rang-arrive 700ms ease-out 
   min-width: 78px;
   min-height: 78px;
   font-size: 2rem;
+}
+
+/* ---- Reconstruction du mot ---- */
+.cases-mot { flex-wrap: wrap; align-items: center; }
+.case-depot.case-lettre { min-width: 48px; }
+.etiquette.etiquette-lettre {
+  min-width: 52px;
+  justify-content: center;
+  letter-spacing: normal;
+}
+/* L'espace du mot est déjà là : « le visage » reste en deux blocs,
+   l'enfant n'a pas à deviner où couper. */
+.espace-mot { display: inline-block; width: 22px; }
+
+/* Un morceau mal placé revient dans le bac. Il tremble une fois,
+   doucement, et rien de faux ne s'écrit nulle part. */
+@keyframes refus-doux {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-5px); }
+  75%      { transform: translateX(5px); }
+}
+.etiquette.refusee { animation: refus-doux 260ms ease-in-out 2; }
+html[data-animations="non"] .etiquette.refusee { animation: none; }
+
+/* Après deux essais, on montre où poser : on ne laisse pas tourner
+   en rond un enfant qui ne se représente pas encore le mot. */
+.etiquette.indiquee {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-doux);
+}
+.case-depot.cible-forte {
+  border-color: var(--accent);
+  border-style: solid;
+  box-shadow: 0 0 0 4px var(--accent-doux);
+}
+
+/* ---- Le nombre en lettres ----
+   Le nombre s'affiche toujours écrit correctement : le trou ne se
+   remplit qu'avec le bon mot. */
+.nombre-lettres {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.7;
+  text-align: center;
+  margin-top: 8px;
+  max-width: var(--largeur-ligne);
+}
+.tiret-nombre { color: var(--texte-doux); padding: 0 1px; }
+.trou-mot-nombre {
+  display: inline-block;
+  min-width: 96px;
+  border-bottom: 4px solid var(--accent);
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+.trou-mot-nombre.trou-rempli {
+  min-width: 0;
+  background: var(--succes-doux);
+  border-bottom-color: var(--succes);
+  border-radius: 6px;
+  padding: 0 4px;
 }

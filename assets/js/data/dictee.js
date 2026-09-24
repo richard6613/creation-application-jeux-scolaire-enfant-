@@ -6,45 +6,74 @@
    a été ajouté : la dictée des arts n° 3, groupe bleu, sur le thème
    du visage.
 
-   Deux formes d'exercice, qui correspondent à ce que l'école
-   demande à ce groupe — dictée à choix multiples ou à trous :
+   RÈGLE ABSOLUE, RAPPELÉE PAR L'ORTHOPHONISTE : l'enfant ne doit
+   jamais voir un mot mal orthographié. Une écriture fausse aperçue
+   une seule fois s'installe en mémoire à côté de la bonne, et
+   l'enfant n'a plus aucun moyen de les départager. C'est encore plus
+   vrai avec une dyslexie, où l'image du mot se construit lentement
+   et se brouille vite.
 
-   - choisir la bonne écriture d'un mot entendu ;
-   - compléter une phrase à trou, indispensable pour les homophones
-     (« et » et « est » ne se distinguent que par le sens).
+   Conséquence sur ce fichier : aucune écriture fausse n'y figure et
+   aucune n'est fabriquée. Ce qu'on propose à la place :
 
-   Les écritures fausses ne sont pas quelconques : ce sont les
-   erreurs qu'un enfant fait réellement sur ce mot-là.
+   - un mot à compléter, avec un trou et des LETTRES à choisir — une
+     lettre seule n'est pas un mot mal écrit ;
+   - un mot à reconstruire à partir de ses syllabes ou de ses
+     lettres, où un morceau mal placé est refusé au lieu d'être
+     écrit ;
+   - pour « et » et « est », une phrase à trou : les deux écritures
+     proposées sont deux mots français corrects, il s'agit de
+     comprendre le sens, pas de reconnaître une faute.
    --------------------------------------------------------------- */
 
 window.Jeu = window.Jeu || {};
 Jeu.Data = Jeu.Data || {};
 
+/* Chaque mot : son découpage en syllabes, et s'il s'y prête, le
+   morceau décisif à faire choisir entre plusieurs graphies
+   possibles — celles qui existent vraiment en français. */
 Jeu.Data.dicteeParDefaut = {
   titre: 'Dictée des arts n° 3 — le visage',
   mots: [
-    { mot: 'le visage',   faux: ['le visaje', 'le vizage', 'le visag'],
+    { mot: 'le visage',   syl: ['le', 'vi', 'sa', 'ge'],
+      trou: { morceau: 'g', autres: ['j'] },
       phrase: 'Elle a un beau ___.' },
-    { mot: 'les épaules', faux: ['les épaule', 'les épaulent', 'les epaules'],
+
+    { mot: 'les épaules', syl: ['les', 'é', 'pau', 'les'],
+      trou: { morceau: 'é', autres: ['e', 'è'] },
       phrase: 'Elle a ___ droites.' },
-    { mot: 'petite',      faux: ['petitte', 'petit', 'pettite'],
+
+    { mot: 'petite',      syl: ['pe', 'ti', 'te'],
       phrase: 'La ___ fille sourit.' },
-    { mot: 'une fille',   faux: ['une file', 'une fiye', 'une filles'],
+
+    { mot: 'une fille',   syl: ['une', 'fi', 'lle'],
+      trou: { morceau: 'll', autres: ['l', 'y'] },
       phrase: 'C\'est ___ qui regarde.' },
-    { mot: 'la bouche',   faux: ['la bousse', 'la boushe', 'la bouch'],
+
+    { mot: 'la bouche',   syl: ['la', 'bou', 'che'],
+      trou: { morceau: 'ch', autres: ['j', 'g'] },
       phrase: 'Elle ouvre ___.' },
-    { mot: 'le nez',      faux: ['le né', 'le nè', 'le ner'],
+
+    { mot: 'le nez',      syl: ['le', 'nez'],
+      trou: { morceau: 'z', autres: ['s', 'x'] },
       phrase: 'Elle a ___ tout droit.' },
-    { mot: 'la joue',     faux: ['la jou', 'la joux', 'la joues'],
+
+    { mot: 'la joue',     syl: ['la', 'joue'],
+      trou: { morceau: 'j', autres: ['g'] },
       phrase: 'Elle pose la main sur ___.' },
-    { mot: 'belle',       faux: ['bele', 'bel', 'belles'],
+
+    { mot: 'belle',       syl: ['bel', 'le'],
+      trou: { morceau: 'll', autres: ['l'] },
       phrase: 'La sculpture est très ___.' },
-    { mot: 'dans',        faux: ['dan', 'd\'en', 'dent'],
+
+    { mot: 'dans',        syl: ['dans'],
+      trou: { morceau: 'an', autres: ['en', 'on'] },
       phrase: 'Le visage est sculpté ___ le marbre.' },
 
-    /* Les deux homophones : ils ne se distinguent que par le sens,
-       donc uniquement en phrase à trou. Les proposer isolément
-       n'aurait aucun sens — les deux écritures sont correctes. */
+    /* Les deux homophones. « et » et « est » sont deux mots français
+       parfaitement corrects : les mettre côte à côte ne montre aucune
+       faute, cela demande seulement de comprendre la phrase. C'est la
+       seule façon de travailler ces deux mots-là. */
     { mot: 'et', homophone: ['et', 'est'], seulementPhrase: true,
       phrase: 'Le nez ___ la bouche.',
       pourquoi: 'On écrit « et » quand on peut dire « et puis ».' },
@@ -67,53 +96,6 @@ Jeu.Data.dicteeCourante = function () {
   return Jeu.Data.dicteeParDefaut;
 };
 
-/* Fabrique des écritures fausses plausibles pour un mot saisi par le
-   parent : consonne doublée ou simplifiée, accord oublié, finale
-   sonore mal rendue. On n'invente rien d'exotique, seulement les
-   erreurs qu'un enfant fait vraiment. */
-Jeu.Data.faussesEcritures = function (mot) {
-  var sortie = {};
-  var m = String(mot);
-
-  // Le déterminant reste, on ne déforme que le mot lui-même
-  var sep = m.lastIndexOf(' ');
-  var tete = sep >= 0 ? m.slice(0, sep + 1) : '';
-  var corps = sep >= 0 ? m.slice(sep + 1) : m;
-
-  function ajouter(x) {
-    if (x && x !== corps) sortie[tete + x] = 1;
-  }
-
-  // Consonne doublée / simplifiée
-  var doublee = corps.match(/([bcdfglmnprst])\1/);
-  if (doublee) ajouter(corps.replace(doublee[0], doublee[1]));
-  else {
-    var m2 = corps.match(/([aeiou])([bcdflmnprst])([aeiou])/);
-    if (m2) ajouter(corps.replace(m2[0], m2[1] + m2[2] + m2[2] + m2[3]));
-  }
-
-  // Marque du pluriel ajoutée ou retirée. On n'ajoute pas de « s »
-  // derrière un mot qui finit déjà par s, x ou z : « les oiseauxs »
-  // n'est l'erreur de personne.
-  if (/s$/.test(corps)) ajouter(corps.slice(0, -1));
-  else if (/[xz]$/.test(corps)) ajouter(corps.slice(0, -1) + 's');
-  else ajouter(corps + 's');
-
-  // Finales qui sonnent pareil
-  if (/er$/.test(corps)) ajouter(corps.slice(0, -2) + 'é');
-  if (/é$/.test(corps)) ajouter(corps.slice(0, -1) + 'er');
-  if (/ez$/.test(corps)) ajouter(corps.slice(0, -2) + 'é');
-  if (/e$/.test(corps)) ajouter(corps.slice(0, -1));
-
-  // Graphies confondues
-  if (/ch/.test(corps)) ajouter(corps.replace('ch', 'sh'));
-  if (/ge/.test(corps)) ajouter(corps.replace('ge', 'je'));
-  if (/au/.test(corps)) ajouter(corps.replace('au', 'o'));
-  if (/ill/.test(corps)) ajouter(corps.replace('ill', 'y'));
-
-  return Object.keys(sortie).slice(0, 3);
-};
-
 /* Identifiant stable d'un mot, pour que le moteur adaptatif retienne
    les difficultés mot par mot. On le fabrique à partir du mot
    lui-même et non de sa place dans la liste : si « la joue » revient
@@ -121,7 +103,7 @@ Jeu.Data.faussesEcritures = function (mot) {
    accroché en septembre. */
 Jeu.Data.cleMot = function (mot) {
   var m = String(mot).toLowerCase();
-  if (m.normalize) m = m.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (m.normalize) m = m.normalize('NFD').replace(/[̀-ͯ]/g, '');
   return 'dictee.' + m.replace(/[^a-z]/g, '');
 };
 
@@ -142,4 +124,19 @@ Jeu.Data.retenirMots = function (liste) {
 Jeu.Data.motRetenu = function (cle) {
   var memoire = Jeu.Stockage.lire('dicteeMots', {}) || {};
   return memoire[cle] || '';
+};
+
+/* Les morceaux à remettre dans l'ordre : les syllabes si on les
+   connaît, les lettres sinon. Les espaces restent en place, ils ne
+   sont pas à deviner. */
+Jeu.Data.morceauxMot = function (entree, forcerLettres) {
+  var mot = String(entree.mot);
+  if (!forcerLettres && entree.syl && entree.syl.length > 1) {
+    return { morceaux: entree.syl.slice(), parLettres: false };
+  }
+  // Découpage en lettres, mot par mot : « le visage » donne deux
+  // groupes, on ne demande pas de placer l'espace.
+  var lettres = [];
+  mot.split('').forEach(function (c) { if (c !== ' ') lettres.push(c); });
+  return { morceaux: lettres, parLettres: true };
 };

@@ -32,8 +32,14 @@ Jeu.Exercices = Jeu.Exercices || [];
     creerItem: function (notion, palier) {
       if (notion === 'ponct.majuscule') {
         var m = Jeu.Data.majuscules[Math.floor(Math.random() * Jeu.Data.majuscules.length)];
-        return { type: 'majuscule', m: m,
-                 options: Jeu.Adaptatif.melanger([m.bon, m.faux]) };
+        /* On ne propose PAS la phrase écrite en double, une fois
+           bien et une fois mal : voir la phrase sans sa majuscule en
+           laisse l'image en mémoire. On montre la phrase avec un trou
+           à la première lettre, et on choisit entre deux lettres. */
+        var premiere = m.bon.charAt(0);
+        return { type: 'majuscule', m: m, bon: premiere,
+                 reste: m.bon.slice(1),
+                 options: Jeu.Adaptatif.melanger([premiere, premiere.toLowerCase()]) };
       }
 
       var liste = Jeu.Data.phrasesPonctuation.filter(function (p) {
@@ -110,13 +116,23 @@ Jeu.Exercices = Jeu.Exercices || [];
   });
 
   function afficherMajuscule(item, ctx) {
-    ctx.consigne('Quelle phrase est bien écrite ?');
+    ctx.consigne('Écoute la phrase. Choisis la lettre qui manque.');
 
-    var carte = Jeu.Ui.el('div', 'carte ligne');
-    carte.style.justifyContent = 'center';
-    carte.appendChild(Jeu.Voix.bouton(item.m.bon, 'Écouter la phrase'));
-    carte.appendChild(Jeu.Ui.el('span', 'petit zone-sourdine',
-      'Regarde bien la première lettre.'));
+    var carte = Jeu.Ui.el('div', 'carte pile');
+    carte.style.alignItems = 'center';
+
+    var ligne = Jeu.Ui.el('div', 'ligne');
+    ligne.style.justifyContent = 'center';
+    ligne.appendChild(Jeu.Voix.bouton(item.m.bon, 'Écouter la phrase'));
+    carte.appendChild(ligne);
+
+    // La phrase avec un trou à sa première lettre. Le trou ne se
+    // remplira qu'avec la bonne : la phrase affichée est toujours juste.
+    var phrase = Jeu.Ui.el('p', 'phrase-ponct');
+    var trou = Jeu.Ui.el('span', 'trou-lettre', '');
+    phrase.appendChild(trou);
+    phrase.appendChild(Jeu.Ui.el('span', null, item.reste));
+    carte.appendChild(phrase);
     ctx.zone.appendChild(carte);
 
     Jeu.Voix.enchainer(item.m.bon, { vitesse: 0.8 });
@@ -125,13 +141,16 @@ Jeu.Exercices = Jeu.Exercices || [];
 
     var grille = Jeu.Ui.choix(options, function (o, btn) {
       Jeu.Ui.figerChoix(grille);
-      var juste = (o.ref === item.m.bon);
+      var juste = (o.ref === item.bon);
       btn.classList.add(juste ? 'juste' : 'faux');
       if (!juste) {
         Array.prototype.forEach.call(grille.querySelectorAll('.choix-btn'), function (a, i) {
-          if (options[i].ref === item.m.bon) a.classList.add('juste');
+          if (options[i].ref === item.bon) a.classList.add('juste');
         });
       }
+      trou.textContent = item.bon;
+      trou.classList.add('trou-rempli');
+
       ctx.repondre({
         juste: juste,
         element: btn,
@@ -143,7 +162,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     });
 
     Array.prototype.forEach.call(grille.querySelectorAll('.choix-btn'), function (b) {
-      b.classList.add('choix-long');
+      b.classList.add('choix-lettre');
     });
     ctx.zone.appendChild(grille);
   }

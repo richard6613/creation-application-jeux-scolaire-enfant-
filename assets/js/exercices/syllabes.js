@@ -113,48 +113,78 @@ Jeu.Exercices.push({
     });
     zone.appendChild(bac);
 
-    var placees = {};
+    var refus = 0;
+    var placees = 0;
+    var fini = false;
+
+    /* Après deux essais, on montre où poser. Un enfant qui ne se
+       représente pas encore le mot ne doit pas tourner en rond. */
+    function indiquer() {
+      var rang = -1;
+      for (var i = 0; i < listeCases.length; i++) {
+        if (!listeCases[i].classList.contains('remplie')) { rang = i; break; }
+      }
+      if (rang < 0) return;
+      listeCases[rang].classList.add('cible-forte');
+      listeEtiq.forEach(function (e) {
+        if (!e.classList.contains('posee') && e.dataset.syllabe === m.syl[rang]) {
+          e.classList.add('indiquee');
+        }
+      });
+    }
 
     Jeu.Glisser.activer({
       etiquettes: listeEtiq,
       cases: listeCases,
       surDepot: function (etiq, caseEl) {
+        if (fini) return false;
         if (caseEl.classList.contains('remplie')) return false;
         if (etiq.classList.contains('posee')) return false;
+
+        var rang = parseInt(caseEl.dataset.rang, 10);
+
+        /* Une syllabe mal placée n'est jamais écrite dans la case.
+           Sinon le mot s'afficherait mal orthographié le temps d'un
+           regard — et c'est justement cette image-là qu'un enfant
+           dyslexique garde. Elle tremble, elle revient au bac. */
+        if (etiq.dataset.syllabe !== m.syl[rang]) {
+          refus += 1;
+          etiq.classList.remove('refusee');
+          void etiq.offsetWidth;
+          etiq.classList.add('refusee');
+          caseEl.classList.remove('cible');
+          if (refus >= 2) indiquer();
+          return false;
+        }
+
         caseEl.textContent = etiq.dataset.syllabe;
         caseEl.classList.add('remplie');
-        caseEl.dataset.syllabe = etiq.dataset.syllabe;
-        caseEl.dataset.source = listeEtiq.indexOf(etiq);
+        caseEl.classList.remove('cible-forte');
         etiq.classList.add('posee');
-        placees[caseEl.dataset.rang] = etiq.dataset.syllabe;
-        verifier();
+        etiq.classList.remove('indiquee');
+        placees += 1;
+        if (placees >= m.syl.length) terminer();
         return true;
       },
-      surRetrait: function (caseEl) {
-        var i = parseInt(caseEl.dataset.source, 10);
-        if (!isNaN(i) && listeEtiq[i]) listeEtiq[i].classList.remove('posee');
-        caseEl.textContent = '';
-        caseEl.classList.remove('remplie');
-        delete placees[caseEl.dataset.rang];
-        delete caseEl.dataset.syllabe;
-      }
+      surRetrait: null   // une fois bien placée, une syllabe ne bouge plus
     });
 
-    function verifier() {
-      if (Object.keys(placees).length < m.syl.length) return;
-      // Avec une syllabe en trop, il reste une étiquette au bac : c'est normal.
-      var propose = listeCases.map(function (c) { return c.dataset.syllabe; }).join('');
-      var juste = (propose === m.mot);
-      listeCases.forEach(function (c, i) {
-        c.style.borderColor = (c.dataset.syllabe === m.syl[i]) ? 'var(--succes)' : 'var(--attention)';
-      });
+    function terminer() {
+      if (fini) return;
+      fini = true;
+      listeCases.forEach(function (c) { c.style.borderColor = 'var(--succes)'; });
+      var sansAide = (refus === 0);
       ctx.repondre({
-        juste: juste,
+        juste: sansAide,
+        element: listeCases[listeCases.length - 1],
         // Mal ordonner des syllabes relève de la construction du mot,
         // pas d'une difficulté de décodage.
         typeErreur: 'notion',
-        detail: m.mot + (juste ? '' : ' → ' + propose),
-        bonneReponse: juste ? '' : 'Le mot est : ' + m.mot
+        detail: m.mot + (sansAide ? '' : ' (' + refus + ' essai' + (refus > 1 ? 's' : '') + ')'),
+        // Le mot est juste à l'écran : on ne dit pas « pas tout à fait »
+        // à un enfant qui vient de le construire correctement.
+        message: sansAide ? '' : 'Tu y es arrivé. Regarde bien ce mot.',
+        bonneReponse: sansAide ? '' : m.mot
       });
     }
   }

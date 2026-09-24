@@ -15,62 +15,6 @@ Jeu.Exercices = Jeu.Exercices || [];
 
 (function () {
 
-/* Version difficile : le mot est écrit en entier, plusieurs fois,
-   avec une seule orthographe juste. */
-function afficherMotEntier(item, ctx) {
-  var it = item.it;
-  var serie = item.serie;
-  var zone = ctx.zone;
-
-  ctx.consigne('Quel mot est bien écrit ?');
-
-  var carte = Jeu.Ui.el('div', 'carte pile');
-  carte.style.alignItems = 'center';
-
-  if (it.img && ctx.reglages.aideVisuelle) {
-    var img = Jeu.Ui.el('div', null, it.img);
-    img.style.fontSize = '3.4rem';
-    img.setAttribute('aria-hidden', 'true');
-    carte.appendChild(img);
-  }
-  var ligne = Jeu.Ui.el('div', 'ligne');
-  ligne.style.justifyContent = 'center';
-  ligne.appendChild(Jeu.Voix.bouton(it.mot, 'Écouter le mot'));
-  carte.appendChild(ligne);
-  zone.appendChild(carte);
-
-  Jeu.Voix.enchainer(it.mot, { vitesse: 0.75 });
-
-  // Chaque graphème de la série donne une écriture possible du mot.
-  var ecritures = serie.choix.map(function (g) {
-    return { texte: it.avant + g + it.apres, juste: g === it.bon };
-  });
-  Jeu.Adaptatif.melanger(ecritures);
-
-  var options = ecritures.map(function (e) { return { texte: e.texte, ref: e }; });
-
-  var grille = Jeu.Ui.choix(options, function (o, btn) {
-    Jeu.Ui.figerChoix(grille);
-    var juste = o.ref.juste;
-    btn.classList.add(juste ? 'juste' : 'faux');
-    if (!juste) {
-      Array.prototype.forEach.call(grille.querySelectorAll('.choix-btn'), function (a, i) {
-        if (options[i].ref.juste) a.classList.add('juste');
-      });
-    }
-    ctx.repondre({
-      juste: juste,
-      element: btn,
-      typeErreur: 'notion',
-      detail: serie.titre + ' — ' + it.mot + (juste ? '' : ' (a choisi ' + o.ref.texte + ')'),
-      bonneReponse: juste ? '' : 'On écrit : ' + it.mot,
-      aide: juste ? '' : serie.aide
-    });
-  }, { deuxColonnes: false });
-
-  zone.appendChild(grille);
-}
-
 Jeu.Exercices.push({
   id: 'confusions',
   nom: 'Complète le mot',
@@ -105,16 +49,18 @@ Jeu.Exercices.push({
 
     var it = bassin[Math.floor(Math.random() * bassin.length)];
 
-    // À partir du palier 4, le trou disparaît : on propose le mot
-    // écrit de plusieurs façons et il faut reconnaître la bonne. La
-    // difficulté passe du repérage d'une lettre à la lecture du mot.
-    var motEntier = palier >= 4;
-    return { serie: serie, it: it, motEntier: motEntier };
+    /* À partir du palier 4, l'image disparaît : il faut reconnaître
+       le mot par sa seule écriture, sans l'indice du dessin. C'est là
+       que monte la difficulté.
+
+       Ce qu'on ne fait PAS, et qu'on faisait à tort : proposer le mot
+       écrit de plusieurs façons pour désigner la bonne. Un enfant
+       dyslexique qui voit « dallon » à côté de « ballon » garde les
+       deux images et ne sait plus les départager. */
+    return { serie: serie, it: it, sansImage: palier >= 4 };
   },
 
   afficher: function (item, ctx) {
-    if (item.motEntier) { afficherMotEntier(item, ctx); return; }
-
     ctx.consigne('Choisis la lettre qui manque.');
 
     var zone = ctx.zone;
@@ -124,7 +70,7 @@ Jeu.Exercices.push({
     var carte = Jeu.Ui.el('div', 'carte pile');
     carte.style.alignItems = 'center';
 
-    if (it.img && ctx.reglages.aideVisuelle) {
+    if (it.img && ctx.reglages.aideVisuelle && !item.sansImage) {
       var img = Jeu.Ui.el('div', null, it.img);
       img.style.fontSize = '3.4rem';
       img.setAttribute('aria-hidden', 'true');

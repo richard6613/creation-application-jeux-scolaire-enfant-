@@ -269,17 +269,19 @@ Jeu.Panneau = (function () {
 
      Elle change tous les lundis et vient de l'école : personne ne
      peut la deviner à l'avance. Le parent la recopie ici en une
-     minute, et le jeu la propose le soir même. Les écritures fausses
-     sont fabriquées automatiquement — consonne doublée, accord
-     oublié, finale qui sonne pareil — pour n'avoir rien d'autre à
-     saisir que les mots eux-mêmes. */
+     minute, et le jeu la propose le soir même.
+
+     Rien à saisir d'autre que les mots eux-mêmes — et surtout aucune
+     écriture fausse : le jeu ne montre jamais un mot mal orthographié
+     à l'enfant, il n'en a donc besoin d'aucune. */
   function dictee() {
     var carte = el('div', 'carte');
     carte.appendChild(el('h3', null, 'Les mots de la dictée'));
     carte.appendChild(el('p', 'petit zone-sourdine',
-      'Un mot par ligne. Pour travailler un mot dans une phrase, écrivez ' +
-      '« mot = la phrase avec ___ à la place du mot ». ' +
-      'Laissez vide pour garder la dictée livrée avec le jeu.'));
+      'Un mot par ligne. Coupez les syllabes avec des traits d\'union ' +
+      '(« che-va-lier ») : l\'enfant reconstruira le mot syllabe par syllabe. ' +
+      'Pour le travailler dans une phrase, écrivez « mot = la phrase avec ___ ' +
+      'à la place du mot ». Laissez vide pour garder la dictée livrée avec le jeu.'));
 
     var perso = Jeu.Stockage.lire('dictee', null);
     var courante = Jeu.Data.dicteeCourante();
@@ -295,10 +297,8 @@ Jeu.Panneau = (function () {
     var zone = document.createElement('textarea');
     zone.rows = 10;
     zone.setAttribute('aria-label', 'Les mots de la dictée, un par ligne');
-    zone.placeholder = (courante.mots || []).slice(0, 4).map(function (m) {
-      return m.phrase ? m.mot + ' = ' + m.phrase : m.mot;
-    }).join('\n');
-    zone.value = perso ? enTexte(perso.mots) : '';
+    zone.placeholder = (courante.mots || []).slice(0, 4).map(enLigne).join('\n');
+    zone.value = perso ? (perso.mots || []).map(enLigne).join('\n') : '';
     champStyle(zone);
     zone.style.minHeight = '190px';
     carte.appendChild(zone);
@@ -316,29 +316,25 @@ Jeu.Panneau = (function () {
 
     var ligne = el('div', 'ligne');
     ligne.appendChild(Jeu.Ui.bouton('Enregistrer la liste', 'btn btn-principal', function () {
-      var lu = analyser(zone.value);
-      if (!lu.mots.length) {
+      var mots = analyser(zone.value);
+      if (!mots.length) {
         direEtat('Aucun mot lu. Écrivez un mot par ligne.', true);
         return;
       }
       Jeu.Stockage.ecrire('dictee', {
         titre: titre.value.trim() || 'Dictée de la semaine',
-        mots: lu.mots
+        mots: mots
       });
-      // La nouvelle dictée doit sortir tout de suite : c'est ce
-      // soir qu'elle se travaille, pas la semaine prochaine.
+      // La nouvelle dictée doit sortir tout de suite : c'est ce soir
+      // qu'elle se travaille, pas la semaine prochaine.
       var prio = (Jeu.Reglages.get('jeuxPrioritaires') || []).slice();
       if (prio.indexOf('dictee') < 0) {
         Jeu.Reglages.set('jeuxPrioritaires', ['dictee'].concat(prio));
       }
-      var message = Jeu.Ui.accord(lu.mots.length, 'mot') + ' enregistré' +
-        (lu.mots.length > 1 ? 's' : '') + '. La dictée passe en priorité.';
-      if (lu.sansVariante.length) {
-        message += ' Attention : ' + lu.sansVariante.join(', ') +
-          ' — impossible de fabriquer une écriture fausse, écrivez ' +
-          'le mot dans une phrase à trou.';
-      }
-      direEtat(message, lu.sansVariante.length > 0);
+      var coupes = mots.filter(function (m) { return m.syl && m.syl.length > 1; }).length;
+      direEtat(Jeu.Ui.accord(mots.length, 'mot') + ' enregistré' +
+        (mots.length > 1 ? 's' : '') + ', dont ' + coupes + ' en syllabes. ' +
+        'La dictée passe en priorité.');
     }));
 
     ligne.appendChild(Jeu.Ui.bouton('Revenir à la liste du jeu', 'btn', function () {
@@ -365,34 +361,53 @@ Jeu.Panneau = (function () {
     champ.style.boxSizing = 'border-box';
   }
 
-  function enTexte(mots) {
-    return (mots || []).map(function (m) {
-      return m.phrase ? m.mot + ' = ' + m.phrase : m.mot;
-    }).join('\n');
+  /* Réaffiche une entrée telle qu'elle se tape, traits d'union
+     compris : ce qui est relu doit pouvoir être remodifié. */
+  function enLigne(m) {
+    var mot = (m.syl && m.syl.length > 1) ? recoller(m.mot, m.syl) : m.mot;
+    return m.phrase ? mot + ' = ' + m.phrase : mot;
   }
 
-  /* Lit ce que le parent a tapé. On signale les mots pour lesquels
-     aucune écriture fausse plausible n'a pu être fabriquée : sans
-     concurrent, il n'y a rien à choisir. */
+  /* Remet les traits d'union entre les syllabes, sans toucher aux
+     espaces du mot : « le visage » découpé le/vi/sa/ge se réécrit
+     « le vi-sa-ge ». */
+  function recoller(mot, syl) {
+    var sortie = '', i = 0, k = 0;
+    while (i < mot.length) {
+      if (mot[i] === ' ') { sortie += ' '; i += 1; continue; }
+      var s = syl[k] || '';
+      sortie += s;
+      i += s.length;
+      k += 1;
+      if (k < syl.length && mot[i] !== ' ' && i < mot.length) sortie += '-';
+    }
+    return sortie;
+  }
+
+  /* Lit ce que le parent a tapé. Aucune écriture fausse n'est
+     produite : le jeu n'en utilise pas. */
   function analyser(texte) {
     var mots = [];
-    var sansVariante = [];
     String(texte).split('\n').forEach(function (l) {
       var ligne = l.trim();
       if (!ligne) return;
-      var mot = ligne, phrase = '';
+      var brut = ligne, phrase = '';
       var k = ligne.indexOf('=');
       if (k > 0) {
-        mot = ligne.slice(0, k).trim();
+        brut = ligne.slice(0, k).trim();
         phrase = ligne.slice(k + 1).trim();
       }
-      if (!mot) return;
-      var entree = { mot: mot, faux: Jeu.Data.faussesEcritures(mot) };
+      if (!brut) return;
+
+      var entree = { mot: brut.replace(/-/g, '') };
+      if (brut.indexOf('-') >= 0) {
+        var syl = brut.split(/[-\s]+/).filter(Boolean);
+        if (syl.length > 1) entree.syl = syl;
+      }
       if (phrase.indexOf('___') >= 0) entree.phrase = phrase;
-      if (!entree.faux.length && !entree.phrase) sansVariante.push(mot);
       mots.push(entree);
     });
-    return { mots: mots, sansVariante: sansVariante };
+    return mots;
   }
 
   /* Séries de sons : le parent peut en mettre de côté. */
