@@ -40,6 +40,7 @@
   --jeu-nombres: #b08246;
   --jeu-ponctuation: #a1567f;
   --jeu-anglais: #2f6f8f;
+  --jeu-dictee: #7a6a3f;
 
   /* Couleurs fonctionnelles, communes à tous les fonds */
   --succes: #2f7d50;
@@ -171,4 +172,5 @@ html[data-fond="sombre"] {
   --jeu-nombres: #cfa066;
   --jeu-ponctuation: #c680a4;
   --jeu-anglais: #6fa8c9;
+  --jeu-dictee: #c4ab6e;
 }

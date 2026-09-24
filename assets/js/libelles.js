@@ -58,7 +58,17 @@ Jeu.Libelles = (function () {
     table[p.notion] = 'Entendre la différence : ' + lettres;
   });
 
-  function nom(notion) { return table[notion] || notion; }
+  /* Les mots de la dictée changent chaque semaine : leur nom se lit
+     dans la liste en cours, ou dans les mots déjà rencontrés quand le
+     mot ne fait plus partie de la dictée du moment. */
+  function nom(notion) {
+    if (table[notion]) return table[notion];
+    if (String(notion).indexOf('dictee.') === 0) {
+      var m = Jeu.Data.motRetenu ? Jeu.Data.motRetenu(notion) : '';
+      return 'Dictée : ' + (m || String(notion).slice(7));
+    }
+    return notion;
+  }
 
   var jeux = {
     ecoute: 'Écoute et montre',
@@ -70,7 +80,8 @@ Jeu.Libelles = (function () {
     nombresLettres: 'Écris le nombre',
     ponctuation: 'Le bon signe',
     anglais: 'English',
-    calcul: 'Compte avec moi'
+    calcul: 'Compte avec moi',
+    dictee: 'Les mots de la dictée'
   };
   function nomJeu(id) { return jeux[id] || id; }
 

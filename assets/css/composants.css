@@ -1073,3 +1073,56 @@ html[data-animations="oui"] .rang-signe { animation: rang-arrive 700ms ease-out 
   min-height: 84px;
   letter-spacing: normal;
 }
+
+/* ---- Les mots de la dictée ----
+   Le mot est la seule chose à regarder : il est grand, aéré, et la
+   partie qui change d'une écriture à l'autre est soulignée pour
+   qu'on voie où se joue la différence. */
+.mot-dictee {
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+.part-qui-change {
+  background: var(--succes-doux);
+  border-radius: 6px;
+  padding: 0 3px;
+  box-shadow: inset 0 -3px 0 var(--succes);
+}
+.phrase-dictee {
+  font-size: 1.35rem;
+  line-height: calc(var(--interligne) + 0.1);
+  max-width: var(--largeur-ligne);
+  margin-top: 10px;
+  text-align: left;
+}
+.trou-mot {
+  display: inline-block;
+  min-width: 72px;
+  border-bottom: 3px solid var(--accent);
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+.trou-mot.trou-rempli {
+  border-bottom-color: var(--succes);
+  min-width: 0;
+}
+.trou-mot .mot-dictee { font-size: 1.35rem; }
+/* Une écriture par ligne : deux mots proches côte à côte se
+   confondent, surtout quand ils ne diffèrent que d'une lettre. */
+/* La taille suit la largeur de l'écran : « le chevalier » écrit en
+   grand avec l'espacement maximal ne doit pas déborder du bouton,
+   et couper un mot en deux serait le pire service à rendre ici. */
+.choix-btn.choix-mot {
+  justify-content: center;
+  font-size: clamp(1.05rem, 5.2vw, 1.5rem);
+  font-weight: 700;
+  min-height: 76px;
+}
+/* Le haut-parleur de la dictée est la commande principale de
+   l'écran : on lui donne la taille qui va avec. */
+.btn-son.haut-parleur-grand {
+  min-width: 78px;
+  min-height: 78px;
+  font-size: 2rem;
+}
