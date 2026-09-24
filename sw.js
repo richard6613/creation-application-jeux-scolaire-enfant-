@@ -9,7 +9,7 @@
    récupérée en arrière-plan quand il y en a une.
    --------------------------------------------------------------- */
 
-var VERSION = 'mes-jeux-939116de493e';
+var VERSION = 'mes-jeux-9f0a3c9471d4';
 
 var FICHIERS = [
   './',
@@ -39,6 +39,7 @@ var FICHIERS = [
   './assets/js/data/nombres.js',
   './assets/js/data/ponctuation.js',
   './assets/js/data/anglais.js',
+  './assets/js/data/dictee.js',
   './assets/js/libelles.js',
   './assets/js/niveaux.js',
   './assets/js/panneau-reglages.js',
@@ -53,6 +54,7 @@ var FICHIERS = [
   './assets/js/exercices/nombresLettres.js',
   './assets/js/exercices/ponctuation.js',
   './assets/js/exercices/anglais.js',
+  './assets/js/exercices/dictee.js',
   './assets/js/parent.js',
   './assets/js/app.js',
   './assets/icone.svg',

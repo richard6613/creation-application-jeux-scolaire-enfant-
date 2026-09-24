@@ -76,6 +76,25 @@ Jeu.Reglages = (function () {
     { cle: 'sombre', nom: 'Sombre' }
   ];
 
+  /* Coups de pouce ponctuels.
+
+     Quand une leçon arrive dans le jeu parce que l'école la travaille
+     en ce moment, elle doit sortir tout de suite. Or les réglages
+     déjà enregistrés sur l'appareil ne connaissent pas les nouveautés :
+     sans cela, la leçon resterait invisible derrière des choix faits
+     avant qu'elle n'existe. Chaque coup de pouce ne s'applique qu'une
+     fois, et le parent reste libre de décocher ensuite. */
+  var COUPS_DE_POUCE = [
+    {
+      cle: 'dictee-arts-3',
+      faire: function (e) {
+        var liste = (e.jeuxPrioritaires || []).slice();
+        if (liste.indexOf('dictee') < 0) liste.unshift('dictee');
+        e.jeuxPrioritaires = liste;
+      }
+    }
+  ];
+
   var etat = null;
   var ecouteurs = [];
 
@@ -93,6 +112,19 @@ Jeu.Reglages = (function () {
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) etat.fond = 'sombre';
       } catch (e) { /* rien */ }
     }
+
+    // Les nouveautés de la semaine passent devant, une seule fois.
+    var faits = (sauve && sauve.coupsDePouce) ? sauve.coupsDePouce.slice() : [];
+    var neufs = false;
+    COUPS_DE_POUCE.forEach(function (c) {
+      if (faits.indexOf(c.cle) >= 0) return;
+      c.faire(etat);
+      faits.push(c.cle);
+      neufs = true;
+    });
+    etat.coupsDePouce = faits;
+    if (neufs) Jeu.Stockage.ecrire(CLE, etat);
+
     return etat;
   }
 

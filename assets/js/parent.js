@@ -141,6 +141,7 @@ Jeu.Parent = (function () {
     zone.appendChild(Jeu.Panneau.aides());
 
     zone.appendChild(el('h2', null, 'Ce qui est proposé'));
+    zone.appendChild(Jeu.Panneau.dictee());
     zone.appendChild(Jeu.Panneau.priorites());
     zone.appendChild(Jeu.Panneau.series());
 

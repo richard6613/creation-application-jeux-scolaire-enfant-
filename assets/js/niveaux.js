@@ -90,7 +90,17 @@ Jeu.Niveaux = (function () {
     { cle: 'anglais',     nom: 'Anglais',     signe: '🇬🇧' }
   ];
 
-  function infos(notion) { return TABLE[notion] || null; }
+  /* Les mots de la dictée arrivent de l'école : ils ne figurent pas
+     dans la table, et leur niveau est celui de la classe en cours.
+     On les rattache à l'orthographe pour qu'ils comptent là où ils
+     doivent compter. */
+  function infos(notion) {
+    if (TABLE[notion]) return TABLE[notion];
+    if (String(notion).indexOf('dictee.') === 0) {
+      return { domaine: 'orthographe', niveau: 'CE2' };
+    }
+    return null;
+  }
 
   /* Où en est un domaine : le niveau le plus haut dont les notions
      vues sont majoritairement acquises, et la part faite du niveau

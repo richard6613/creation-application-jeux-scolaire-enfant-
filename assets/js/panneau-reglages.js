@@ -265,6 +265,136 @@ Jeu.Panneau = (function () {
     return carte;
   }
 
+  /* La liste de mots de la dictée de la semaine.
+
+     Elle change tous les lundis et vient de l'école : personne ne
+     peut la deviner à l'avance. Le parent la recopie ici en une
+     minute, et le jeu la propose le soir même. Les écritures fausses
+     sont fabriquées automatiquement — consonne doublée, accord
+     oublié, finale qui sonne pareil — pour n'avoir rien d'autre à
+     saisir que les mots eux-mêmes. */
+  function dictee() {
+    var carte = el('div', 'carte');
+    carte.appendChild(el('h3', null, 'Les mots de la dictée'));
+    carte.appendChild(el('p', 'petit zone-sourdine',
+      'Un mot par ligne. Pour travailler un mot dans une phrase, écrivez ' +
+      '« mot = la phrase avec ___ à la place du mot ». ' +
+      'Laissez vide pour garder la dictée livrée avec le jeu.'));
+
+    var perso = Jeu.Stockage.lire('dictee', null);
+    var courante = Jeu.Data.dicteeCourante();
+
+    var titre = document.createElement('input');
+    titre.type = 'text';
+    titre.value = (perso && perso.titre) ? perso.titre : '';
+    titre.placeholder = courante.titre || 'Dictée de la semaine';
+    titre.setAttribute('aria-label', 'Titre de la dictée');
+    champStyle(titre);
+    carte.appendChild(titre);
+
+    var zone = document.createElement('textarea');
+    zone.rows = 10;
+    zone.setAttribute('aria-label', 'Les mots de la dictée, un par ligne');
+    zone.placeholder = (courante.mots || []).slice(0, 4).map(function (m) {
+      return m.phrase ? m.mot + ' = ' + m.phrase : m.mot;
+    }).join('\n');
+    zone.value = perso ? enTexte(perso.mots) : '';
+    champStyle(zone);
+    zone.style.minHeight = '190px';
+    carte.appendChild(zone);
+
+    var etat = el('p', 'petit');
+    carte.appendChild(etat);
+
+    function direEtat(texte, alerte) {
+      etat.textContent = texte;
+      etat.style.color = alerte ? 'var(--attention)' : 'var(--texte-doux)';
+    }
+    direEtat(perso
+      ? Jeu.Ui.accord((perso.mots || []).length, 'mot') + ' dans votre liste.'
+      : 'Liste livrée avec le jeu : ' + courante.titre + '.');
+
+    var ligne = el('div', 'ligne');
+    ligne.appendChild(Jeu.Ui.bouton('Enregistrer la liste', 'btn btn-principal', function () {
+      var lu = analyser(zone.value);
+      if (!lu.mots.length) {
+        direEtat('Aucun mot lu. Écrivez un mot par ligne.', true);
+        return;
+      }
+      Jeu.Stockage.ecrire('dictee', {
+        titre: titre.value.trim() || 'Dictée de la semaine',
+        mots: lu.mots
+      });
+      // La nouvelle dictée doit sortir tout de suite : c'est ce
+      // soir qu'elle se travaille, pas la semaine prochaine.
+      var prio = (Jeu.Reglages.get('jeuxPrioritaires') || []).slice();
+      if (prio.indexOf('dictee') < 0) {
+        Jeu.Reglages.set('jeuxPrioritaires', ['dictee'].concat(prio));
+      }
+      var message = Jeu.Ui.accord(lu.mots.length, 'mot') + ' enregistré' +
+        (lu.mots.length > 1 ? 's' : '') + '. La dictée passe en priorité.';
+      if (lu.sansVariante.length) {
+        message += ' Attention : ' + lu.sansVariante.join(', ') +
+          ' — impossible de fabriquer une écriture fausse, écrivez ' +
+          'le mot dans une phrase à trou.';
+      }
+      direEtat(message, lu.sansVariante.length > 0);
+    }));
+
+    ligne.appendChild(Jeu.Ui.bouton('Revenir à la liste du jeu', 'btn', function () {
+      Jeu.Stockage.effacer('dictee');
+      zone.value = '';
+      titre.value = '';
+      direEtat('Liste livrée avec le jeu : ' + Jeu.Data.dicteeParDefaut.titre + '.');
+    }));
+    carte.appendChild(ligne);
+
+    return carte;
+  }
+
+  function champStyle(champ) {
+    champ.style.font = 'inherit';
+    champ.style.fontSize = 'var(--taille-texte)';
+    champ.style.padding = '12px';
+    champ.style.margin = '8px 0';
+    champ.style.borderRadius = '14px';
+    champ.style.border = '2px solid var(--bordure)';
+    champ.style.background = 'var(--surface)';
+    champ.style.color = 'var(--texte)';
+    champ.style.width = '100%';
+    champ.style.boxSizing = 'border-box';
+  }
+
+  function enTexte(mots) {
+    return (mots || []).map(function (m) {
+      return m.phrase ? m.mot + ' = ' + m.phrase : m.mot;
+    }).join('\n');
+  }
+
+  /* Lit ce que le parent a tapé. On signale les mots pour lesquels
+     aucune écriture fausse plausible n'a pu être fabriquée : sans
+     concurrent, il n'y a rien à choisir. */
+  function analyser(texte) {
+    var mots = [];
+    var sansVariante = [];
+    String(texte).split('\n').forEach(function (l) {
+      var ligne = l.trim();
+      if (!ligne) return;
+      var mot = ligne, phrase = '';
+      var k = ligne.indexOf('=');
+      if (k > 0) {
+        mot = ligne.slice(0, k).trim();
+        phrase = ligne.slice(k + 1).trim();
+      }
+      if (!mot) return;
+      var entree = { mot: mot, faux: Jeu.Data.faussesEcritures(mot) };
+      if (phrase.indexOf('___') >= 0) entree.phrase = phrase;
+      if (!entree.faux.length && !entree.phrase) sansVariante.push(mot);
+      mots.push(entree);
+    });
+    return { mots: mots, sansVariante: sansVariante };
+  }
+
   /* Séries de sons : le parent peut en mettre de côté. */
   function series() {
     var carte = el('div', 'carte');
@@ -305,5 +435,5 @@ Jeu.Panneau = (function () {
     return carte;
   }
 
-  return { confort: confort, aides: aides, series: series, priorites: priorites, apercu: apercu, interrupteur: interrupteur, curseur: curseur, puces: puces };
+  return { confort: confort, aides: aides, series: series, priorites: priorites, dictee: dictee, apercu: apercu, interrupteur: interrupteur, curseur: curseur, puces: puces };
 })();

@@ -283,20 +283,30 @@ Jeu.App = (function () {
     var voulus = (Jeu.Reglages.get('jeuxPrioritaires') || []).filter(function (id) {
       return Jeu.Exercices.some(function (e) { return e.id === id; });
     });
+
+    var stPrio = Jeu.Adaptatif.statistiques();
+    var vues = {};
+    (stPrio.sessions || []).forEach(function (x) { vues[x.jeu] = (vues[x.jeu] || 0) + 1; });
+
+    /* Une leçon désignée qui n'a encore jamais été jouée passe devant
+       sans tirage au sort. Quand le parent saisit la dictée du lundi,
+       c'est elle qu'on attend le soir même — pas dans trois séances. */
+    var neuves = voulus.filter(function (id) { return !vues[id]; });
+    if (neuves.length) {
+      var premier = Jeu.Exercices.filter(function (e) { return e.id === neuves[0]; })[0];
+      if (premier) return premier;
+    }
+
     if (voulus.length && Math.random() < 0.7) {
       // Entre plusieurs leçons cochées, on prend d'abord celle qui a
       // été le moins vue : sinon la première accapare tout.
-      var st = Jeu.Adaptatif.statistiques();
-      var vues = {};
-      (st.sessions || []).forEach(function (x) { vues[x.jeu] = (vues[x.jeu] || 0) + 1; });
-
-      var moins = voulus[0];
+      var moinsVu = voulus[0];
       voulus.forEach(function (id) {
-        if ((vues[id] || 0) < (vues[moins] || 0)) moins = id;
+        if ((vues[id] || 0) < (vues[moinsVu] || 0)) moinsVu = id;
       });
       // À égalité, on tire au sort pour ne pas figer l'ordre.
       var exAequo = voulus.filter(function (id) {
-        return (vues[id] || 0) === (vues[moins] || 0);
+        return (vues[id] || 0) === (vues[moinsVu] || 0);
       });
       var id = exAequo[Math.floor(Math.random() * exAequo.length)];
 
@@ -313,9 +323,8 @@ Jeu.App = (function () {
       });
       if (trouve) return trouve;
     }
-    var st = Jeu.Adaptatif.statistiques();
     var compte = {};
-    st.sessions.forEach(function (s) { compte[s.jeu] = (compte[s.jeu] || 0) + 1; });
+    (stPrio.sessions || []).forEach(function (s) { compte[s.jeu] = (compte[s.jeu] || 0) + 1; });
     var moins = Jeu.Exercices[0];
     Jeu.Exercices.forEach(function (ex) {
       if ((compte[ex.id] || 0) < (compte[moins.id] || 0)) moins = ex;
