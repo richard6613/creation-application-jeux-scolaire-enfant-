@@ -220,6 +220,13 @@ Jeu.Session = (function () {
     var texte;
     if (reponse.juste) {
       texte = choisirParmi(['Bravo !', 'C\'est ça !', 'Très bien !', 'Parfait !', 'Bien joué !']);
+    } else if (reponse.message) {
+      /* Certains exercices se terminent forcément sur la bonne
+         réponse — un mot reconstruit morceau par morceau est juste à
+         l'écran même s'il a fallu s'y reprendre. Leur dire « pas tout
+         à fait » serait faux et décourageant : l'exercice fournit
+         alors sa propre phrase. */
+      texte = reponse.message;
     } else if (typeErreur === 'lecture') {
       // On ne reproche jamais une difficulté de lecture.
       texte = 'Ce mot est difficile à lire. Écoute-le encore.';
