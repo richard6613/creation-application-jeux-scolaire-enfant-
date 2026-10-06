@@ -13,6 +13,22 @@
 window.Jeu = window.Jeu || {};
 
 Jeu.Session = (function () {
+
+  /* Deux raccourcis vers des modules qui peuvent ne pas être là :
+     une nouveauté absente ne doit jamais empêcher de jouer. */
+  function son(nom) {
+    try {
+      if (window.Jeu && Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer(nom);
+    } catch (e) { /* rien */ }
+  }
+  function signaler(evenement, donnees) {
+    try {
+      if (window.Jeu && Jeu.Quetes && Jeu.Quetes.signaler) {
+        Jeu.Quetes.signaler(evenement, donnees);
+      }
+    } catch (e) { /* rien */ }
+  }
+
   var CLE_REPRISE = 'seanceEnCours';
   var courante = null;
 
@@ -92,6 +108,7 @@ Jeu.Session = (function () {
       scene: Jeu.Scene.creer(programme.length)
     };
     noter();
+    signaler('seance.commencee', { jeu: exercice.id });
     afficherItem();
   }
 
@@ -189,9 +206,22 @@ Jeu.Session = (function () {
     s.resultats[s.index] = !!reponse.juste;
     noter();
 
+    son(reponse.juste ? 'juste' : 'douce');
+    signaler('reponse', {
+      juste: !!reponse.juste,
+      jeu: s.exercice.id,
+      notion: s.programme[s.index],
+      ecoutes: Jeu.Voix.nbEcoutes()
+    });
+
     // La récompense est immédiate : un élément de plus dans la scène,
     // tout de suite, sous ses yeux — pas à la fin de la séance.
-    if (reponse.juste && s.scene) s.scene.ajouter();
+    if (reponse.juste && s.scene) {
+      s.scene.ajouter();
+      // La pièce arrive juste après le son de réussite, pas en même
+      // temps : collées, les deux se mangent l'une l'autre.
+      setTimeout(function () { son('piece'); }, 140);
+    }
 
     if (!reponse.juste) programmerReprise(s.programme[s.index]);
 
@@ -296,6 +326,8 @@ Jeu.Session = (function () {
       justes: justes,
       ms: Date.now() - s.debut
     });
+    son('fin');
+    signaler('seance.finie', { jeu: s.exercice.id, items: total, justes: justes });
 
     // Sans faute : on monte d'un cran supplémentaire. Ce qui est déjà
     // acquis ne doit pas revenir tel quel la fois suivante.
@@ -356,12 +388,20 @@ Jeu.Session = (function () {
     // Rien n'attend l'enfant : il peut continuer pendant que ça retombe.
     Jeu.Fete.allumerEtoiles(etoiles, Math.max(1, Math.min(6, justes)), function () {
       var neufs = Jeu.Collection.recolter();
-      if (neufs.length) montrerAutocollants(carte, neufs);
+      if (neufs.length) { son('coffre'); montrerAutocollants(carte, neufs); }
 
       // Un nouveau rang se fête franchement : c'est ce qui donne envie
       // d'aller chercher le suivant.
       var rang = Jeu.Grade.nouveauRang();
-      if (rang) montrerRang(carte, rang);
+      if (rang) { son('niveau'); montrerRang(carte, rang); }
+
+      // Les hauts faits tout juste gagnés se fêtent de la même façon.
+      try {
+        if (window.Jeu && Jeu.Quetes && Jeu.Quetes.nouveaux) {
+          var faits = Jeu.Quetes.nouveaux() || [];
+          if (faits.length) { son('niveau'); montrerHautsFaits(carte, faits); }
+        }
+      } catch (e) { /* rien */ }
     });
 
     Jeu.Voix.dire('Séance terminée. ' + phrase);
@@ -398,6 +438,35 @@ Jeu.Session = (function () {
 
     Jeu.Fete.confettis({ combien: 60 });
     Jeu.Voix.enchainer('Bravo ! Tu es maintenant ' + rang.nom + ' !');
+  }
+
+  /* Un haut fait gagné : il ne se perdra jamais, on le dit comme tel. */
+  function montrerHautsFaits(carte, faits) {
+    var bloc = Jeu.Ui.el('div', 'retour bravo');
+    bloc.setAttribute('role', 'status');
+    bloc.style.textAlign = 'center';
+    bloc.appendChild(Jeu.Ui.el('p', null,
+      faits.length > 1 ? 'Nouveaux hauts faits !' : 'Nouveau haut fait !'));
+
+    var rangee = Jeu.Ui.el('div', 'ligne');
+    rangee.style.justifyContent = 'center';
+    rangee.style.flexWrap = 'wrap';
+    rangee.style.marginTop = '10px';
+    faits.forEach(function (f) {
+      var e = Jeu.Ui.el('span', 'autocollant-neuf', f.signe || '🏅');
+      e.setAttribute('aria-hidden', 'true');
+      rangee.appendChild(e);
+    });
+    bloc.appendChild(rangee);
+    faits.slice(0, 2).forEach(function (f) {
+      bloc.appendChild(Jeu.Ui.el('p', 'petit', f.nom || ''));
+    });
+    carte.appendChild(bloc);
+
+    Jeu.Fete.confettis({ combien: 50 });
+    Jeu.Voix.enchainer(faits.length > 1
+      ? 'Bravo ! Tu as gagné de nouveaux hauts faits !'
+      : 'Bravo ! ' + (faits[0] && faits[0].nom ? faits[0].nom + ' !' : 'Nouveau haut fait !'));
   }
 
   /* Un autocollant gagné : on le montre en grand, sans un mot de trop. */

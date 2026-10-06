@@ -149,6 +149,9 @@ Jeu.Exercices.push({
            dyslexique garde. Elle tremble, elle revient au bac. */
         if (etiq.dataset.syllabe !== m.syl[rang]) {
           refus += 1;
+          try {
+            if (window.Jeu && Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('refus');
+          } catch (err) { /* le son n'empêche jamais de jouer */ }
           etiq.classList.remove('refusee');
           void etiq.offsetWidth;
           etiq.classList.add('refusee');
@@ -160,6 +163,9 @@ Jeu.Exercices.push({
         caseEl.textContent = etiq.dataset.syllabe;
         caseEl.classList.add('remplie');
         caseEl.classList.remove('cible-forte');
+        try {
+          if (window.Jeu && Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('pose');
+        } catch (err) { /* rien */ }
         etiq.classList.add('posee');
         etiq.classList.remove('indiquee');
         placees += 1;

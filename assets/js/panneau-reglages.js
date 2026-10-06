@@ -223,6 +223,12 @@ Jeu.Panneau = (function () {
       'À couper si les mouvements à l\'écran gênent la concentration.'));
     carte.appendChild(interrupteur('Exercices chronométrés', 'chrono',
       'Désactivé. Le temps n\'entre jamais dans le calcul de la réussite : activé, le chronomètre est seulement affiché.'));
+    carte.appendChild(interrupteur('Sons du jeu', 'sons',
+      'Les petits bruits de récompense : pièces, réussite, pose d\'un morceau. ' +
+      'Ils sont volontairement discrets et jamais agressifs — une erreur ne ' +
+      'déclenche jamais de son de sanction.'));
+    carte.appendChild(curseur('Volume des sons', 'volumeSons', 0, 1, 0.1, '',
+      'Les boutons de volume de l\'appareil ne commandent pas ces sons.'));
     carte.appendChild(curseur('Exercices par séance', 'longueurSession', 5, 12, 1, '',
       'Des séances courtes et réussies valent mieux qu\'une longue série.'));
 

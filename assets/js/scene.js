@@ -170,8 +170,66 @@ Jeu.Scene = (function () {
   function creer(total) {
     var gout = Jeu.Reglages.get('decors') || 'melange';
     if (gout === 'chantiers') return creerChantier(total);
-    if (gout === 'melange' && Math.random() < 0.6) return creerChantier(total);
-    return creerPaysage(total);
+    if (gout === 'melange' && Math.random() < 0.5) return creerChantier(total);
+    var royaume = creerContree(total);
+    return royaume || creerPaysage(total);
+  }
+
+  /* Une contrée du Royaume, en papier découpé. Chaque bonne réponse y
+     fait pousser quelque chose. C'est le même monde que sur le chemin
+     et sur l'accueil : l'enfant reconnaît l'endroit où il est.
+
+     Repli sur l'ancien paysage en emoji si le module n'est pas là :
+     une séance ne doit jamais dépendre d'un décor. */
+  function creerContree(total) {
+    if (!(window.Jeu && Jeu.Monde && Jeu.Monde.decor && Jeu.Monde.contreePour)) return null;
+    try {
+      var n = (Jeu.Adaptatif.statistiques().sessions || []).length + 1;
+      var contree = Jeu.Monde.contreePour(n);
+      var decor = Jeu.Monde.decor(contree && contree.cle ? contree.cle : contree, {
+        hauteur: 190,
+        pousses: 0,
+        voile: false
+      });
+      if (!decor || decor.nodeType !== 1) return null;
+
+      var boite = Jeu.Ui.el('div', 'scene scene-royaume');
+      boite.appendChild(decor);
+      boite.setAttribute('role', 'img');
+      boite.setAttribute('aria-label',
+        (contree && contree.phrase) ? contree.phrase : 'Ton royaume se remplit.');
+
+      var compteur = Jeu.Ui.el('div', 'scene-compte', '0 / ' + total);
+      compteur.setAttribute('aria-hidden', 'true');
+      boite.appendChild(compteur);
+
+      return {
+        noeud: boite,
+        decor: contree,
+        total: total,
+        places: 0,
+
+        ajouter: function () {
+          if (this.places >= this.total) return;
+          this.places += 1;
+          try { decor.pousser(); } catch (e) { /* le décor est un plus */ }
+          compteur.textContent = this.places + ' / ' + this.total;
+          boite.setAttribute('aria-label',
+            ((contree && contree.phrase) ? contree.phrase + ' ' : '') +
+            this.places + ' sur ' + this.total + '.');
+        },
+
+        complete: function () { return this.places >= this.total; },
+
+        feter: function () {
+          if (!Jeu.Fete.autorisee()) return;
+          boite.classList.add('scene-fete');
+          setTimeout(function () { boite.classList.remove('scene-fete'); }, 1400);
+        }
+      };
+    } catch (e) {
+      return null;
+    }
   }
 
   function creerPaysage(total) {

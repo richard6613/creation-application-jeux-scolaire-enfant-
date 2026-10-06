@@ -110,7 +110,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     id: 'nombresLettres',
     nom: 'Écris le nombre',
     quoi: 'Le nombre en lettres, sans faute',
-    emoji: '🔤',
+    emoji: '💯',
     teinte: '--jeu-nombres',
 
     notions: function () {

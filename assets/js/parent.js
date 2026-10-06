@@ -140,6 +140,15 @@ Jeu.Parent = (function () {
     zone.appendChild(el('h2', null, 'Aides'));
     zone.appendChild(Jeu.Panneau.aides());
 
+    // Le choix de la voix : c'est le réglage qui change le plus le
+    // ressenti de l'application, il mérite sa propre carte.
+    if (Jeu.Voix && Jeu.Voix.panneau) {
+      try {
+        var v = Jeu.Voix.panneau();
+        if (v) { zone.appendChild(el('h2', null, 'La voix')); zone.appendChild(v); }
+      } catch (e) { /* une nouveauté ne doit pas fermer l'espace parent */ }
+    }
+
     zone.appendChild(el('h2', null, 'Ce qui est proposé'));
     zone.appendChild(Jeu.Panneau.dictee());
     zone.appendChild(Jeu.Panneau.priorites());
@@ -438,6 +447,7 @@ Jeu.Parent = (function () {
         Jeu.Adaptatif.reinitialiser();
         Jeu.Collection.reinitialiser();
         Jeu.Grade.reinitialiser();
+        if (Jeu.Quetes && Jeu.Quetes.reinitialiser) Jeu.Quetes.reinitialiser();
         Jeu.App.aller('parent');
       }
     }));

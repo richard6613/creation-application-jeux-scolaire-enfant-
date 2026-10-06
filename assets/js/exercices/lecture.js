@@ -206,6 +206,22 @@ function lireEnSuivant(phrase, mots, spans, guide, cadre) {
   u.lang = 'fr-FR';
   u.rate = Jeu.Reglages.get('vitesseVoix') || 0.85;
 
+  /* La voix choisie, comme partout ailleurs. Sans cette ligne, le
+     navigateur prend la voix par défaut du système — sur iPhone, une
+     voix d'homme : c'est exactement d'où venait le « la voix est
+     toujours un homme » signalé après plusieurs mises à jour, alors
+     que le reste de l'application parlait bien avec la bonne voix.
+     La hauteur suit le même réglage, pour que ce soit la même
+     personne qui lit d'un écran à l'autre. */
+  try {
+    var choisie = Jeu.Voix.choisirVoix ? Jeu.Voix.choisirVoix() : null;
+    if (choisie) u.voice = choisie;
+    var hauteur = Jeu.Reglages.get('hauteurVoix');
+    if (hauteur) u.pitch = hauteur;
+    var vol = Jeu.Reglages.get('volumeVoix');
+    if (vol !== undefined && vol !== null) u.volume = vol;
+  } catch (e) { /* une voix absente ne doit pas empêcher la lecture */ }
+
   var minuteurs = [];
   var parRepere = false;
 

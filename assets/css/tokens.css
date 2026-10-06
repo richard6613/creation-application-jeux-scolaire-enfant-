@@ -30,17 +30,17 @@
 
   /* Une teinte par jeu : elle ne porte jamais de texte, seulement
      la pastille et le liseré, pour ne pas toucher au contraste. */
-  --jeu-ecoute: #4a86c5;
-  --jeu-confusions: #9b6bbf;
-  --jeu-syllabes: #4f9d69;
-  --jeu-phrase: #e2725b;
-  --jeu-lecture: #c9862f;
-  --jeu-calcul: #3f9fa2;
-  --jeu-lire: #5a7fc4;
-  --jeu-nombres: #b08246;
-  --jeu-ponctuation: #a1567f;
-  --jeu-anglais: #2f6f8f;
-  --jeu-dictee: #7a6a3f;
+  --jeu-ecoute: #3b7fc4;
+  --jeu-confusions: #8f5bc8;
+  --jeu-syllabes: #2f9b5e;
+  --jeu-phrase: #e05c42;
+  --jeu-lecture: #d4860f;
+  --jeu-calcul: #17a2a6;
+  --jeu-lire: #4a6fd0;
+  --jeu-nombres: #c07a23;
+  --jeu-ponctuation: #b2417a;
+  --jeu-anglais: #1f6f9c;
+  --jeu-dictee: #c08a2e;
 
   /* Couleurs fonctionnelles, communes à tous les fonds */
   --succes: #2f7d50;
@@ -162,15 +162,15 @@ html[data-fond="sombre"] {
   --filou-oreille: #e8bf95;
   --filou-museau: #edd0ad;
   --filou-trait: #2a2520;
-  --jeu-ecoute: #6fa6df;
-  --jeu-confusions: #b58ad6;
-  --jeu-syllabes: #6cba87;
-  --jeu-phrase: #ef8f7a;
-  --jeu-lecture: #dda44f;
-  --jeu-calcul: #5cbcbf;
-  --jeu-lire: #86a6e0;
-  --jeu-nombres: #cfa066;
-  --jeu-ponctuation: #c680a4;
-  --jeu-anglais: #6fa8c9;
-  --jeu-dictee: #c4ab6e;
+  --jeu-ecoute: #7cb2ea;
+  --jeu-confusions: #c29ae4;
+  --jeu-syllabes: #6fd298;
+  --jeu-phrase: #f59a84;
+  --jeu-lecture: #e8b35e;
+  --jeu-calcul: #63cfd2;
+  --jeu-lire: #93b2f0;
+  --jeu-nombres: #dcae70;
+  --jeu-ponctuation: #d98bb4;
+  --jeu-anglais: #79b6d9;
+  --jeu-dictee: #d4bb7a;
 }

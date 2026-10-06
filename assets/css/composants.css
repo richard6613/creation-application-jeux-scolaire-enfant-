@@ -354,31 +354,8 @@ input[type="range"] { width: 100%; height: 44px; accent-color: var(--accent); }
 .etiq.lecture { background: var(--attention-doux); border-color: var(--attention); }
 .etiq.notion  { background: var(--accent-doux); border-color: var(--accent); }
 
-/* ------------------------- Grille d'accueil ------------------------- */
-
-.grille-jeux { display: grid; gap: 14px; grid-template-columns: 1fr; }
-@media (min-width: 560px) { .grille-jeux { grid-template-columns: 1fr 1fr; } }
-
-.carte-jeu {
-  font-family: inherit;
-  font-size: 1.05rem;
-  text-align: left;
-  padding: 18px;
-  border-radius: var(--rayon);
-  border: 3px solid var(--bordure);
-  background: var(--surface);
-  color: var(--texte);
-  box-shadow: var(--ombre);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-height: 92px;
-}
-.carte-jeu .emoji { font-size: 2.2rem; }
-.carte-jeu .nom { font-weight: 700; }
-.carte-jeu .quoi { font-size: 0.85rem; color: var(--texte-doux); }
-.carte-jeu:active { transform: translateY(2px); box-shadow: none; }
+/* La grille d'accueil et les cartes de jeu sont définies plus bas,
+   dans « La coquille du jeu ». */
 
 /* ------------------------- Célébration ------------------------- */
 
@@ -506,26 +483,6 @@ html[data-animations="oui"] .autocollant-neuf { animation: autocollant-arrive 62
   background: var(--accent);
   transition: width 500ms ease-out;
 }
-
-/* ------------------------- Cartes de jeu colorées ------------------------- */
-
-.carte-jeu {
-  position: relative;
-  overflow: hidden;
-  border-left: 10px solid var(--teinte, var(--bordure));
-}
-.carte-jeu .pastille {
-  width: 62px; height: 62px;
-  border-radius: 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  background: var(--teinte, var(--surface-2));
-  flex: 0 0 auto;
-  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.12);
-}
-.carte-jeu:active .pastille { transform: scale(0.94); }
 
 /* Arrivée en douceur des cartes, une fraction après l'autre.
    Elles partent visibles : rien n'attend un défilement pour exister. */
@@ -1217,3 +1174,302 @@ html[data-animations="non"] .etiquette.refusee { animation: none; }
   border-radius: 6px;
   padding: 0 4px;
 }
+
+/* =================================================================
+   LA COQUILLE DU JEU — « Le Royaume des Mots »
+
+   Tout ce bloc sert une idée : quand l'enfant ouvre l'application,
+   il doit avoir l'impression d'ouvrir un jeu, pas un cahier. Le
+   décor, le niveau, la jauge et les cartes sont là pour ça.
+
+   Rien ici ne touche aux règles de confort : le texte reste réglable,
+   les cibles restent grandes, et html[data-animations="non"] coupe
+   absolument tout mouvement.
+   ================================================================= */
+
+:root {
+  --ressort: cubic-bezier(.34, 1.56, .64, 1);
+  --sortie: cubic-bezier(.22, 1, .36, 1);
+}
+
+/* ---- Le bandeau d'ouverture : décor, personnage, niveau ---- */
+.hud {
+  position: relative;
+  border-radius: 26px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: var(--ombre);
+  background: var(--surface-2);
+  isolation: isolate;
+}
+/* Le décor est une bannière en haut du bandeau, pas un fond derrière
+   le texte : on garantit ainsi le contraste sans avoir à voiler quoi
+   que ce soit, et la contrée se voit en entier. */
+.hud-decor {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  pointer-events: none;
+  /* Les nuages dérivent au-delà du cadre : sans cette coupe, ils
+     élargissent la page sur un petit écran. */
+  overflow: hidden;
+}
+/* Un voile doux garantit que le texte posé sur le décor reste
+   lisible quelle que soit la contrée et quel que soit le fond. */
+
+.hud-dedans {
+  position: relative;
+  z-index: 2;
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface);
+}
+.hud-bonjour { align-items: center; gap: 10px; }
+/* Filou dépasse de sa boîte quand il porte un chapeau : on lui laisse
+   la place au-dessus plutôt que de rogner son accessoire. */
+.hud-haut { display: flex; align-items: center; gap: 12px; padding-top: 18px; }
+.hud-filou { overflow: visible; line-height: 0; }
+.hud-filou { flex: 0 0 auto; }
+.hud-texte { flex: 1 1 auto; min-width: 0; }
+.hud-salut { font-size: 1.2rem; font-weight: 700; margin: 0; max-width: none; }
+/* La salutation et son haut-parleur tiennent sur une seule ligne :
+   un bouton qui saute au-dessus du texte casse la lecture. */
+.hud-bonjour .btn-son { min-width: 52px; min-height: 52px; font-size: 1.3rem; }
+.hud-rang { margin-bottom: 8px; }
+.hud-rang { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.hud-rang-signe { font-size: 1.5rem; line-height: 1; }
+.hud-rang-nom { font-weight: 700; color: var(--grade, var(--accent)); }
+
+/* ---- La jauge de progression vers le rang suivant ---- */
+.jauge-xp {
+  position: relative;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  overflow: hidden;
+}
+.jauge-xp > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--grade, var(--succes)));
+  transition: width 900ms var(--sortie);
+  position: relative;
+}
+.jauge-xp > span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.45) 50%, transparent 80%);
+  transform: translateX(-120%);
+  animation: reflet 3.4s ease-in-out 1.2s infinite;
+}
+@keyframes reflet { 0% { transform: translateX(-120%); } 55%, 100% { transform: translateX(240%); } }
+.jauge-legende { font-size: 0.78rem; color: var(--texte-doux); letter-spacing: normal; }
+
+/* ---- Les compteurs : étoiles, pièces, hauts faits ---- */
+.jetons { display: flex; gap: 8px; flex-wrap: wrap; }
+.jeton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--bordure);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: normal;
+  box-shadow: 0 2px 0 var(--bordure);
+}
+.jeton .signe { font-size: 1.1rem; }
+.jeton.cliquable { cursor: pointer; }
+.jeton.cliquable:active { transform: translateY(2px); box-shadow: none; }
+/* Un compteur qui monte se remarque : c'est la récompense qui arrive. */
+@keyframes jeton-monte {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+.jeton.monte { animation: jeton-monte 520ms var(--ressort); }
+
+/* ---- Les cartes de jeu ---- */
+/* Deux colonnes dès que la place le permet, une seule sinon. Les noms
+   de jeux français sont longs (« Lis tranquillement ») : plutôt que de
+   couper un mot en deux — ce qu'on ne fait jamais ici — on laisse la
+   carte prendre toute la largeur quand il le faut. */
+.grille-jeux {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+@media (min-width: 380px) {
+  .grille-jeux { grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); }
+}
+.carte-jeu {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 16px 14px 14px;
+  min-height: 132px;
+  border-radius: 22px;
+  border: 3px solid var(--teinte, var(--accent));
+  background: var(--surface);
+  color: var(--texte);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1rem;
+  box-shadow: 0 5px 0 var(--teinte, var(--accent));
+  transition: transform 120ms var(--sortie), box-shadow 120ms var(--sortie);
+  overflow: hidden;
+}
+/* Une pastille de couleur en fond donne son identité à chaque jeu
+   sans rien rendre illisible : elle reste très pâle. */
+.carte-jeu::before {
+  content: "";
+  position: absolute;
+  right: -28px;
+  top: -28px;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: var(--teinte, var(--accent));
+  opacity: 0.12;
+}
+.carte-jeu:active { transform: translateY(5px); box-shadow: 0 0 0 var(--teinte, var(--accent)); }
+.carte-jeu .emoji-jeu { font-size: 2.3rem; line-height: 1; position: relative; }
+.carte-jeu .nom-jeu {
+  font-weight: 700;
+  line-height: 1.25;
+  position: relative;
+  font-size: clamp(0.84rem, 4.1vw, 1.05rem);
+  hyphens: manual;
+}
+.carte-jeu .quoi-jeu { font-size: 0.82rem; color: var(--texte-doux); line-height: 1.35; position: relative; letter-spacing: normal; }
+.carte-jeu .marque-jeu {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--teinte, var(--accent));
+  letter-spacing: normal;
+}
+
+/* ---- Du ressort sur ce qui se touche ---- */
+.btn { transition: transform 110ms var(--sortie); }
+.btn:active { transform: translateY(2px) scale(0.98); }
+.choix-btn { transition: transform 110ms var(--sortie), background-color 160ms linear; }
+.choix-btn:not([disabled]):active { transform: scale(0.975); }
+
+/* ---- Les apparitions ---- */
+@keyframes surgit {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+.surgit { animation: surgit 420ms var(--ressort) both; }
+.surgit-2 { animation-delay: 70ms; }
+.surgit-3 { animation-delay: 140ms; }
+.surgit-4 { animation-delay: 210ms; }
+
+/* ---- La coupure générale : elle n'admet aucune exception ---- */
+html[data-animations="non"] .jauge-xp > span::after,
+html[data-animations="non"] .jeton.monte,
+html[data-animations="non"] .surgit {
+  animation: none !important;
+}
+html[data-animations="non"] .jauge-xp > span { transition: none; }
+html[data-animations="non"] .btn,
+html[data-animations="non"] .choix-btn,
+html[data-animations="non"] .carte-jeu { transition: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .jauge-xp > span::after, .jeton.monte, .surgit { animation: none !important; }
+  .jauge-xp > span, .btn, .choix-btn, .carte-jeu { transition: none !important; }
+}
+
+/* ---- Le cadre du chemin ---- */
+.chemin-monde {
+  position: relative;
+  border-radius: 26px;
+  padding: 6px 0 10px;
+}
+
+/* ---- La couleur du jeu en cours ----
+   Pendant une séance, le bandeau du haut prend la teinte du jeu :
+   l'enfant sait où il est sans avoir à lire le titre. */
+.barre-haut { border-bottom-color: var(--teinte-ecran, var(--bordure)); border-bottom-width: 4px; }
+.barre-seance .avance {
+  background: linear-gradient(90deg, var(--teinte-ecran, var(--succes)), var(--succes));
+}
+
+/* ---- La contrée pendant une séance ---- */
+.scene-royaume { position: relative; overflow: hidden; border-radius: 22px; max-width: 100%; }
+.scene-royaume > *:first-child { display: block; width: 100%; }
+@keyframes scene-fete {
+  0%, 100% { transform: none; }
+  30%      { transform: scale(1.016); }
+  60%      { transform: scale(0.995); }
+}
+.scene-royaume.scene-fete { animation: scene-fete 900ms var(--ressort) 2; }
+html[data-animations="non"] .scene-royaume.scene-fete { animation: none; }
+@media (prefers-reduced-motion: reduce) { .scene-royaume.scene-fete { animation: none !important; } }
+
+/* ---- Les missions du jour, version courte sur l'accueil ---- */
+.missions-courtes { padding: 14px; }
+.missions-titre { align-items: center; gap: 10px; margin-bottom: 8px; }
+.missions-titre h2 { margin: 0; font-size: 1.05rem; flex: 1 1 auto; min-width: 0; }
+.missions-titre .btn-son { min-width: 48px; min-height: 48px; font-size: 1.2rem; }
+.mission {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 10px 12px;
+  margin-top: 8px;
+  border-radius: 16px;
+  border: 2px solid var(--bordure);
+  background: var(--surface-2);
+  color: var(--texte);
+  cursor: pointer;
+  min-height: 62px;
+}
+.mission.finie { border-color: var(--succes); background: var(--succes-doux); }
+.mission-signe { font-size: 1.5rem; flex: 0 0 auto; }
+.mission-corps { flex: 1 1 auto; min-width: 0; }
+.mission-nom { display: block; font-weight: 700; line-height: 1.25; }
+.mission-jauge {
+  display: block;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  overflow: hidden;
+}
+.mission-jauge > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 500ms var(--sortie);
+}
+.mission-prix {
+  flex: 0 0 auto;
+  font-weight: 700;
+  letter-spacing: normal;
+  color: var(--texte-doux);
+}
+.mission.finie .mission-prix { color: var(--succes); }
+html[data-animations="non"] .mission-jauge > span { transition: none; }
+@media (prefers-reduced-motion: reduce) { .mission-jauge > span { transition: none !important; } }

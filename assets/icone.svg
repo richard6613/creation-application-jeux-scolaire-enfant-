@@ -1,11 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="Mes jeux">
-  <rect width="192" height="192" rx="40" fill="#faf3e6"/>
-  <rect x="26" y="34" width="60" height="60" rx="14" fill="#2f5d8a"/>
-  <rect x="106" y="34" width="60" height="60" rx="14" fill="#2f7d50"/>
-  <rect x="26" y="114" width="60" height="60" rx="14" fill="#9a6212"/>
-  <rect x="106" y="114" width="60" height="60" rx="14" fill="#2f5d8a" opacity="0.55"/>
-  <text x="56" y="76" font-family="Verdana, sans-serif" font-size="34" font-weight="700" fill="#ffffff" text-anchor="middle">a</text>
-  <text x="136" y="76" font-family="Verdana, sans-serif" font-size="34" font-weight="700" fill="#ffffff" text-anchor="middle">b</text>
-  <text x="56" y="156" font-family="Verdana, sans-serif" font-size="34" font-weight="700" fill="#ffffff" text-anchor="middle">1</text>
-  <text x="136" y="156" font-family="Verdana, sans-serif" font-size="34" font-weight="700" fill="#37312a" text-anchor="middle">2</text>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="i" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b3f7a"/><stop offset="0.55" stop-color="#4a5fa8"/><stop offset="1" stop-color="#7b6bb5"/>
+    </linearGradient>
+    <linearGradient id="colline" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4f9d69"/><stop offset="1" stop-color="#2f7d50"/>
+    </linearGradient>
+    <radialGradient id="lune" cx="0.35" cy="0.35"><stop offset="0" stop-color="#fff8e2"/><stop offset="1" stop-color="#f4e2b0"/></radialGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#ciel)"/>
+
+  <!-- étoiles -->
+  <g fill="#fff8e2">
+    <circle cx="96" cy="86" r="7" opacity=".9"/><circle cx="168" cy="48" r="4.5" opacity=".7"/>
+    <circle cx="408" cy="70" r="6" opacity=".85"/><circle cx="452" cy="140" r="4" opacity=".6"/>
+    <circle cx="64" cy="168" r="4" opacity=".55"/><circle cx="344" cy="40" r="3.6" opacity=".5"/>
+  </g>
+  <circle cx="404" cy="124" r="40" fill="url(#lune)" opacity=".95"/>
+
+  <!-- collines en papier découpé -->
+  <path d="M0 392 Q 120 330 236 382 Q 360 438 512 368 L512 512 L0 512 Z" fill="#3b6f9e" opacity=".55"/>
+  <path d="M0 424 Q 140 366 268 414 Q 392 460 512 410 L512 512 L0 512 Z" fill="url(#colline)"/>
+
+  <!-- Filou -->
+  <g transform="translate(256 288) scale(2.42) translate(-50 -56)">
+    <path d="M22 34 L26 12 L44 24 Z" fill="#e8a05c"/>
+    <path d="M78 34 L74 12 L56 24 Z" fill="#e8a05c"/>
+    <path d="M27 31 L29 19 L39 26 Z" fill="#f0c3a0"/>
+    <path d="M73 31 L71 19 L61 26 Z" fill="#f0c3a0"/>
+    <circle cx="50" cy="56" r="34" fill="#e8a05c"/>
+    <ellipse cx="50" cy="66" rx="16" ry="12" fill="#f7ddc4"/>
+    <circle cx="24" cy="62" r="7" fill="#e2725b" opacity="0.6"/>
+    <circle cx="76" cy="62" r="7" fill="#e2725b" opacity="0.6"/>
+    <path d="M31 50 Q38 43 45 50" stroke="#3a2d22" stroke-width="4.4" fill="none" stroke-linecap="round"/>
+    <path d="M55 50 Q62 43 69 50" stroke="#3a2d22" stroke-width="4.4" fill="none" stroke-linecap="round"/>
+    <path d="M44 62 Q50 67 56 62" fill="#d98b7a"/>
+    <path d="M50 66 Q44 74 38 70" stroke="#3a2d22" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+    <path d="M50 66 Q56 74 62 70" stroke="#3a2d22" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- la couronne : c'est le Royaume des Mots -->
+  <g transform="translate(256 150)">
+    <path d="M-52 20 L-52 -14 L-30 2 L-10 -22 L10 2 L32 -14 L32 20 Z" fill="#e8c24a" stroke="#b8922c" stroke-width="5" stroke-linejoin="round"/>
+    <circle cx="-10" cy="-30" r="7" fill="#fff0b8"/>
+  </g>
 </svg>
