@@ -27,7 +27,6 @@
   --m-cl-ciel-2: #cfe9f4;
   --m-cl-ciel-3: #ffe2b4;
   --m-cl-soleil: #ffd176;
-  --m-cl-halo: rgba(255, 214, 130, 0.38);
   --m-cl-nuage: #fffaf1;
   --m-cl-nuage-2: #e7f1f6;
   --m-cl-oiseau: #6a7f8c;
@@ -74,7 +73,6 @@
   --m-ri-ciel-2: #c6e4f1;
   --m-ri-ciel-3: #ffdfc2;
   --m-ri-soleil: #ffd98c;
-  --m-ri-halo: rgba(255, 218, 140, 0.34);
   --m-ri-nuage: #fffaf2;
   --m-ri-nuage-2: #e7f1f7;
   --m-ri-oiseau: #6e8392;
@@ -96,7 +94,8 @@
   --m-ri-phare: #f8f2e6;
   --m-ri-phare-bande: #d85c4b;
   --m-ri-lanterne: #4a5560;
-  --m-ri-faisceau: rgba(255, 228, 150, 0.4);
+  --m-ri-faisceau: #ffe08a;
+  --m-ri-sable-mouille: #d2ab6c;
   --m-ri-coque: #8c5a3c;
   --m-ri-mat: #6b4a33;
   --m-ri-voile-a: #fdf6ea;
@@ -120,22 +119,20 @@
   --m-ci-ciel-2: #bed9ee;
   --m-ci-ciel-3: #eaf2f8;
   --m-ci-soleil: #fff1c8;
-  --m-ci-halo: rgba(255, 241, 200, 0.42);
   --m-ci-nuage: #fffdf8;
   --m-ci-nuage-2: #e4edf5;
   --m-ci-mont-3: #a7bdd6;
   --m-ci-mont-3-haut: #c9d7e6;
   --m-ci-mont-2: #7386a7;
   --m-ci-mont-2-haut: #92a3bf;
-  --m-ci-mont-1: #4d6076;
-  --m-ci-mont-1-haut: #67798f;
+  --m-ci-mont-1: #c3d6e8;
+  --m-ci-mont-1-haut: #f0f7fc;
   --m-ci-lac: #74b0cc;
   --m-ci-lac-clair: #a3d2e4;
   --m-ci-neige: #fbfdff;
   --m-ci-neige-2: #e1ecf6;
-  --m-ci-neige-3: #eef5fb;
+  --m-ci-neige-3: #f7fbff;
   --m-ci-brume: rgba(255, 255, 255, 0.40);
-  --m-ci-brume-2: rgba(255, 255, 255, 0.24);
   --m-ci-sapin-3: #5b7d6e;
   --m-ci-sapin-2: #3e6152;
   --m-ci-sapin-1: #2e4c40;
@@ -162,7 +159,6 @@
   --m-et-ciel-3: #4a2f58;
   --m-et-etoile: #fff7dc;
   --m-et-etoile-2: #cfe4ff;
-  --m-et-halo: rgba(255, 247, 220, 0.3);
   --m-et-nebuleuse: rgba(134, 104, 206, 0.28);
   --m-et-nebuleuse-2: rgba(72, 146, 198, 0.22);
   --m-et-planete: #d9875f;
@@ -172,7 +168,7 @@
   --m-et-anneau-2: #a8865e;
   --m-et-lune: #e9e2cf;
   --m-et-lune-2: #cdc4af;
-  --m-et-queue: rgba(255, 247, 220, 0.28);
+  --m-et-queue: #fff7dc;
   --m-et-sol-2: #3a3366;
   --m-et-sol-2-haut: #4d4584;
   --m-et-sol-1: #262049;
@@ -225,7 +221,6 @@ html[data-fond="sombre"] {
   --m-cl-ciel-2: #3a4463;
   --m-cl-ciel-3: #7b5a62;
   --m-cl-soleil: #e8b071;
-  --m-cl-halo: rgba(232, 176, 113, 0.22);
   --m-cl-nuage: #4a5272;
   --m-cl-nuage-2: #3d4663;
   --m-cl-oiseau: #8c94ad;
@@ -271,7 +266,6 @@ html[data-fond="sombre"] {
   --m-ri-ciel-2: #35425f;
   --m-ri-ciel-3: #6f5567;
   --m-ri-soleil: #e8b271;
-  --m-ri-halo: rgba(232, 178, 113, 0.2);
   --m-ri-nuage: #475070;
   --m-ri-nuage-2: #3b4462;
   --m-ri-oiseau: #8b93ab;
@@ -293,7 +287,8 @@ html[data-fond="sombre"] {
   --m-ri-phare: #d6cdbc;
   --m-ri-phare-bande: #ad4c3f;
   --m-ri-lanterne: #2e353d;
-  --m-ri-faisceau: rgba(255, 226, 146, 0.3);
+  --m-ri-faisceau: #ffe8a8;
+  --m-ri-sable-mouille: #7d6a4c;
   --m-ri-coque: #5d3c28;
   --m-ri-mat: #46301f;
   --m-ri-voile-a: #d8d0c2;
@@ -315,22 +310,20 @@ html[data-fond="sombre"] {
   --m-ci-ciel-2: #33435f;
   --m-ci-ciel-3: #5d6880;
   --m-ci-soleil: #ead9a8;
-  --m-ci-halo: rgba(234, 217, 168, 0.2);
   --m-ci-nuage: #495171;
   --m-ci-nuage-2: #3c4564;
   --m-ci-mont-3: #4a5872;
   --m-ci-mont-3-haut: #5a6983;
   --m-ci-mont-2: #3a4760;
   --m-ci-mont-2-haut: #49566f;
-  --m-ci-mont-1: #2b3548;
-  --m-ci-mont-1-haut: #3a4559;
+  --m-ci-mont-1: #4b5c78;
+  --m-ci-mont-1-haut: #697d9c;
   --m-ci-lac: #2d4f66;
   --m-ci-lac-clair: #3e6c86;
   --m-ci-neige: #c6d4e4;
   --m-ci-neige-2: #93a4bb;
   --m-ci-neige-3: #8fa0b8;
   --m-ci-brume: rgba(176, 196, 224, 0.26);
-  --m-ci-brume-2: rgba(176, 196, 224, 0.16);
   --m-ci-sapin-3: #2c4440;
   --m-ci-sapin-2: #223834;
   --m-ci-sapin-1: #1a2c29;
@@ -372,7 +365,6 @@ html[data-fond="sombre"] {
     --m-cl-ciel-2: #3a4463;
     --m-cl-ciel-3: #7b5a62;
     --m-cl-soleil: #e8b071;
-    --m-cl-halo: rgba(232, 176, 113, 0.22);
     --m-cl-nuage: #4a5272;
     --m-cl-nuage-2: #3d4663;
     --m-cl-colline-3: #46556a;
@@ -407,8 +399,8 @@ html[data-fond="sombre"] {
     --m-ci-mont-3-haut: #5a6983;
     --m-ci-mont-2: #3a4760;
     --m-ci-mont-2-haut: #49566f;
-    --m-ci-mont-1: #2b3548;
-    --m-ci-mont-1-haut: #3a4559;
+    --m-ci-mont-1: #4b5c78;
+    --m-ci-mont-1-haut: #697d9c;
     --m-ci-neige: #c6d4e4;
     --m-ci-neige-2: #93a4bb;
     --m-ci-neige-3: #8fa0b8;
@@ -417,6 +409,22 @@ html[data-fond="sombre"] {
     --m-et-ciel-1: #0e1226;
     --m-et-ciel-2: #1e1c40;
     --m-et-ciel-3: #3a2446;
+    --m-cl-toit-clair: #a05949;
+    --m-cl-cheminee: #713c32;
+    --m-cl-eau: #2f5a72;
+    --m-cl-eau-clair: #3f7691;
+    --m-cl-chemin: #6b5e46;
+    --m-cl-chemin-clair: #87785b;
+    --m-ri-mer-1: #16293d;
+    --m-ri-mer-1-haut: #28435e;
+    --m-ci-lac: #2d4f66;
+    --m-ci-lac-clair: #3e6c86;
+    --m-ci-brume: rgba(176, 196, 224, 0.26);
+    --m-et-sol-2: #2e2954;
+    --m-et-sol-2-haut: #3d376c;
+    --m-et-sol-1: #1c1838;
+    --m-et-sol-1-haut: #28224b;
+    --m-et-cratere: #262046;
   }
 }
 

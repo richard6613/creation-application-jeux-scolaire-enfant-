@@ -473,8 +473,13 @@ Jeu.Compagnon = (function () {
 
   function habille(humeur, taille) {
     var t = taille || 76;
+    var nom = VISAGES[humeur] ? humeur : 'salut';
     var boite = document.createElement('span');
-    boite.className = 'filou-boite';
+    /* L'humeur est aussi portée par la boîte : quand Filou est
+       habillé, c'est elle qui saute, se penche ou respire. Si on
+       animait le seul dessin, le chapeau resterait en l'air pendant
+       que le chat redescend. */
+    boite.className = 'filou-boite filou-humeur-' + nom;
     boite.style.width = t + 'px';
     boite.style.height = t + 'px';
     boite.setAttribute('data-taille', t);
@@ -483,7 +488,7 @@ Jeu.Compagnon = (function () {
     var m = morpho(t);
 
     ORDRE_DERRIERE.forEach(function (cat) { poser(boite, tenues[cat], m, t); });
-    boite.appendChild(dessiner(humeur, t));
+    boite.appendChild(dessiner(nom, t));
     ORDRE_DEVANT.forEach(function (cat) { poser(boite, tenues[cat], m, t); });
 
     return boite;
@@ -556,7 +561,16 @@ Jeu.Compagnon = (function () {
     if (!svg) return null;
     var t = parseFloat(svg.getAttribute('data-taille')) || parseFloat(svg.getAttribute('width')) || 76;
     var neuf = dessiner(humeur, t);
-    if (svg.parentNode) svg.parentNode.replaceChild(neuf, svg);
+    var p = svg.parentNode;
+    if (p) {
+      p.replaceChild(neuf, svg);
+      /* La boîte porte elle aussi l'humeur : si on ne la met pas à
+         jour, Filou garde l'animation de l'humeur précédente. */
+      if (p.classList && p.classList.contains('filou-boite')) {
+        p.className = p.className.replace(/\s*filou-humeur-\S+/g, '') +
+          ' filou-humeur-' + neuf.getAttribute('data-humeur');
+      }
+    }
     return neuf;
   }
 
@@ -581,15 +595,20 @@ Jeu.Compagnon = (function () {
        suite. Une animation ne doit JAMAIS retarder la suite. */
     if (!svg || !DUREES[nom] || !anime()) { if (apres) apres(); return; }
 
+    /* On anime la boîte quand il y en a une : le chapeau et la cape
+       doivent sauter avec le chat, pas rester derrière lui. */
+    var hote = (svg.parentNode && svg.parentNode.classList &&
+      svg.parentNode.classList.contains('filou-boite')) ? svg.parentNode : svg;
+
     var classe = 'filou-anime-' + nom;
-    svg.classList.remove(classe);
+    hote.classList.remove(classe);
     /* Forcer un recalcul : sans cela, rejouer la même animation deux
        fois de suite ne produit rien. */
-    if (svg.getBoundingClientRect) svg.getBoundingClientRect();
-    svg.classList.add(classe);
+    if (hote.getBoundingClientRect) hote.getBoundingClientRect();
+    hote.classList.add(classe);
 
     setTimeout(function () {
-      svg.classList.remove(classe);
+      hote.classList.remove(classe);
       if (apres) apres();
     }, DUREES[nom] + 40);
   }

@@ -357,10 +357,72 @@ html:not([data-animations="non"]) .filou.filou-anime-non .f-tete {
   transform-origin: 50% 100%;
 }
 
+/* ------------------------- Filou habillé bouge d'un seul bloc -------------------------
+   composants.css anime le dessin lui-même (.filou-salut, .filou-bravo…).
+   Tant que Filou était nu, c'était juste. Habillé, le chapeau est un
+   calque posé À CÔTÉ du dessin : il resterait en l'air pendant que le
+   chat saute. On rend donc le dessin immobile dès qu'il est dans une
+   boîte, et c'est la boîte — chat ET affaires — qui joue l'animation. */
+.filou-boite {
+  transform-origin: 50% 100%;
+}
+
+html:not([data-animations="non"]) .filou-boite > .filou.filou-salut,
+html:not([data-animations="non"]) .filou-boite > .filou.filou-bravo,
+html:not([data-animations="non"]) .filou-boite > .filou.filou-fete,
+html:not([data-animations="non"]) .filou-boite > .filou.filou-courage,
+html:not([data-animations="non"]) .filou-boite > .filou.filou-saute,
+html:not([data-animations="non"]) .filou-boite > .filou.filou-surprise {
+  animation: none;
+}
+
+html:not([data-animations="non"]) .filou-boite.filou-humeur-salut {
+  animation: filou-respire 3.2s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .filou-boite.filou-humeur-bravo,
+html:not([data-animations="non"]) .filou-boite.filou-humeur-fete {
+  animation: filou-saute 700ms ease-out 2;
+}
+html:not([data-animations="non"]) .filou-boite.filou-humeur-courage {
+  animation: filou-penche 900ms ease-in-out 2;
+}
+html:not([data-animations="non"]) .filou-boite.filou-humeur-saute {
+  animation: f-saut-doux 1.8s cubic-bezier(.34, 1.56, .64, 1) infinite;
+}
+html:not([data-animations="non"]) .filou-boite.filou-humeur-surprise {
+  animation: f-sursaut 420ms cubic-bezier(.34, 1.56, .64, 1) 1;
+}
+
+html:not([data-animations="non"]) .filou-boite.filou-anime-saute {
+  animation: f-saut 900ms cubic-bezier(.34, 1.56, .64, 1) 1;
+}
+html:not([data-animations="non"]) .filou-boite.filou-anime-salue {
+  animation: f-salue-corps 600ms ease-in-out 2;
+}
+html:not([data-animations="non"]) .filou-boite.filou-anime-salue .f-bras-d {
+  animation: f-coucou-patte 300ms ease-in-out 4;
+}
+html:not([data-animations="non"]) .filou-boite.filou-anime-danse {
+  animation: f-danse 800ms ease-in-out 2;
+}
+html:not([data-animations="non"]) .filou-boite.filou-anime-tourne {
+  animation: f-tourne 900ms cubic-bezier(.22, 1, .36, 1) 1;
+}
+html:not([data-animations="non"]) .filou-boite.filou-anime-etire {
+  animation: f-etire 1000ms cubic-bezier(.34, 1.56, .64, 1) 1;
+}
+html:not([data-animations="non"]) .filou-boite.filou-anime-oui .f-tete {
+  animation: f-nod 400ms ease-in-out 2;
+}
+html:not([data-animations="non"]) .filou-boite.filou-anime-non .f-tete {
+  animation: f-shake 400ms ease-in-out 2;
+}
+
 /* ------------------------- La coupure, pour de vrai -------------------------
    On annule l'animation, JAMAIS la transformation : sur un SVG,
    « transform: none » écraserait l'attribut transform du dessin et
    démonterait le chat. Filou s'arrête net, et reste entier. */
+html[data-animations="non"] .filou-boite,
 html[data-animations="non"] .filou,
 html[data-animations="non"] .filou *,
 html[data-animations="non"] .filou-calque,
@@ -369,6 +431,7 @@ html[data-animations="non"] .filou-calque * {
   transition: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
+  .filou-boite,
   .filou,
   .filou *,
   .filou-calque,
