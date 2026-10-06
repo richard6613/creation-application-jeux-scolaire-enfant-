@@ -405,12 +405,12 @@ Jeu.Monde = (function () {
     pousses: [
       ['fleurRose', 78, 238, 1], ['buisson', 196, 234, 1],
       ['fleurJaune', 128, 252, 1.05], ['arbre', 286, 232, 1],
-      ['papillon', 166, 208, 0.95], ['champignon', 100, 258, 1],
+      ['papillon', 166, 208, 0.95], ['champignon', 100, 255, 1],
       ['fleurViolette', 236, 252, 1], ['lapin', 338, 250, 1],
       ['fleurRose', 262, 228, 0.85], ['ruche', 56, 254, 0.9],
-      ['escargot', 180, 262, 1], ['fleurJaune', 310, 258, 0.9],
-      ['buisson', 360, 230, 0.8], ['fleurViolette', 214, 262, 1.1],
-      ['champignon', 276, 260, 0.9], ['arbre', 140, 226, 0.6]
+      ['escargot', 180, 255, 1], ['fleurJaune', 310, 255, 0.9],
+      ['buisson', 360, 230, 0.8], ['fleurViolette', 214, 255, 1.1],
+      ['champignon', 276, 255, 0.9], ['arbre', 140, 226, 0.6]
     ]
   };
 
@@ -558,13 +558,13 @@ Jeu.Monde = (function () {
     },
     pousses: [
       ['chateau', 186, 240, 1], ['coquillage', 96, 244, 1],
-      ['etoileMer', 142, 256, 1], ['voilier', 262, 180, 0.8],
+      ['etoileMer', 142, 255, 1], ['voilier', 262, 180, 0.8],
       ['crabe', 232, 252, 1], ['cabane', 56, 222, 0.9],
       ['mouette', 162, 136, 0.8], ['coquillage', 304, 254, 0.9],
       ['phoque', 118, 230, 0.9], ['etoileMer', 250, 232, 0.8],
       ['voilier', 50, 172, 0.68], ['crabe', 356, 248, 0.85],
-      ['coquillage', 212, 262, 0.85], ['mouette', 248, 108, 0.65],
-      ['chateau', 150, 226, 0.7], ['etoileMer', 74, 258, 0.9]
+      ['coquillage', 212, 255, 0.85], ['mouette', 248, 108, 0.65],
+      ['chateau', 150, 226, 0.7], ['etoileMer', 74, 255, 0.9]
     ]
   };
 
@@ -599,10 +599,11 @@ Jeu.Monde = (function () {
         ch('M268,96 L282,109 L270,113 L256,110 Z', '--m-ci-neige-2') +
         ch('M374,100 L388,113 L376,117 L362,113 Z', '--m-ci-neige-2');
     },
-    moyen: function () {
+    moyen: function (u) {
       var d = 'M-20,196 L58,96 L120,166 L182,74 L254,172 L314,112 L376,178 ' +
               'L420,158 L420,' + BAS + ' L-20,' + BAS + ' Z';
-      return sol(d, '--m-ci-mont-2', '--m-ci-mont-2-haut', 6) +
+      return '<defs>' + defHalo('b' + u, '--m-ci-brume', 0.85) + '</defs>' +
+        sol(d, '--m-ci-mont-2', '--m-ci-mont-2-haut', 6) +
         /* Les neiges : une forme découpée à part, pas un dégradé. */
         ch('M58,96 L82,124 L66,130 L48,124 L38,131 L26,122 Z', '--m-ci-neige') +
         ch('M182,74 L212,110 L194,117 L174,110 L160,119 L148,107 Z', '--m-ci-neige') +
@@ -615,8 +616,10 @@ Jeu.Monde = (function () {
         /* La brume : deux voiles qui glissent lentement entre les
            plans. Discrète — elle suggère la distance, elle ne lave
            pas le paysage. */
-        g(0, 0, 1, 'monde-brume-a', ovale(120, 186, 140, 11, '--m-ci-brume')) +
-        g(0, 0, 1, 'monde-brume-b', ovale(300, 192, 120, 9, '--m-ci-brume-2'));
+        g(0, 0, 1, 'monde-brume-a',
+          '<ellipse cx="120" cy="186" rx="150" ry="16" fill="url(#b' + u + ')"/>') +
+        g(0, 0, 1, 'monde-brume-b',
+          '<ellipse cx="312" cy="192" rx="130" ry="13" fill="url(#b' + u + ')"/>');
     },
     pres: function () {
       var d = 'M-20,218 C56,196 126,212 196,220 C256,227 318,206 420,214 ' +
@@ -693,10 +696,10 @@ Jeu.Monde = (function () {
     pousses: [
       ['chalet', 188, 228, 1], ['sapin', 112, 236, 1],
       ['cairn', 148, 252, 1], ['bouquetin', 296, 236, 0.95],
-      ['sapin', 258, 244, 0.8], ['marmotte', 128, 260, 1],
+      ['sapin', 258, 244, 0.8], ['marmotte', 128, 255, 1],
       ['aigle', 196, 130, 0.9], ['pinPetit', 352, 224, 1],
-      ['bonhomme', 68, 254, 0.9], ['cairn', 254, 258, 0.85],
-      ['sapin', 340, 258, 0.9], ['marmotte', 286, 254, 0.85],
+      ['bonhomme', 68, 254, 0.9], ['cairn', 254, 255, 0.85],
+      ['sapin', 340, 255, 0.9], ['marmotte', 286, 254, 0.85],
       ['aigle', 92, 106, 0.68], ['pinPetit', 168, 228, 0.9],
       ['bouquetin', 48, 234, 0.7], ['cairn', 380, 250, 0.8]
     ]
