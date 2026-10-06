@@ -284,7 +284,8 @@ Jeu.Monde = (function () {
 
   var CL = {
     ciel: function (u) {
-      return '<defs>' + defHalo('h' + u, '--m-cl-soleil', 0.75) + '</defs>' +
+      return '<defs>' + defHalo('h' + u, '--m-cl-soleil', 0.75) +
+          defHalo('l' + u, '--m-lune', 0.4) + '</defs>' +
         g(0, 0, 1, 'monde-jour',
           halo('h' + u, 310, 88, 78) +
           cercle(310, 88, 31, '--m-cl-soleil') +
@@ -293,7 +294,8 @@ Jeu.Monde = (function () {
           trait('M62,96 C65,91 69,91 72,96 C75,91 79,91 82,96', '--m-cl-oiseau', 2)
         ) +
         g(0, 0, 1, 'monde-nuit',
-          '<path transform="translate(312,82) rotate(18)" d="M0,-28 A28,28 0 1 0 0,28 A21,21 0 1 1 0,-28 Z"' +
+          halo('l' + u, 312, 82, 64) +
+          '<path transform="translate(312,82) rotate(18)" d="M0,-27 A27,27 0 1 0 0,27 A41,41 0 0 1 0,-27 Z"' +
             S('--m-lune') + '/>' +
           etoilesDuCiel(semis(16, 16, 392, 24, 116, 7717), '--m-etoile')
         ) +
@@ -418,7 +420,8 @@ Jeu.Monde = (function () {
 
   var RI = {
     ciel: function (u) {
-      return '<defs>' + defHalo('h' + u, '--m-ri-soleil', 0.7) + '</defs>' +
+      return '<defs>' + defHalo('h' + u, '--m-ri-soleil', 0.7) +
+          defHalo('l' + u, '--m-lune', 0.4) + '</defs>' +
         g(0, 0, 1, 'monde-jour',
           halo('h' + u, 86, 78, 70) +
           cercle(86, 78, 27, '--m-ri-soleil') +
@@ -427,7 +430,8 @@ Jeu.Monde = (function () {
           trait('M232,86 C235,81 239,81 242,86 C245,81 249,81 252,86', '--m-ri-oiseau', 2)
         ) +
         g(0, 0, 1, 'monde-nuit',
-          '<path transform="translate(86,74) rotate(-14)" d="M0,-26 A26,26 0 1 0 0,26 A19,19 0 1 1 0,-26 Z"' +
+          halo('l' + u, 86, 74, 58) +
+          '<path transform="translate(86,74) rotate(-14)" d="M0,-24 A24,24 0 1 0 0,24 A37,37 0 0 1 0,-24 Z"' +
             S('--m-lune') + '/>' +
           etoilesDuCiel(semis(16, 16, 392, 20, 112, 3391), '--m-etoile')
         ) +
@@ -570,13 +574,15 @@ Jeu.Monde = (function () {
 
   var CI = {
     ciel: function (u) {
-      return '<defs>' + defHalo('h' + u, '--m-ci-soleil', 0.6) + '</defs>' +
+      return '<defs>' + defHalo('h' + u, '--m-ci-soleil', 0.6) +
+          defHalo('l' + u, '--m-lune', 0.4) + '</defs>' +
         g(0, 0, 1, 'monde-jour',
           halo('h' + u, 316, 62, 62) +
           cercle(316, 62, 23, '--m-ci-soleil')
         ) +
         g(0, 0, 1, 'monde-nuit',
-          '<path transform="translate(316,60) rotate(12)" d="M0,-25 A25,25 0 1 0 0,25 A18,18 0 1 1 0,-25 Z"' +
+          halo('l' + u, 316, 60, 54) +
+          '<path transform="translate(316,60) rotate(12)" d="M0,-23 A23,23 0 1 0 0,23 A35,35 0 0 1 0,-23 Z"' +
             S('--m-lune') + '/>' +
           etoilesDuCiel(semis(18, 14, 394, 18, 108, 5501), '--m-etoile')
         ) +
@@ -1187,9 +1193,13 @@ Jeu.Monde = (function () {
 
   var VIGNETTES = {
     clairiere: function (u) {
-      return '<defs>' + defHalo('h' + u, '--m-cl-soleil', 0.7) + '</defs>' +
-        halo('h' + u, 74, 26, 30) +
-        cercle(74, 26, 14, '--m-cl-soleil') +
+      return '<defs>' + defHalo('h' + u, '--m-cl-soleil', 0.7) +
+          defHalo('l' + u, '--m-lune', 0.4) + '</defs>' +
+        g(0, 0, 1, 'monde-jour', halo('h' + u, 74, 26, 30) +
+          cercle(74, 26, 14, '--m-cl-soleil')) +
+        g(0, 0, 1, 'monde-nuit', halo('l' + u, 74, 26, 28) +
+          '<path transform="translate(74,26) rotate(18)" d="M0,-13 A13,13 0 1 0 0,13 A20,20 0 0 1 0,-13 Z"' +
+          S('--m-lune') + '/>') +
         nuage(24, 24, 0.36, '--m-cl-nuage') +
         sol('M-5,46 C16,34 36,40 54,46 C72,52 90,44 105,48 L105,110 L-5,110 Z',
             '--m-cl-colline-3', '--m-cl-colline-3-haut', 3) +
@@ -1202,9 +1212,13 @@ Jeu.Monde = (function () {
         fleur(50, 96, 0.6, '--m-cl-fleur-a', '--m-cl-coeur', '--m-cl-tige');
     },
     rivage: function (u) {
-      return '<defs>' + defHalo('h' + u, '--m-ri-soleil', 0.7) + '</defs>' +
-        halo('h' + u, 26, 24, 28) +
-        cercle(26, 24, 13, '--m-ri-soleil') +
+      return '<defs>' + defHalo('h' + u, '--m-ri-soleil', 0.7) +
+          defHalo('l' + u, '--m-lune', 0.4) + '</defs>' +
+        g(0, 0, 1, 'monde-jour', halo('h' + u, 26, 24, 28) +
+          cercle(26, 24, 13, '--m-ri-soleil')) +
+        g(0, 0, 1, 'monde-nuit', halo('l' + u, 26, 24, 26) +
+          '<path transform="translate(26,24) rotate(-14)" d="M0,-12 A12,12 0 1 0 0,12 A18,18 0 0 1 0,-12 Z"' +
+          S('--m-lune') + '/>') +
         sol('M-5,44 L105,44 L105,110 L-5,110 Z', '--m-ri-mer-3', '--m-ri-horizon', 3) +
         sol('M-5,56 q11,-6 22,0 t22,0 t22,0 t22,0 t22,0 L105,110 L-5,110 Z',
             '--m-ri-mer-2', '--m-ri-mer-2-haut', 3) +
@@ -1221,9 +1235,13 @@ Jeu.Monde = (function () {
         rocher(20, 96, 0.52, '--m-ri-roche', '--m-ri-roche-clair');
     },
     cimes: function (u) {
-      return '<defs>' + defHalo('h' + u, '--m-ci-soleil', 0.6) + '</defs>' +
-        halo('h' + u, 78, 22, 26) +
-        cercle(78, 22, 11, '--m-ci-soleil') +
+      return '<defs>' + defHalo('h' + u, '--m-ci-soleil', 0.6) +
+          defHalo('l' + u, '--m-lune', 0.4) + '</defs>' +
+        g(0, 0, 1, 'monde-jour', halo('h' + u, 78, 22, 26) +
+          cercle(78, 22, 11, '--m-ci-soleil')) +
+        g(0, 0, 1, 'monde-nuit', halo('l' + u, 78, 22, 24) +
+          '<path transform="translate(78,22) rotate(12)" d="M0,-11 A11,11 0 1 0 0,11 A17,17 0 0 1 0,-11 Z"' +
+          S('--m-lune') + '/>') +
         sol('M-5,56 L20,26 L42,50 L66,20 L94,54 L105,46 L105,110 L-5,110 Z',
             '--m-ci-mont-2', '--m-ci-mont-2-haut', 3) +
         ch('M20,26 L31,38 L22,41 L11,37 Z', '--m-ci-neige') +
