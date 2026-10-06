@@ -23,6 +23,8 @@ Jeu.Reglages = (function () {
 
     // Aides, réglables une par une
     audio: true,            // lecture audio des consignes et des mots
+    sons: true,             // bruitages du jeu (pièces, réussite, pose)
+    volumeSons: 0.6,        // discret par défaut : rien ne doit faire sursauter
     vitesseVoix: 0.9,       // voix posée, sans être traînante
     hauteurVoix: 1,         // 0.8 = plus grave, 1.2 = plus claire
     volumeVoix: 1,          // les boutons de l'iPhone ne commandent pas cette voix

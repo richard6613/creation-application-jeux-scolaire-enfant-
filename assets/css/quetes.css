@@ -1,0 +1,511 @@
+/* ===============================================================
+   quetes.css — missions du jour, journal des jours, hauts faits.
+
+   Trois règles tenues dans tout ce fichier :
+
+   - Rien ne se vide. Aucune jauge ici ne peut reculer : elles
+     mesurent toutes des compteurs qui ne font que monter. Il n'y a
+     donc pas d'état « perdu », pas de rouge, pas de case barrée.
+   - Un haut fait pas encore gagné garde son dessin, en silhouette
+     grise. Jamais de case vide : on voit ce qu'on va chercher.
+   - Tout reste correct avec le texte au maximum : aucune hauteur
+     n'est figée, tout est en `min-height` et les étiquettes ont le
+     droit de passer à la ligne.
+
+   Toutes les couleurs viennent des variables existantes, donc les
+   six fonds de lecture et le mode sombre suivent sans une règle de
+   plus.
+   =============================================================== */
+
+.quetes {
+  /* Papier découpé : chaque carte est un plan posé sur le fond. */
+  --q-rayon-vignette: 18px;
+}
+
+.q-carte {
+  /* Un liseré de couleur à gauche, comme les cartes de jeu : on
+     reconnaît la section d'un coup d'œil, sans la lire. */
+  border-left: 10px solid var(--teinte, var(--accent));
+  padding: 16px;
+}
+.q-missions { --teinte: var(--attention); }
+.q-journal  { --teinte: var(--accent); }
+.q-vitrine  { --teinte: var(--succes); }
+
+/* ------------------------- En-tête de carte ------------------------- */
+
+.q-entete {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 4px;
+  flex-wrap: wrap;
+}
+.q-entete-titre {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.q-entete h2 {
+  margin: 0;
+  /* La place est comptée : le bouton d'écoute fait 64 px et ne bouge
+     pas d'un pixel. Le titre prend donc un cran de moins, et il a le
+     droit de se replier plutôt que de passer sous le compteur quand
+     le texte est réglé au maximum. */
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: break-word;
+  font-size: 1.05rem;
+}
+.q-compteur {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  /* Rejeté à droite quand il se retrouve seul sur sa ligne : il a
+     alors l'air d'une pastille posée, pas d'un reste de titre. */
+  margin-left: auto;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  font-weight: 700;
+  font-size: 0.85rem;
+  /* Un compteur n'est pas un texte à déchiffrer : espacement normal. */
+  letter-spacing: normal;
+  word-spacing: normal;
+  font-variant-numeric: tabular-nums;
+}
+.q-compteur-signe { color: var(--attention); }
+
+.q-note { margin: 12px 0 0; }
+
+/* =================================================================
+   Les missions du jour.
+
+   Trois lignes au plus. Chacune dit un geste à faire, l'avancement
+   en petites pastilles qui se remplissent, et les pièces à gagner.
+   Une mission non finie à la fin de la journée s'en va sans un mot :
+   il n'existe donc aucun style de « mission ratée ».
+   ================================================================= */
+
+.q-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.q-mission {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--cible-min);
+  padding: 10px 12px;
+  border-radius: var(--rayon);
+  border: 2px solid var(--bordure);
+  background: var(--surface-2);
+}
+.q-mission.terminee {
+  background: var(--succes-doux);
+  border-color: var(--succes);
+}
+
+.q-signe {
+  width: 50px;
+  min-width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  background: var(--surface);
+  border: 2px solid var(--bordure);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.10);
+  flex: 0 0 auto;
+}
+.q-mission.terminee .q-signe {
+  background: var(--surface);
+  border-color: var(--succes);
+}
+
+.q-mission-texte {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.q-mission-titre {
+  font-weight: 700;
+  line-height: 1.3;
+  /* Un mot long ne doit jamais passer sous le prix en pièces. */
+  overflow-wrap: break-word;
+}
+
+/* Les pastilles d'avancement. Elles se remplissent, et comme elles
+   comptent des gestes faits — pas des réussites — elles ne peuvent
+   pas se vider. */
+.q-pas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.q-pas-un {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--bordure);
+  flex: 0 0 auto;
+  transition: background var(--duree-anim), border-color var(--duree-anim);
+}
+.q-pas-un.fait {
+  background: var(--attention);
+  border-color: var(--attention);
+}
+.q-mission.terminee .q-pas-un.fait {
+  background: var(--succes);
+  border-color: var(--succes);
+}
+
+.q-prix {
+  flex: 0 0 auto;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: normal;
+  word-spacing: normal;
+  font-variant-numeric: tabular-nums;
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+.q-prix.q-gagne {
+  color: var(--succes);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+/* =================================================================
+   Le journal des jours joués.
+
+   Un calendrier qui n'allume que ce qui a été fait. Il n'y a
+   volontairement aucune règle pour un jour manqué : un jour sans
+   jeu a exactement l'allure de n'importe quelle case neutre, et
+   rien à l'écran ne vient le signaler.
+   ================================================================= */
+
+.q-cal-barre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 10px;
+}
+.q-cal-mois {
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+.q-cal-fleche {
+  min-width: 48px;
+  min-height: 48px;
+  font-size: 1.4rem;
+  flex: 0 0 auto;
+}
+
+.q-cal {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+.q-cal-lettre {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: normal;
+  color: var(--texte-doux);
+  padding-bottom: 2px;
+}
+.q-cal-vide { visibility: hidden; }
+
+.q-cal-jour {
+  aspect-ratio: 1;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: normal;
+  word-spacing: normal;
+  font-variant-numeric: tabular-nums;
+  /* Un jour sans jeu n'a pas de case : il n'est qu'un chiffre discret.
+     Impossible, dès lors, de « voir ses trous » — il n'y a rien à
+     voir. Le calendrier ne sait allumer que les jours joués. */
+  background: transparent;
+  border: 2px solid transparent;
+  color: var(--texte-doux);
+}
+/* Un jour joué s'allume : c'est la seule chose que ce calendrier
+   sait dire. */
+.q-cal-jour.joue {
+  background: var(--attention-doux);
+  border-color: var(--attention);
+  color: var(--attention);
+  font-size: 1.1rem;
+  box-shadow: var(--ombre);
+}
+.q-cal-jour.cejour {
+  border-width: 3px;
+  border-color: var(--accent);
+}
+/* Les jours à venir attendent, en plus discret encore. */
+.q-cal-jour.plustard { opacity: 0.5; }
+
+/* =================================================================
+   La vitrine des hauts faits.
+
+   Un haut fait gagné est en couleur, relief et coche. Un haut fait
+   à venir garde son dessin, en silhouette grise sur fond creux :
+   il donne envie, il ne manque pas.
+   ================================================================= */
+
+.q-famille {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 10px;
+  padding-top: 14px;
+  border-top: 2px solid var(--bordure);
+}
+.q-famille:first-of-type { border-top: 0; }
+.q-famille h3 {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: break-word;
+  font-size: 1rem;
+}
+.q-famille-signe {
+  font-size: 1.3rem;
+  flex: 0 0 auto;
+}
+.q-famille-compte {
+  flex: 0 0 auto;
+  letter-spacing: normal;
+  word-spacing: normal;
+  font-variant-numeric: tabular-nums;
+}
+
+.q-grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 10px;
+}
+
+.q-fait {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  min-height: 92px;
+  padding: 10px 6px 8px;
+  border-radius: var(--q-rayon-vignette);
+  border: 2px solid var(--bordure);
+  background: var(--surface-2);
+  color: var(--texte);
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: var(--ombre);
+  transition: transform var(--duree-anim);
+}
+.q-fait:active { transform: translateY(2px); box-shadow: none; }
+
+.q-fait-signe {
+  font-size: 2rem;
+  line-height: 1.1;
+}
+.q-fait-nom {
+  font-size: 0.62rem;
+  line-height: 1.25;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: normal;
+  word-spacing: normal;
+  /* Deux ou trois mots : ils ont le droit de passer à la ligne, et
+     la vignette grandit avec eux quand le texte est au maximum. */
+  overflow-wrap: break-word;
+}
+
+/* Gagné : couleur pleine, fond de surface, coche posée dans le coin. */
+.q-fait.acquis {
+  background: var(--surface);
+  border-color: var(--succes);
+  border-width: 3px;
+}
+.q-fait.acquis .q-fait-signe {
+  /* Un rond doux derrière le dessin : le relief du papier découpé. */
+  border-radius: 50%;
+  background: var(--succes-doux);
+  padding: 4px 8px;
+}
+.q-fait-coche {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: normal;
+  background: var(--succes);
+  color: var(--surface);
+  border: 2px solid var(--surface);
+}
+
+/* Pas encore gagné : la silhouette, jamais une case vide. */
+.q-fait.a-venir {
+  border-style: dashed;
+  background: var(--surface-2);
+}
+.q-fait.a-venir .q-fait-signe {
+  filter: grayscale(1);
+  opacity: 0.42;
+}
+.q-fait.a-venir .q-fait-nom {
+  color: var(--texte-doux);
+  opacity: 0.85;
+}
+
+/* Le prochain de chaque famille : celui qu'on peut aller chercher
+   maintenant. Il est mis en avant, avec sa jauge qui monte. */
+.q-fait.prochain {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-doux);
+}
+.q-fait.prochain .q-fait-signe { opacity: 0.75; }
+.q-fait.prochain .q-fait-nom { color: var(--texte); opacity: 1; }
+
+.q-fait-jauge {
+  width: 100%;
+  height: 8px;
+  margin-top: auto;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--bordure);
+  overflow: hidden;
+}
+.q-fait-jauge > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.q-fait.ouvert {
+  outline: 4px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* La fiche d'explication : une seule phrase à la fois, à gauche,
+   avec son bouton d'écoute toujours au même endroit. */
+.q-fiche {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: var(--rayon);
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  border-left: 8px solid var(--accent);
+}
+.q-fiche p {
+  margin: 0;
+  font-weight: 600;
+  font-style: normal;
+  max-width: var(--largeur-ligne);
+}
+.q-fiche-gagne {
+  background: var(--succes-doux);
+  border-left-color: var(--succes);
+}
+.q-fiche-avenir {
+  background: var(--surface-2);
+  border-left-color: var(--accent);
+}
+
+/* =================================================================
+   Le mouvement. Ressort à l'arrivée, rien de clignotant, et tout
+   se coupe avec le réglage d'animations comme ailleurs.
+   ================================================================= */
+
+@keyframes q-vignette-arrive {
+  0%   { opacity: 0; transform: scale(0.72) rotate(-8deg); }
+  70%  { opacity: 1; transform: scale(1.08) rotate(3deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+html[data-animations="oui"] .q-fait.acquis .q-fait-coche {
+  animation: q-vignette-arrive 460ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes q-pas-plein {
+  0%   { transform: scale(0.5); }
+  70%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+html[data-animations="oui"] .q-pas-un.fait {
+  animation: q-pas-plein 380ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes q-jour-allume {
+  from { transform: scale(0.8); }
+  to   { transform: scale(1); }
+}
+html[data-animations="oui"] .q-cal-jour.joue {
+  animation: q-jour-allume 320ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Les réglages d'animations coupent tout, ici comme partout. */
+html[data-animations="non"] .q-fait.acquis .q-fait-coche,
+html[data-animations="non"] .q-pas-un.fait,
+html[data-animations="non"] .q-cal-jour.joue {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .q-fait.acquis .q-fait-coche,
+  .q-pas-un.fait,
+  .q-cal-jour.joue { animation: none !important; }
+}
+
+/* =================================================================
+   Les petits écrans et le texte au maximum.
+
+   À partir d'ici, la vitrine passe à trois colonnes plutôt que de
+   couper les étiquettes, et les pastilles d'avancement grossissent
+   pour rester touchables.
+   ================================================================= */
+
+@media (max-width: 380px) {
+  /* Sur un écran de 320 px, trois colonnes forcées débordaient de
+     quelques pixels une fois les écarts et la marge de la carte
+     comptés. On laisse la grille décider. */
+  .q-grille { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
+  .q-fait { min-width: 0; }
+  .q-fait { min-height: 86px; }
+  .q-cal { gap: 4px; }
+  .q-cal-jour { min-height: 30px; }
+}

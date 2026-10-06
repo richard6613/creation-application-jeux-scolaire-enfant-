@@ -332,6 +332,9 @@ Jeu.Exercices = Jeu.Exercices || [];
         // la case. Il tremble, il revient, et rien de faux ne s'affiche.
         if (etiq.dataset.morceau !== morceaux[rang]) {
           refus += 1;
+          try {
+            if (window.Jeu && Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('refus');
+          } catch (err) { /* le son n'empêche jamais de jouer */ }
           etiq.classList.remove('refusee');
           void etiq.offsetWidth;
           etiq.classList.add('refusee');
@@ -343,6 +346,9 @@ Jeu.Exercices = Jeu.Exercices || [];
         caseEl.textContent = etiq.dataset.morceau;
         caseEl.classList.add('remplie');
         caseEl.classList.remove('cible-forte');
+        try {
+          if (window.Jeu && Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('pose');
+        } catch (err) { /* rien */ }
         etiq.classList.add('posee');
         etiq.classList.remove('indiquee');
         placees += 1;

@@ -137,7 +137,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     id: 'calcul',
     nom: 'Compte avec moi',
     quoi: 'Calculs courts et images',
-    emoji: '🔢',
+    emoji: '🧮',
   teinte: '--jeu-calcul',
 
     /* On n'ouvre les calculs les plus durs qu'une fois les premiers

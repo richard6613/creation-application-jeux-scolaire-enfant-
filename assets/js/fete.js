@@ -127,6 +127,11 @@ Jeu.Fete = (function () {
     etoiles.forEach(function (e, i) {
       setTimeout(function () {
         e.classList.add('vue');
+        // Chaque étoile sonne un demi-ton plus haut : la petite montée
+        // qui fait qu'on a envie d'en gagner une de plus.
+        try {
+          if (window.Jeu && Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('etoile', { degre: i });
+        } catch (err) { /* rien */ }
         if (i === etoiles.length - 1) {
           depuis(e, 40);
           if (surFini) surFini();

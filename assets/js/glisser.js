@@ -52,7 +52,14 @@ Jeu.Glisser = (function () {
     function deposer(etiquette, caseEl) {
       if (!etiquette || !caseEl) return false;
       var ok = surDepot(etiquette, caseEl);
-      if (ok) deselectionner();
+      if (ok) {
+        deselectionner();
+        // Les missions du jour comptent les morceaux posés : un geste,
+        // pas une réussite.
+        try {
+          if (window.Jeu && Jeu.Quetes && Jeu.Quetes.signaler) Jeu.Quetes.signaler('morceau', {});
+        } catch (e) { /* rien */ }
+      }
       return ok;
     }
 

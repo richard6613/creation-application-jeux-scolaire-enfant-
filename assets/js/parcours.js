@@ -81,6 +81,13 @@ Jeu.Parcours = (function () {
     // Deux étapes franchies au-dessus : le chemin parcouru se voit,
     // sans repousser l'étape en cours hors de l'écran.
     var debut = Math.max(0, pos - 2);
+
+    /* Pas de décor derrière le chemin : la contrée est déjà montrée
+       en grand dans le bandeau d'accueil et pendant la séance. Deux
+       paysages sur le même écran se disputent le regard, et le chemin
+       doit rester l'élément le plus lisible de l'accueil. */
+    var cadre = Jeu.Ui.el('div', 'chemin-monde');
+
     var d = Jeu.Ui.el('div', 'chemin');
 
     var rangs = [];
@@ -145,7 +152,8 @@ Jeu.Parcours = (function () {
       }
     });
 
-    return d;
+    cadre.appendChild(d);
+    return cadre;
   }
 
   /* La semaine écoulée, en pastilles. */

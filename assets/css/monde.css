@@ -1,0 +1,664 @@
+/* ---------------------------------------------------------------
+   monde.css — les couleurs et le mouvement du Royaume des Mots.
+
+   POURQUOI un fichier de couleurs à part : un paysage n'est pas une
+   interface. Le vert d'une prairie ne peut pas sortir de --accent.
+   On définit donc ici les teintes du décor, et seulement ici — en
+   deux palettes, le jour et la nuit. Rien n'est écrit en dur dans
+   le JavaScript : monde.js ne manipule que des var(--m-*).
+
+   Les six fonds de lecture gardent le même paysage (un pré reste un
+   pré sur fond crème comme sur fond gris), mais le fond « sombre »
+   bascule tout le royaume au crépuscule : ciels profonds, lune au
+   lieu du soleil, verts éteints. Seul le voile — la zone sûre où
+   l'intégrateur peut poser du texte — suit le fond choisi, puisque
+   c'est lui qui porte le contraste.
+   --------------------------------------------------------------- */
+
+:root {
+  /* --------- commun --------- */
+  --m-ombre: rgba(52, 40, 26, 0.20);   /* l'ombre entre deux papiers */
+  --m-cadre: rgba(255, 255, 255, 0.34);
+  --m-lune: #f6efd8;
+  --m-etoile: #fff6dc;
+
+  /* --------- La Clairière --------- */
+  --m-cl-ciel-1: #8ec9ec;
+  --m-cl-ciel-2: #cfe9f4;
+  --m-cl-ciel-3: #ffe2b4;
+  --m-cl-soleil: #ffd176;
+  --m-cl-halo: rgba(255, 214, 130, 0.38);
+  --m-cl-nuage: #fffaf1;
+  --m-cl-nuage-2: #e7f1f6;
+  --m-cl-oiseau: #6a7f8c;
+  --m-cl-colline-3: #a6cb9b;
+  --m-cl-colline-3-haut: #c2debb;
+  --m-cl-arbre-3: #85b57c;
+  --m-cl-colline-2: #78b26c;
+  --m-cl-colline-2-haut: #97ca86;
+  --m-cl-arbre-2: #4b8f55;
+  --m-cl-tronc-2: #8a6a4c;
+  --m-cl-herbe: #4d9752;
+  --m-cl-herbe-haut: #6cb467;
+  --m-cl-arbre-1: #2e6d42;
+  --m-cl-arbre-1-clair: #489056;
+  --m-cl-tronc: #7d5637;
+  --m-cl-mur: #f7e8cf;
+  --m-cl-toit: #c45a46;
+  --m-cl-toit-clair: #d9775f;
+  --m-cl-cheminee: #a04a3a;
+  --m-cl-eau: #62b6d4;
+  --m-cl-eau-clair: #91d3e5;
+  --m-cl-chemin: #d3b784;
+  --m-cl-chemin-clair: #ecd7a9;
+  --m-cl-porte: #8a6141;
+  --m-cl-vitre: #ffe49b;
+  --m-cl-tige: #4b8a4a;
+  --m-cl-fleur-a: #ef7e91;
+  --m-cl-fleur-b: #f6c44f;
+  --m-cl-fleur-c: #ab86d8;
+  --m-cl-coeur: #fff0b8;
+  --m-cl-coeur-b: #e4873f;
+  --m-cl-pied: #f0e3cd;
+  --m-cl-chapeau: #d9594f;
+  --m-cl-pois: #fff6e2;
+  --m-cl-lapin: #d6c3ab;
+  --m-cl-lapin-clair: #f2e6d6;
+  --m-cl-oeil: #3d332a;
+  --m-cl-ruche: #e6b14e;
+  --m-cl-coquille: #d9a05e;
+  --m-cl-coquille-2: #b97e42;
+
+  /* --------- Le Rivage --------- */
+  --m-ri-ciel-1: #83c5e9;
+  --m-ri-ciel-2: #c6e4f1;
+  --m-ri-ciel-3: #ffdfc2;
+  --m-ri-soleil: #ffd98c;
+  --m-ri-halo: rgba(255, 218, 140, 0.34);
+  --m-ri-nuage: #fffaf2;
+  --m-ri-nuage-2: #e7f1f7;
+  --m-ri-oiseau: #6e8392;
+  --m-ri-mer-3: #84c2d8;
+  --m-ri-horizon: #a9d8e6;
+  --m-ri-mer-2: #3f93ba;
+  --m-ri-mer-2-haut: #63b2d2;
+  --m-ri-mer-1: #2a79a4;
+  --m-ri-mer-1-haut: #4b9bc3;
+  --m-ri-ecume: #f4fbfd;
+  --m-ri-ile: #7da681;
+  --m-ri-ile-clair: #9cc098;
+  --m-ri-sable-1: #e0bc7c;
+  --m-ri-sable-haut: #f3daa5;
+  --m-ri-sable-2: #f2dfb4;
+  --m-ri-roche: #9a8d84;
+  --m-ri-roche-clair: #b5a9a0;
+  --m-ri-oyat: #afa767;
+  --m-ri-phare: #f8f2e6;
+  --m-ri-phare-bande: #d85c4b;
+  --m-ri-lanterne: #4a5560;
+  --m-ri-faisceau: rgba(255, 228, 150, 0.4);
+  --m-ri-coque: #8c5a3c;
+  --m-ri-mat: #6b4a33;
+  --m-ri-voile-a: #fdf6ea;
+  --m-ri-voile-b: #f0c05a;
+  --m-ri-coquille: #f0cdb6;
+  --m-ri-coquille-2: #d79a84;
+  --m-ri-etoile-mer: #ef8a62;
+  --m-ri-etoile-mer-2: #f7b78f;
+  --m-ri-crabe: #e0634a;
+  --m-ri-oeil: #3d332a;
+  --m-ri-cabane: #f2e3c8;
+  --m-ri-cabane-toit: #4e93a8;
+  --m-ri-vitre: #ffe49b;
+  --m-ri-mouette: #fdfaf2;
+  --m-ri-mouette-2: #dde5ea;
+  --m-ri-bec: #e8a33f;
+  --m-ri-phoque: #99a2aa;
+
+  /* --------- Les Cimes --------- */
+  --m-ci-ciel-1: #78acdd;
+  --m-ci-ciel-2: #bed9ee;
+  --m-ci-ciel-3: #eaf2f8;
+  --m-ci-soleil: #fff1c8;
+  --m-ci-halo: rgba(255, 241, 200, 0.42);
+  --m-ci-nuage: #fffdf8;
+  --m-ci-nuage-2: #e4edf5;
+  --m-ci-mont-3: #a7bdd6;
+  --m-ci-mont-3-haut: #c9d7e6;
+  --m-ci-mont-2: #7386a7;
+  --m-ci-mont-2-haut: #92a3bf;
+  --m-ci-mont-1: #4d6076;
+  --m-ci-mont-1-haut: #67798f;
+  --m-ci-lac: #74b0cc;
+  --m-ci-lac-clair: #a3d2e4;
+  --m-ci-neige: #fbfdff;
+  --m-ci-neige-2: #e1ecf6;
+  --m-ci-neige-3: #eef5fb;
+  --m-ci-brume: rgba(255, 255, 255, 0.40);
+  --m-ci-brume-2: rgba(255, 255, 255, 0.24);
+  --m-ci-sapin-3: #5b7d6e;
+  --m-ci-sapin-2: #3e6152;
+  --m-ci-sapin-1: #2e4c40;
+  --m-ci-sapin-1-clair: #3b6251;
+  --m-ci-tronc: #6b4f3a;
+  --m-ci-roche: #79746d;
+  --m-ci-roche-clair: #948e86;
+  --m-ci-chalet: #8e6244;
+  --m-ci-chalet-toit: #5c4231;
+  --m-ci-chalet-porte: #5c4231;
+  --m-ci-fenetre: #ffdf96;
+  --m-ci-bouquetin: #a8805a;
+  --m-ci-corne: #e4d6bb;
+  --m-ci-oeil: #332c24;
+  --m-ci-museau: #d8bba0;
+  --m-ci-marmotte: #b08a5e;
+  --m-ci-aigle: #58483a;
+  --m-ci-aigle-2: #7d6a55;
+  --m-ci-carotte: #e8863a;
+
+  /* --------- Les Étoiles (nocturne en toutes circonstances) --------- */
+  --m-et-ciel-1: #141a33;
+  --m-et-ciel-2: #272450;
+  --m-et-ciel-3: #4a2f58;
+  --m-et-etoile: #fff7dc;
+  --m-et-etoile-2: #cfe4ff;
+  --m-et-halo: rgba(255, 247, 220, 0.3);
+  --m-et-nebuleuse: rgba(134, 104, 206, 0.28);
+  --m-et-nebuleuse-2: rgba(72, 146, 198, 0.22);
+  --m-et-planete: #d9875f;
+  --m-et-planete-2: #eaa377;
+  --m-et-planete-3: #bf6a47;
+  --m-et-anneau: #f0d19c;
+  --m-et-anneau-2: #a8865e;
+  --m-et-lune: #e9e2cf;
+  --m-et-lune-2: #cdc4af;
+  --m-et-queue: rgba(255, 247, 220, 0.28);
+  --m-et-sol-2: #3a3366;
+  --m-et-sol-2-haut: #4d4584;
+  --m-et-sol-1: #262049;
+  --m-et-sol-1-haut: #352d60;
+  --m-et-cratere: #322b58;
+  --m-et-planete-b: #67a6c9;
+  --m-et-planete-b2: #8cc3dd;
+  --m-et-fusee: #eeece4;
+  --m-et-fusee-2: #d8584a;
+  --m-et-fusee-3: #8a8f99;
+  --m-et-hublot: #7fc4e8;
+  --m-et-panneau: #4a6fb0;
+  --m-et-flamme: #ffb24a;
+  --m-et-lien: rgba(255, 247, 220, 0.45);
+
+  /* La zone sûre : elle part de --surface, donc elle suit le fond
+     de lecture choisi. C'est elle, et elle seule, qui garantit le
+     contraste d'un texte posé sur un décor. */
+  --m-voile: rgba(255, 250, 240, 0.94);
+  --m-voile-0: rgba(255, 250, 240, 0);
+}
+
+/* Le voile suit les six fonds : sa couleur est celle de --surface,
+   sinon le texte posé dessus n'aurait plus le contraste habituel.
+   On ne peut pas l'écrire avec var(--surface) : un dégradé a besoin
+   d'une version transparente de la même couleur. */
+html[data-fond="creme"] { --m-voile: rgba(255, 250, 240, 0.94); --m-voile-0: rgba(255, 250, 240, 0); }
+html[data-fond="sable"] { --m-voile: rgba(251, 242, 226, 0.94); --m-voile-0: rgba(251, 242, 226, 0); }
+html[data-fond="bleu"]  { --m-voile: rgba(245, 250, 253, 0.94); --m-voile-0: rgba(245, 250, 253, 0); }
+html[data-fond="vert"]  { --m-voile: rgba(245, 250, 244, 0.94); --m-voile-0: rgba(245, 250, 244, 0); }
+html[data-fond="gris"]  { --m-voile: rgba(246, 246, 244, 0.94); --m-voile-0: rgba(246, 246, 244, 0); }
+html[data-fond="sombre"] { --m-voile: rgba(47, 53, 61, 0.94); --m-voile-0: rgba(47, 53, 61, 0); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) { --m-voile: rgba(47, 53, 61, 0.94); --m-voile-0: rgba(47, 53, 61, 0); }
+}
+
+/* ===============================================================
+   La palette de nuit. Même royaume, fin de journée : le ciel
+   descend dans les bleus profonds, la lune remplace le soleil, les
+   verts et les pierres s'éteignent. Les petites couleurs vives
+   (fleurs, crabes, fusée) sont assourdies pour ne pas crier sur un
+   fond sombre.
+   =============================================================== */
+
+html[data-fond="sombre"] {
+  --m-ombre: rgba(0, 0, 0, 0.3);
+  --m-cadre: rgba(255, 255, 255, 0.12);
+
+  --m-cl-ciel-1: #1c2744;
+  --m-cl-ciel-2: #3a4463;
+  --m-cl-ciel-3: #7b5a62;
+  --m-cl-soleil: #e8b071;
+  --m-cl-halo: rgba(232, 176, 113, 0.22);
+  --m-cl-nuage: #4a5272;
+  --m-cl-nuage-2: #3d4663;
+  --m-cl-oiseau: #8c94ad;
+  --m-cl-colline-3: #46556a;
+  --m-cl-colline-3-haut: #55667c;
+  --m-cl-arbre-3: #3c5160;
+  --m-cl-colline-2: #3b5a52;
+  --m-cl-colline-2-haut: #4a6c62;
+  --m-cl-arbre-2: #2e4a44;
+  --m-cl-tronc-2: #4e3d33;
+  --m-cl-herbe: #2f5247;
+  --m-cl-herbe-haut: #3f6659;
+  --m-cl-arbre-1: #1f3c36;
+  --m-cl-arbre-1-clair: #2c5248;
+  --m-cl-tronc: #4a382a;
+  --m-cl-mur: #c8b79a;
+  --m-cl-toit: #8f4c40;
+  --m-cl-toit-clair: #a05949;
+  --m-cl-cheminee: #713c32;
+  --m-cl-eau: #2f5a72;
+  --m-cl-eau-clair: #3f7691;
+  --m-cl-chemin: #6b5e46;
+  --m-cl-chemin-clair: #87785b;
+  --m-cl-porte: #4a382a;
+  --m-cl-vitre: #ffd37a;
+  --m-cl-tige: #35604a;
+  --m-cl-fleur-a: #c2667a;
+  --m-cl-fleur-b: #cfa248;
+  --m-cl-fleur-c: #8e71b4;
+  --m-cl-coeur: #e4cf96;
+  --m-cl-coeur-b: #b96e36;
+  --m-cl-pied: #bdb199;
+  --m-cl-chapeau: #ab4a43;
+  --m-cl-pois: #e8ddc6;
+  --m-cl-lapin: #a79784;
+  --m-cl-lapin-clair: #c4b7a5;
+  --m-cl-oeil: #1d1915;
+  --m-cl-ruche: #bb8f41;
+  --m-cl-coquille: #ab7f4b;
+  --m-cl-coquille-2: #8c6035;
+
+  --m-ri-ciel-1: #182542;
+  --m-ri-ciel-2: #35425f;
+  --m-ri-ciel-3: #6f5567;
+  --m-ri-soleil: #e8b271;
+  --m-ri-halo: rgba(232, 178, 113, 0.2);
+  --m-ri-nuage: #475070;
+  --m-ri-nuage-2: #3b4462;
+  --m-ri-oiseau: #8b93ab;
+  --m-ri-mer-3: #2f4f68;
+  --m-ri-horizon: #49708b;
+  --m-ri-mer-2: #1f3c57;
+  --m-ri-mer-2-haut: #335573;
+  --m-ri-mer-1: #16293d;
+  --m-ri-mer-1-haut: #28435e;
+  --m-ri-ecume: #5e7c96;
+  --m-ri-ile: #2e4a46;
+  --m-ri-ile-clair: #3d5c55;
+  --m-ri-sable-1: #9c8560;
+  --m-ri-sable-haut: #b39a71;
+  --m-ri-sable-2: #ab9570;
+  --m-ri-roche: #5e5750;
+  --m-ri-roche-clair: #756e66;
+  --m-ri-oyat: #7a7449;
+  --m-ri-phare: #d6cdbc;
+  --m-ri-phare-bande: #ad4c3f;
+  --m-ri-lanterne: #2e353d;
+  --m-ri-faisceau: rgba(255, 226, 146, 0.3);
+  --m-ri-coque: #5d3c28;
+  --m-ri-mat: #46301f;
+  --m-ri-voile-a: #d8d0c2;
+  --m-ri-voile-b: #c09a47;
+  --m-ri-coquille: #c0a391;
+  --m-ri-coquille-2: #a87a68;
+  --m-ri-etoile-mer: #bf6f4f;
+  --m-ri-etoile-mer-2: #c7916f;
+  --m-ri-crabe: #b35140;
+  --m-ri-cabane: #c3b59d;
+  --m-ri-cabane-toit: #3c7386;
+  --m-ri-vitre: #ffd37a;
+  --m-ri-mouette: #d6d2c8;
+  --m-ri-mouette-2: #b3bac0;
+  --m-ri-bec: #bd8435;
+  --m-ri-phoque: #777f86;
+
+  --m-ci-ciel-1: #182544;
+  --m-ci-ciel-2: #33435f;
+  --m-ci-ciel-3: #5d6880;
+  --m-ci-soleil: #ead9a8;
+  --m-ci-halo: rgba(234, 217, 168, 0.2);
+  --m-ci-nuage: #495171;
+  --m-ci-nuage-2: #3c4564;
+  --m-ci-mont-3: #4a5872;
+  --m-ci-mont-3-haut: #5a6983;
+  --m-ci-mont-2: #3a4760;
+  --m-ci-mont-2-haut: #49566f;
+  --m-ci-mont-1: #2b3548;
+  --m-ci-mont-1-haut: #3a4559;
+  --m-ci-lac: #2d4f66;
+  --m-ci-lac-clair: #3e6c86;
+  --m-ci-neige: #c6d4e4;
+  --m-ci-neige-2: #93a4bb;
+  --m-ci-neige-3: #8fa0b8;
+  --m-ci-brume: rgba(176, 196, 224, 0.26);
+  --m-ci-brume-2: rgba(176, 196, 224, 0.16);
+  --m-ci-sapin-3: #2c4440;
+  --m-ci-sapin-2: #223834;
+  --m-ci-sapin-1: #1a2c29;
+  --m-ci-sapin-1-clair: #223935;
+  --m-ci-tronc: #3f2f23;
+  --m-ci-roche: #4c4843;
+  --m-ci-roche-clair: #605b55;
+  --m-ci-chalet: #5e4230;
+  --m-ci-chalet-toit: #3b2a20;
+  --m-ci-chalet-porte: #3b2a20;
+  --m-ci-fenetre: #ffd37a;
+  --m-ci-bouquetin: #7a5c41;
+  --m-ci-corne: #b3a68e;
+  --m-ci-museau: #a28a74;
+  --m-ci-marmotte: #826549;
+  --m-ci-aigle: #3c322a;
+  --m-ci-aigle-2: #594c3e;
+  --m-ci-carotte: #b96a2d;
+
+  --m-et-ciel-1: #0e1226;
+  --m-et-ciel-2: #1e1c40;
+  --m-et-ciel-3: #3a2446;
+  --m-et-sol-2: #2e2954;
+  --m-et-sol-2-haut: #3d376c;
+  --m-et-sol-1: #1c1838;
+  --m-et-sol-1-haut: #28224b;
+  --m-et-cratere: #262046;
+    --m-et-planete-3: #bf6a47;
+}
+
+/* Même palette de nuit quand l'appareil est en mode sombre et
+   qu'aucun fond n'a encore été choisi : la page ne doit pas
+   éblouir avant le premier réglage. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --m-ombre: rgba(0, 0, 0, 0.3);
+    --m-cadre: rgba(255, 255, 255, 0.12);
+    --m-cl-ciel-1: #1c2744;
+    --m-cl-ciel-2: #3a4463;
+    --m-cl-ciel-3: #7b5a62;
+    --m-cl-soleil: #e8b071;
+    --m-cl-halo: rgba(232, 176, 113, 0.22);
+    --m-cl-nuage: #4a5272;
+    --m-cl-nuage-2: #3d4663;
+    --m-cl-colline-3: #46556a;
+    --m-cl-colline-3-haut: #55667c;
+    --m-cl-arbre-3: #3c5160;
+    --m-cl-colline-2: #3b5a52;
+    --m-cl-colline-2-haut: #4a6c62;
+    --m-cl-arbre-2: #2e4a44;
+    --m-cl-herbe: #2f5247;
+    --m-cl-herbe-haut: #3f6659;
+    --m-cl-arbre-1: #1f3c36;
+    --m-cl-arbre-1-clair: #2c5248;
+    --m-cl-tronc: #4a382a;
+    --m-cl-mur: #c8b79a;
+    --m-cl-toit: #8f4c40;
+    --m-ri-ciel-1: #182542;
+    --m-ri-ciel-2: #35425f;
+    --m-ri-ciel-3: #6f5567;
+    --m-ri-soleil: #e8b271;
+    --m-ri-mer-3: #2f4f68;
+    --m-ri-horizon: #49708b;
+    --m-ri-mer-2: #1f3c57;
+    --m-ri-mer-2-haut: #335573;
+    --m-ri-ecume: #5e7c96;
+    --m-ri-sable-1: #9c8560;
+    --m-ri-sable-haut: #b39a71;
+    --m-ri-phare: #d6cdbc;
+    --m-ci-ciel-1: #182544;
+    --m-ci-ciel-2: #33435f;
+    --m-ci-ciel-3: #5d6880;
+    --m-ci-mont-3: #4a5872;
+    --m-ci-mont-3-haut: #5a6983;
+    --m-ci-mont-2: #3a4760;
+    --m-ci-mont-2-haut: #49566f;
+    --m-ci-mont-1: #2b3548;
+    --m-ci-mont-1-haut: #3a4559;
+    --m-ci-neige: #c6d4e4;
+    --m-ci-neige-2: #93a4bb;
+    --m-ci-neige-3: #8fa0b8;
+    --m-ci-sapin-1: #1a2c29;
+    --m-ci-sapin-1-clair: #223935;
+    --m-et-ciel-1: #0e1226;
+    --m-et-ciel-2: #1e1c40;
+    --m-et-ciel-3: #3a2446;
+  }
+}
+
+/* ===============================================================
+   Le cadre du décor
+   =============================================================== */
+
+.monde {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  border-radius: 22px;
+  box-shadow: var(--ombre), inset 0 0 0 2px var(--m-cadre);
+  /* Un décor ne se touche jamais et ne gêne jamais un bouton posé
+     par-dessus : il n'intercepte aucun geste. */
+  pointer-events: none;
+  /* Les plans sont composés entre eux, pas avec le reste de la page :
+     le défilement reste fluide sur un iPhone. */
+  isolation: isolate;
+  contain: paint;
+}
+
+.monde-plan {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* L'ombre portée du papier découpé. */
+.monde-ombre { fill: var(--m-ombre); }
+
+/* Le ciel de chaque contrée : un dégradé, pas une image. */
+.monde--clairiere {
+  background: linear-gradient(to bottom,
+    var(--m-cl-ciel-1) 0%, var(--m-cl-ciel-2) 44%, var(--m-cl-ciel-3) 74%);
+}
+.monde--rivage {
+  background: linear-gradient(to bottom,
+    var(--m-ri-ciel-1) 0%, var(--m-ri-ciel-2) 40%, var(--m-ri-ciel-3) 70%);
+}
+.monde--cimes {
+  background: linear-gradient(to bottom,
+    var(--m-ci-ciel-1) 0%, var(--m-ci-ciel-2) 46%, var(--m-ci-ciel-3) 78%);
+}
+.monde--etoiles {
+  background: linear-gradient(to bottom,
+    var(--m-et-ciel-1) 0%, var(--m-et-ciel-2) 52%, var(--m-et-ciel-3) 100%);
+}
+
+/* Jour et nuit : le même décor porte les deux ciels, on n'en montre
+   qu'un. Changer de fond de lecture change le ciel, sans rien
+   reconstruire. */
+.monde-nuit { display: none; }
+html[data-fond="sombre"] .monde-jour { display: none; }
+html[data-fond="sombre"] .monde-nuit { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) .monde-jour { display: none; }
+  :root:not([data-fond]) .monde-nuit { display: block; }
+}
+
+/* ===============================================================
+   La zone sûre — le seul endroit où du texte peut être posé
+   =============================================================== */
+
+.monde-voile {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 32%;
+  opacity: 0;
+  transition: opacity var(--duree-anim) ease;
+  pointer-events: none;
+}
+.monde-voile--haut {
+  top: 0;
+  background: linear-gradient(to bottom, var(--m-voile) 0%, var(--m-voile) 46%, var(--m-voile-0) 100%);
+}
+.monde-voile--bas {
+  bottom: 0;
+  background: linear-gradient(to top, var(--m-voile) 0%, var(--m-voile) 42%, var(--m-voile-0) 100%);
+}
+.monde--voile-haut .monde-voile--haut { opacity: 1; }
+.monde--voile-bas .monde-voile--bas { opacity: 1; }
+
+/* Texte posé par l'intégrateur dans la zone sûre. */
+.monde-texte {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 12px 18px;
+  max-width: none;
+  color: var(--texte);
+  font-weight: 700;
+  pointer-events: none;
+}
+.monde-texte--haut { top: 0; }
+.monde-texte--bas { bottom: 0; }
+
+/* ===============================================================
+   Les pousses : ce qui apparaît à chaque bonne réponse
+   =============================================================== */
+
+.monde-pousse-c {
+  /* Une pousse grandit depuis sa base, posée au sol : l'origine est
+     le point (0,0) de son groupe, c'est-à-dire ses pieds. */
+  transform-origin: 0px 0px;
+}
+
+@keyframes monde-pousser {
+  0%   { transform: scale(0.05) translateY(10px); opacity: 0; }
+  45%  { opacity: 1; }
+  65%  { transform: scale(1.14) translateY(-2px); }
+  82%  { transform: scale(0.95) translateY(0); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+/* Le ressort du contrat : ça pousse, ça dépasse, ça se repose. */
+.monde-pousse.neuve > .monde-pousse-c {
+  animation: monde-pousser 660ms cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+/* ===============================================================
+   La vie du décor — lente, en boucle, jamais agitée
+   =============================================================== */
+
+@keyframes monde-derive {
+  from { transform: translateX(-16px); }
+  to   { transform: translateX(20px); }
+}
+.monde-nuage { animation: monde-derive 64s ease-in-out infinite alternate; }
+.monde-derive-a { animation-duration: 58s; }
+.monde-derive-b { animation-duration: 78s; animation-delay: -20s; }
+.monde-derive-c { animation-duration: 96s; animation-delay: -40s; }
+
+@keyframes monde-vague {
+  from { transform: translateX(0); }
+  to   { transform: translateX(24px); }
+}
+.monde-vague-a { animation: monde-vague 12s ease-in-out infinite alternate; }
+.monde-vague-b { animation: monde-vague 8.5s ease-in-out infinite alternate reverse; }
+
+@keyframes monde-brume {
+  from { transform: translateX(-22px); opacity: 0.55; }
+  to   { transform: translateX(26px); opacity: 1; }
+}
+.monde-brume-a { animation: monde-brume 46s ease-in-out infinite alternate; }
+.monde-brume-b { animation: monde-brume 64s ease-in-out infinite alternate reverse; }
+
+@keyframes monde-scintille {
+  from { opacity: 0.35; }
+  to   { opacity: 1; }
+}
+.monde-scintille {
+  opacity: 0.85;
+  animation: monde-scintille 5s ease-in-out infinite alternate;
+}
+
+@keyframes monde-faisceau {
+  from { opacity: 0.45; }
+  to   { opacity: 1; }
+}
+.monde-faisceau { animation: monde-faisceau 7s ease-in-out infinite alternate; }
+
+/* Une comète ne passe pas toutes les trois secondes : elle traverse
+   le ciel une fois par minute, doucement, puis s'efface. */
+@keyframes monde-comete {
+  0%   { transform: translate(-70px, 172px); opacity: 0; }
+  4%   { opacity: 1; }
+  26%  { opacity: 1; }
+  34%  { transform: translate(468px, 86px); opacity: 0; }
+  100% { transform: translate(468px, 86px); opacity: 0; }
+}
+.monde-comete {
+  opacity: 0;
+  animation: monde-comete 62s linear infinite;
+}
+
+@keyframes monde-voltige {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(5px, -5px); }
+  100% { transform: translate(0, 0); }
+}
+.monde-voltige { animation: monde-voltige 7s ease-in-out infinite; }
+
+@keyframes monde-flotte {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+.monde-flotte { animation: monde-flotte 9s ease-in-out infinite; }
+
+@keyframes monde-pulse {
+  from { opacity: 0.6; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1.05); }
+}
+.monde-pulse {
+  transform-origin: 0px 0px;
+  animation: monde-pulse 3.6s ease-in-out infinite alternate;
+}
+
+/* Le parallaxe ne prépare la couche graphique que quand il sert. */
+.monde--parallaxe .monde-plan { will-change: transform; }
+
+/* ===============================================================
+   La coupure du mouvement. Le décor reste entier : il s'immobilise.
+   =============================================================== */
+
+html[data-animations="non"] .monde,
+html[data-animations="non"] .monde *,
+html[data-animations="non"] .monde-vignette,
+html[data-animations="non"] .monde-vignette *,
+.monde--fige,
+.monde--fige * {
+  animation: none !important;
+  transition: none !important;
+}
+/* La comète est invisible au repos : sans son animation, elle ne doit
+   pas rester plantée en bas à gauche du ciel. */
+html[data-animations="non"] .monde-comete,
+.monde--fige .monde-comete { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .monde, .monde *, .monde-vignette, .monde-vignette * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .monde-comete { display: none; }
+}
+
+/* ===============================================================
+   Vignettes — le décor en pictogramme
+   =============================================================== */
+
+.monde-vignette {
+  display: block;
+  border-radius: 20%;
+  overflow: hidden;
+  box-shadow: var(--ombre), inset 0 0 0 2px var(--m-cadre);
+}

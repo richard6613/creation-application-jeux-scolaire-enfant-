@@ -9,7 +9,7 @@
    récupérée en arrière-plan quand il y en a une.
    --------------------------------------------------------------- */
 
-var VERSION = 'mes-jeux-5f7881f0af94';
+var VERSION = 'mes-jeux-7a7ba39cba34';
 
 var FICHIERS = [
   './',
@@ -18,10 +18,14 @@ var FICHIERS = [
   './assets/css/tokens.css',
   './assets/css/base.css',
   './assets/css/composants.css',
+  './assets/css/monde.css',
+  './assets/css/filou.css',
+  './assets/css/quetes.css',
   './assets/js/version.js',
   './assets/js/stockage.js',
   './assets/js/reglages.js',
   './assets/js/voix.js',
+  './assets/js/sons.js',
   './assets/js/adaptatif.js',
   './assets/js/ui.js',
   './assets/js/compagnon.js',
@@ -29,7 +33,9 @@ var FICHIERS = [
   './assets/js/collection.js',
   './assets/js/garderobe.js',
   './assets/js/scene.js',
+  './assets/js/monde.js',
   './assets/js/grade.js',
+  './assets/js/quetes.js',
   './assets/js/parcours.js',
   './assets/js/glisser.js',
   './assets/js/data/lexique.js',

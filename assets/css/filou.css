@@ -1,0 +1,493 @@
+/* ---------------------------------------------------------------
+   filou.css — Filou vivant, et sa boutique.
+
+   Deux principes tiennent tout ce fichier :
+
+   1. Le mouvement est en CSS, jamais en JavaScript. Une règle CSS
+      se coupe net ; une boucle de minuteries, non. Les animations
+      sont donc toutes sous html:not([data-animations="non"]), et
+      annulées une seconde fois sous prefers-reduced-motion. Filou
+      immobile reste exactement aussi lisible : son dessin ne doit
+      rien à ses animations.
+
+   2. Rien n'est animé en « transform: none » quand on coupe : sur
+      un SVG, la propriété CSS transform écrase l'attribut transform
+      du dessin, et Filou se démonterait. On coupe l'animation, pas
+      la transformation.
+   --------------------------------------------------------------- */
+
+/* ------------------------- Nuances de Filou -------------------------
+   Les couleurs du chat lui-même vivent dans tokens.css (--filou-poil,
+   --filou-oreille, --filou-museau, --filou-joue, --filou-nez,
+   --filou-langue, --filou-trait). Ici, celles de ses petits détails
+   et de ses affaires : elles n'existaient pas encore. */
+:root {
+  --filou-reflet: #fffaf2;       /* l'étincelle dans l'œil */
+  --filou-eclat: #e8ae3c;        /* les étoiles de joie */
+  --filou-bulle: #b9c6d4;        /* bulles de sommeil, points de réflexion */
+  --filou-coeur: #e07f86;
+
+  /* La garde-robe */
+  --filou-or: #d9a227;
+  --filou-or-fonce: #ab7b16;
+  --filou-gemme: #5f8fd0;
+  --filou-laine: #b2574f;
+  --filou-laine-clair: #e8d6bd;
+  --filou-laine-fonce: #8e3f39;
+  --filou-magie: #6a56a8;
+  --filou-magie-clair: #8b76c7;
+  --filou-metal: #93a0ad;
+  --filou-verre: #cfe2f2;
+  --filou-cape: #3f6fa8;
+  --filou-cape-clair: #7fa5cf;
+  --filou-bois: #93642f;
+  --filou-bois-clair: #c69a5c;
+  --filou-plume: #e9e2d4;
+  --filou-nuit: #2f3a63;
+  --filou-lueur: #f0c34f;
+}
+
+/* Appareil en mode sombre, avant tout choix de fond : même logique
+   que tokens.css, on ne joue que si aucun fond n'a été choisi. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --filou-reflet: #fff6e6;
+    --filou-eclat: #f0c361;
+    --filou-bulle: #8d9aa8;
+    --filou-coeur: #e9949a;
+    --filou-or: #e5b955;
+    --filou-or-fonce: #b98f2c;
+    --filou-gemme: #7fabe2;
+    --filou-laine: #c4675e;
+    --filou-laine-clair: #efe0cb;
+    --filou-laine-fonce: #9b4a43;
+    --filou-magie: #8470c4;
+    --filou-magie-clair: #a492db;
+    --filou-metal: #aab6c2;
+    --filou-verre: #93b6d6;
+    --filou-cape: #5b8ac2;
+    --filou-cape-clair: #8fb4dc;
+    --filou-bois: #ab7a44;
+    --filou-bois-clair: #d4ab70;
+    --filou-plume: #f1ece1;
+    --filou-nuit: #3d4a7a;
+    --filou-lueur: #f6d478;
+  }
+}
+
+/* Fond sombre choisi : les accessoires s'éclaircissent, sinon une
+   cape bleu nuit sur un fond anthracite devient une tache noire. */
+:root[data-fond="sombre"] {
+  --filou-reflet: #fff6e6;
+  --filou-eclat: #f0c361;
+  --filou-bulle: #8d9aa8;
+  --filou-coeur: #e9949a;
+  --filou-or: #e5b955;
+  --filou-or-fonce: #b98f2c;
+  --filou-gemme: #7fabe2;
+  --filou-laine: #c4675e;
+  --filou-laine-clair: #efe0cb;
+  --filou-laine-fonce: #9b4a43;
+  --filou-magie: #8470c4;
+  --filou-magie-clair: #a492db;
+  --filou-metal: #aab6c2;
+  --filou-verre: #93b6d6;
+  --filou-cape: #5b8ac2;
+  --filou-cape-clair: #8fb4dc;
+  --filou-bois: #ab7a44;
+  --filou-bois-clair: #d4ab70;
+  --filou-plume: #f1ece1;
+  --filou-nuit: #3d4a7a;
+  --filou-lueur: #f6d478;
+}
+
+/* ------------------------- Filou habillé -------------------------
+   Les accessoires sont des calques posés autour du chat. L'ordre de
+   peinture ne peut pas venir du seul ordre du DOM : un SVG non
+   positionné se peint avant tout élément positionné. D'où les
+   z-index — l'aura et la cape derrière, le chat, puis le reste. */
+
+.filou-boite > .filou {
+  position: relative;
+  z-index: 2;
+}
+
+.filou-calque {
+  position: absolute;
+  line-height: 1;
+  pointer-events: none;
+  display: block;
+  z-index: 3;
+}
+.filou-calque > svg { display: block; overflow: visible; }
+
+.filou-calque-aura,
+.filou-calque-dos { z-index: 1; }
+
+/* Un chapeau se pose PAR LE BAS sur le haut du crâne ; tout le reste
+   se centre sur son point d'accroche. */
+.filou-calque-chapeau { transform: translate(-50%, -100%); }
+.filou-calque-lunettes,
+.filou-calque-cou,
+.filou-calque-tenu,
+.filou-calque-dos,
+.filou-calque-aura { transform: translate(-50%, -50%); }
+
+/* ------------------------- Filou vivant -------------------------
+   Respiration, clignement, queue : rien de spectaculaire. C'est
+   justement ce qui fait qu'un personnage semble vivant plutôt que
+   collé sur la page. Tout est lent — la respiration dure quatre
+   secondes, le clignement arrive toutes les six à neuf secondes, et
+   la durée exacte est tirée au sort par chaque Filou (voir
+   compagnon.js) pour que deux chats ne soient jamais synchrones. */
+
+.filou .f-corps,
+.filou .f-tete,
+.filou .f-queue,
+.filou .f-oeil,
+.filou .f-bras-d,
+.filou .f-eclat,
+.filou .f-point,
+.filou .f-bulle,
+.filou .f-aura-tour {
+  /* Sans fill-box, l'origine d'une rotation SVG se calcule depuis le
+     coin du cadre entier et le mouvement partirait de travers. */
+  transform-box: fill-box;
+}
+
+.filou .f-corps { transform-origin: 50% 100%; }
+.filou .f-tete { transform-origin: 50% 96%; }
+.filou .f-queue { transform-origin: 86% 90%; }
+.filou .f-queue-buste { transform-origin: 70% 100%; }
+.filou .f-oeil { transform-origin: 50% 50%; }
+.filou .f-bras-d { transform-origin: 22% 88%; }
+.filou .f-eclat,
+.filou .f-point,
+.filou .f-bulle,
+.filou .f-aura-tour { transform-origin: 50% 50%; }
+
+@keyframes f-respire {
+  0%, 100% { transform: scale(1, 1); }
+  50%      { transform: scale(1.025, 0.975); }
+}
+@keyframes f-tete-vit {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  35%      { transform: rotate(1.4deg) translateY(-0.6px); }
+  70%      { transform: rotate(-1.2deg) translateY(0.3px); }
+}
+@keyframes f-queue-onde {
+  0%, 100% { transform: rotate(0deg); }
+  30%      { transform: rotate(7deg); }
+  65%      { transform: rotate(-5deg); }
+}
+/* Le clignement : 94 % du cycle les yeux sont ouverts. Un cycle long
+   et un seul battement court, c'est ça qui fait « vivant » ; un
+   clignement régulier ferait métronome. */
+@keyframes f-cligne {
+  0%, 92%, 100% { transform: scaleY(1); }
+  94%           { transform: scaleY(0.08); }
+  96%           { transform: scaleY(1); }
+}
+@keyframes f-scintille {
+  0%, 100% { transform: scale(0.7) rotate(0deg); opacity: 0.45; }
+  50%      { transform: scale(1.15) rotate(25deg); opacity: 1; }
+}
+@keyframes f-monte {
+  0%   { transform: translateY(6px) scale(0.6); opacity: 0; }
+  30%  { opacity: 0.95; }
+  100% { transform: translateY(-6px) scale(1.05); opacity: 0; }
+}
+@keyframes f-coucou-patte {
+  0%, 100% { transform: rotate(-14deg); }
+  50%      { transform: rotate(16deg); }
+}
+@keyframes f-aura-tourne {
+  0%, 100% { transform: scale(0.97); opacity: 0.85; }
+  50%      { transform: scale(1.04); opacity: 1; }
+}
+
+html:not([data-animations="non"]) .filou .f-corps {
+  animation: f-respire var(--f-resp, 3.8s) ease-in-out infinite;
+}
+html:not([data-animations="non"]) .filou .f-tete {
+  animation: f-tete-vit 6.4s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .filou .f-queue {
+  animation: f-queue-onde var(--f-queue, 5s) ease-in-out infinite;
+  animation-delay: var(--f-queue-retard, 0s);
+}
+html:not([data-animations="non"]) .filou .f-oeil {
+  animation: f-cligne var(--f-cligne, 7s) ease-in-out infinite;
+  animation-delay: var(--f-cligne-retard, 0s);
+}
+html:not([data-animations="non"]) .filou .f-eclat {
+  animation: f-scintille 2.4s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .filou .f-eclat-2 { animation-delay: 0.5s; }
+html:not([data-animations="non"]) .filou .f-eclat-3 { animation-delay: 1s; }
+
+html:not([data-animations="non"]) .filou .f-point,
+html:not([data-animations="non"]) .filou .f-bulle {
+  animation: f-monte 3.4s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .filou .f-point-2,
+html:not([data-animations="non"]) .filou .f-bulle-2 { animation-delay: 0.6s; }
+html:not([data-animations="non"]) .filou .f-point-3,
+html:not([data-animations="non"]) .filou .f-bulle-3 { animation-delay: 1.2s; }
+
+html:not([data-animations="non"]) .filou-calque .f-aura-tour {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: f-aura-tourne 4.6s ease-in-out infinite;
+}
+
+/* ------------------------- Humeurs qui bougent toutes seules ------------------------- */
+
+/* Il dort : il respire plus lentement, et sa tête ne cherche rien. */
+html:not([data-animations="non"]) .filou-dort .f-corps { animation-duration: 6.2s; }
+html:not([data-animations="non"]) .filou-dort .f-tete { animation: none; }
+html:not([data-animations="non"]) .filou-dort .f-queue { animation-duration: 8s; }
+
+/* Il fait coucou : la patte levée salue, en boucle douce. */
+html:not([data-animations="non"]) .filou-coucou .f-bras-d {
+  animation: f-coucou-patte 1.3s ease-in-out infinite;
+}
+
+/* Il réfléchit : rien d'autre que les bulles. Pas de tête qui remue
+   — on ne met jamais ça devant un enfant en train de lire, et une
+   image calme reste calme. */
+html:not([data-animations="non"]) .filou-reflechit .f-tete { animation: none; }
+
+@keyframes f-saut-doux {
+  0%, 62%, 100% { transform: translateY(0) scale(1, 1); }
+  10%           { transform: translateY(1px) scale(1.06, 0.92); }
+  32%           { transform: translateY(-12%) scale(0.96, 1.07); }
+  52%           { transform: translateY(0) scale(1.05, 0.95); }
+}
+/* L'humeur « saute » : il rebondit, avec un temps d'arrêt entre deux
+   sauts. Sans pause, ça devient un clignotement. */
+html:not([data-animations="non"]) .filou-saute {
+  animation: f-saut-doux 1.8s cubic-bezier(.34, 1.56, .64, 1) infinite;
+}
+
+@keyframes f-sursaut {
+  0%   { transform: scale(0.9, 1.1); }
+  60%  { transform: scale(1.04, 0.97); }
+  100% { transform: scale(1, 1); }
+}
+html:not([data-animations="non"]) .filou-surprise {
+  animation: f-sursaut 420ms cubic-bezier(.34, 1.56, .64, 1) 1;
+}
+
+/* ------------------------- Animations déclenchables -------------------------
+   Déclenchées par Jeu.Compagnon.animer(). Les durées sont écrites
+   deux fois, ici et dans compagnon.js (DUREES) : il faut savoir
+   quand retirer la classe pour pouvoir rejouer l'animation. */
+
+@keyframes f-saut {
+  0%   { transform: translateY(0) scale(1, 1); }
+  14%  { transform: translateY(2px) scale(1.1, 0.88); }
+  42%  { transform: translateY(-22%) scale(0.92, 1.12); }
+  70%  { transform: translateY(0) scale(1.08, 0.92); }
+  85%  { transform: translateY(-4%) scale(0.98, 1.02); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+@keyframes f-salue-corps {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-5deg); }
+}
+@keyframes f-danse {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  20%      { transform: rotate(-8deg) translateY(-4%); }
+  45%      { transform: rotate(7deg) translateY(0); }
+  70%      { transform: rotate(-6deg) translateY(-3%); }
+}
+@keyframes f-tourne {
+  0%   { transform: scaleX(1); }
+  50%  { transform: scaleX(-1); }
+  100% { transform: scaleX(1); }
+}
+@keyframes f-etire {
+  0%, 100% { transform: scale(1, 1); }
+  45%      { transform: scale(0.94, 1.1) translateY(-3%); }
+  75%      { transform: scale(1.03, 0.97); }
+}
+@keyframes f-nod {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  25%      { transform: rotate(0deg) translateY(6%); }
+  60%      { transform: rotate(0deg) translateY(-2%); }
+}
+@keyframes f-shake {
+  0%, 100% { transform: rotate(0deg); }
+  25%      { transform: rotate(-7deg); }
+  75%      { transform: rotate(7deg); }
+}
+
+html:not([data-animations="non"]) .filou.filou-anime-saute {
+  animation: f-saut 900ms cubic-bezier(.34, 1.56, .64, 1) 1;
+}
+html:not([data-animations="non"]) .filou.filou-anime-salue {
+  animation: f-salue-corps 600ms ease-in-out 2;
+}
+html:not([data-animations="non"]) .filou.filou-anime-salue .f-bras-d {
+  animation: f-coucou-patte 300ms ease-in-out 4;
+}
+html:not([data-animations="non"]) .filou.filou-anime-danse {
+  animation: f-danse 800ms ease-in-out 2;
+}
+html:not([data-animations="non"]) .filou.filou-anime-tourne {
+  animation: f-tourne 900ms cubic-bezier(.22, 1, .36, 1) 1;
+}
+html:not([data-animations="non"]) .filou.filou-anime-etire {
+  animation: f-etire 1000ms cubic-bezier(.34, 1.56, .64, 1) 1;
+}
+html:not([data-animations="non"]) .filou.filou-anime-oui .f-tete {
+  animation: f-nod 400ms ease-in-out 2;
+}
+html:not([data-animations="non"]) .filou.filou-anime-non .f-tete {
+  animation: f-shake 400ms ease-in-out 2;
+}
+
+.filou.filou-anime-saute,
+.filou.filou-anime-etire,
+.filou.filou-anime-danse,
+.filou.filou-anime-tourne,
+.filou.filou-anime-salue {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+/* ------------------------- La coupure, pour de vrai -------------------------
+   On annule l'animation, JAMAIS la transformation : sur un SVG,
+   « transform: none » écraserait l'attribut transform du dessin et
+   démonterait le chat. Filou s'arrête net, et reste entier. */
+html[data-animations="non"] .filou,
+html[data-animations="non"] .filou *,
+html[data-animations="non"] .filou-calque,
+html[data-animations="non"] .filou-calque * {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .filou,
+  .filou *,
+  .filou-calque,
+  .filou-calque * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* =================================================================
+   LA BOUTIQUE DE FILOU
+   ================================================================= */
+
+.boutique-filou { display: block; }
+
+.boutique-vitrine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+/* La scène garde sa hauteur quoi qu'il arrive : un chapeau qui
+   dépasse ne doit pas faire sauter la page à chaque essai. */
+.boutique-scene {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 150px;
+  /* Un grand chapeau dépasse du cadre de Filou par le haut : on lui
+     réserve la place, sinon il mord sur le titre de l'écran. */
+  padding-top: 58px;
+  width: 100%;
+}
+
+.boutique-dit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+.boutique-dit p { margin: 0; }
+
+.boutique-bourse {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+}
+.boutique-piece { font-size: 1.4em; line-height: 1; }
+.boutique-bourse strong { font-size: 1.3em; }
+
+.boutique-mot {
+  margin: 12px 0 0;
+  min-height: 1.6em;      /* la place est réservée : pas de saut de page */
+  color: var(--texte);
+}
+.boutique-mot:empty { min-height: 0.8em; }
+
+.boutique-rayon { margin-top: 22px; }
+
+.boutique-titre {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 6px;
+  font-size: 1em;
+  color: var(--texte);
+}
+.boutique-ic { font-size: 1.3em; line-height: 1; }
+
+/* Des cases plus larges que l'étagère d'origine : « Chapeau de
+   magicien » doit tenir sans être coupé, même avec le texte au
+   maximum et l'espacement au maximum. */
+.boutique-filou .etagere {
+  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+}
+
+.boutique-filou .article {
+  min-height: 124px;
+  gap: 4px;
+  justify-content: flex-start;
+  padding-top: 10px;
+}
+
+.boutique-vignette {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+}
+.boutique-vignette.signe { font-size: 2.2rem; line-height: 1; }
+.boutique-vignette svg { display: block; }
+
+.boutique-nom {
+  font-size: 0.82rem;
+  line-height: 1.25;
+  text-align: center;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.boutique-filou .article.a-acheter .boutique-vignette { opacity: 0.7; }
+.boutique-filou .article.a-acheter .boutique-nom { color: var(--texte-doux); }
+
+/* Ce qui est porté se voit d'un coup d'œil, sans avoir à lire. */
+.boutique-filou .article.portee { border-width: 4px; }
+.boutique-filou .article.portee .boutique-nom { font-weight: 700; }
+
+.boutique-but { margin: 14px 0 0; }
+
+/* Le focus clavier doit rester visible sur fond sombre comme clair. */
+.boutique-filou .article:focus-visible {
+  outline: 4px solid var(--accent);
+  outline-offset: 3px;
+}
