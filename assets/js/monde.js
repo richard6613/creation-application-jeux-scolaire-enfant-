@@ -181,6 +181,19 @@ Jeu.Monde = (function () {
       '<stop offset="100%" style="stop-color:var(' + v + ');stop-opacity:0"/>' +
       '</radialGradient>';
   }
+  /* Un fondu horizontal : une traînée de comète ou un faisceau de
+     phare ne s'arrête pas net, il s'éteint. Le dégradé part du côté
+     droit de la forme (x1 = 1), là où se trouve la source. */
+  function defFondu(id, v, a) {
+    return '<linearGradient id="' + id + '" x1="1" y1="0" x2="0" y2="0">' +
+      '<stop offset="0%" style="stop-color:var(' + v + ');stop-opacity:' + a + '"/>' +
+      '<stop offset="100%" style="stop-color:var(' + v + ');stop-opacity:0"/>' +
+      '</linearGradient>';
+  }
+  function fondu(d, id) {
+    return '<path d="' + d + '" fill="url(#' + id + ')"/>';
+  }
+
   function halo(id, x, y, r) {
     return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="url(#' + id + ')"/>';
   }
@@ -388,14 +401,14 @@ Jeu.Monde = (function () {
       }
     },
     pousses: [
-      ['fleurRose', 86, 240, 1], ['buisson', 196, 236, 1],
-      ['fleurJaune', 132, 250, 1.05], ['arbre', 282, 234, 1],
-      ['papillon', 170, 210, 0.95], ['champignon', 110, 258, 1],
-      ['fleurViolette', 244, 251, 1], ['lapin', 218, 256, 1],
-      ['fleurRose', 262, 230, 0.85], ['ruche', 330, 248, 0.9],
-      ['escargot', 150, 260, 1], ['fleurJaune', 68, 257, 0.9],
-      ['buisson', 348, 232, 0.8], ['fleurViolette', 202, 260, 1.1],
-      ['champignon', 296, 259, 0.9], ['arbre', 126, 228, 0.6]
+      ['fleurRose', 78, 238, 1], ['buisson', 196, 234, 1],
+      ['fleurJaune', 128, 252, 1.05], ['arbre', 286, 232, 1],
+      ['papillon', 166, 208, 0.95], ['champignon', 100, 258, 1],
+      ['fleurViolette', 236, 252, 1], ['lapin', 338, 250, 1],
+      ['fleurRose', 262, 228, 0.85], ['ruche', 56, 254, 0.9],
+      ['escargot', 180, 262, 1], ['fleurJaune', 310, 258, 0.9],
+      ['buisson', 360, 230, 0.8], ['fleurViolette', 214, 262, 1.1],
+      ['champignon', 276, 260, 0.9], ['arbre', 140, 226, 0.6]
     ]
   };
 
@@ -448,20 +461,27 @@ Jeu.Monde = (function () {
           ch('M3,-42 L26,-6 L3,-6 Z', '--m-ri-voile-a') +
           ch('M-3,-37 L-19,-6 L-3,-6 Z', '--m-ri-voile-b'));
     },
-    pres: function () {
+    pres: function (u) {
       var d = 'M-20,212 C34,198 72,206 118,208 C166,210 206,198 252,203 ' +
               'C304,208 352,218 420,210 L420,' + BAS + ' L-20,' + BAS + ' Z';
       var ecume = 'M-60,210 q18,-10 36,0 t36,0 t36,0 t36,0 t36,0 t36,0 t36,0 t36,0 t36,0 t36,0 t36,0 t36,0' +
                   ' l0,14 L-60,224 Z';
-      return g(0, 0, 1, 'monde-vague-b', ch(ecume, '--m-ri-ecume')) +
+      /* Le sable mouillé : une bande plus sombre là où la vague
+         vient de se retirer. C'est ce qui rattache la mer à la plage. */
+      var mouille = 'M-20,210 C34,196 72,204 118,206 C166,208 206,196 252,201 ' +
+                    'C304,206 352,216 420,208 L420,228 L-20,232 Z';
+      return '<defs>' + defFondu('f' + u, '--m-ri-faisceau', 0.55) + '</defs>' +
+        g(0, 0, 1, 'monde-vague-b', ch(ecume, '--m-ri-ecume')) +
         sol(d, '--m-ri-sable-1', '--m-ri-sable-haut', 7) +
+        ch(mouille, '--m-ri-sable-mouille') +
         /* Le phare, planté dans la plage : le point le plus haut de
            la contrée, celui qu'on cherche des yeux en arrivant. */
         g(330, 216, 1, '',
           ch('M-44,4 L-33,-18 L-14,-28 L6,-21 L22,-4 L26,4 Z', '--m-ri-roche') +
           ch('M-33,-18 L-14,-28 L-6,-23 L-20,-4 Z', '--m-ri-roche-clair') +
           g(-12, -24, 1.08, '',
-            ch('M-128,-54 L-7,-70 L-7,-40 Z', '--m-ri-faisceau', 'monde-faisceau') +
+            '<g class="monde-faisceau">' +
+              fondu('M-132,-62 L-7,-68 L-7,-44 Z', 'f' + u) + '</g>' +
             ch('M-13,0 L-9,-58 L9,-58 L13,0 Z', '--m-ri-phare') +
             ch('M-11.4,-20 L11.4,-20 L10.6,-34 L-10.6,-34 Z', '--m-ri-phare-bande') +
             ch('M-9.6,-44 L9.6,-44 L9.2,-54 L-9.2,-54 Z', '--m-ri-phare-bande') +
@@ -642,11 +662,13 @@ Jeu.Monde = (function () {
       },
       aigle: function () {
         return g(0, 0, 1, 'monde-voltige',
-          ch('M0,-4 C-24,-19 -32,-6 -9,0 Z', '--m-ci-aigle') +
-          ch('M0,-4 C24,-19 32,-6 9,0 Z', '--m-ci-aigle') +
-          ovale(0, -4, 7.5, 5, '--m-ci-aigle-2') +
-          cercle(8, -9, 4, '--m-ci-aigle-2') +
-          ch('M11,-9 L18,-7 L11,-5 Z', '--m-ci-carotte'));
+          ch('M-2,-6 C-14,-18 -28,-22 -36,-15 C-26,-13 -13,-8 -4,-2 Z', '--m-ci-aigle') +
+          ch('M2,-6 C14,-18 28,-22 36,-15 C26,-13 13,-8 4,-2 Z', '--m-ci-aigle') +
+          ch('M-9,-3 L-19,4 L-4,0 Z', '--m-ci-aigle') +
+          ovale(0, -5, 8, 4.5, '--m-ci-aigle-2') +
+          cercle(9, -9, 4.2, '--m-ci-aigle-2') +
+          ch('M12,-9 L19,-7 L12,-5 Z', '--m-ci-carotte') +
+          cercle(10, -10, 1.4, '--m-ci-oeil'));
       },
       bonhomme: function () {
         return cercle(0, -12, 13, '--m-ci-neige') +
@@ -686,6 +708,8 @@ Jeu.Monde = (function () {
         '</defs>' +
         '<ellipse cx="108" cy="86" rx="130" ry="62" fill="url(#n1' + u + ')"/>' +
         '<ellipse cx="310" cy="58" rx="104" ry="48" fill="url(#n2' + u + ')"/>' +
+          defFondu('q' + u, '--m-et-queue', 0.5) +
+          defHalo('he' + u, '--m-et-etoile', 0.8) +
         etoilesDuCiel(semis(32, 8, 396, 12, 186, 2029), '--m-et-etoile') +
         etoilesDuCiel(semis(10, 20, 380, 16, 86, 9377), '--m-et-etoile-2');
     },
@@ -702,8 +726,8 @@ Jeu.Monde = (function () {
         cercle(6, 4, 3.2, '--m-et-lune-2') +
         cercle(-2, 8, 2.4, '--m-et-lune-2'));
       var comete = g(0, 0, 1, 'monde-comete',
-        ch('M0,0 L-50,-10 L-50,10 Z', '--m-et-queue') +
-        halo('n1' + u, 0, 0, 16) +
+        fondu('M2,-7 L-62,-2 L-62,2 L2,7 Z', 'q' + u) +
+        halo('he' + u, 0, 0, 18) +
         cercle(0, 0, 6, '--m-et-etoile'));
       return planete + lune + comete;
     },
@@ -724,10 +748,11 @@ Jeu.Monde = (function () {
         rocher(62, 254, 0.8, '--m-et-sol-1-haut', null);
     },
     formes: {
-      etoile: function () {
+      etoile: function (u) {
         return g(0, 0, 1, 'monde-pulse',
-          '<path transform="translate(0,-14)" d="M0,-16 L4.7,-5.8 L15.4,-5 L7.3,1.8 ' +
-          'L9.5,12.4 L0,7 L-9.5,12.4 L-7.3,1.8 L-15.4,-5 L-4.7,-5.8 Z"' +
+          halo('he' + u, 0, -14, 26) +
+          '<path transform="translate(0,-14)" d="M0,-13 L3.8,-4.7 L12.5,-4 L5.9,1.5 ' +
+          'L7.7,10 L0,5.7 L-7.7,10 L-5.9,1.5 L-12.5,-4 L-3.8,-4.7 Z"' +
           S('--m-et-etoile') + '/>');
       },
       planete: function () {
@@ -752,10 +777,11 @@ Jeu.Monde = (function () {
           trait('M0,-26 L0,-34', '--m-et-fusee-3', 2) +
           cercle(0, -36, 3.6, '--m-et-etoile'));
       },
-      comete: function () {
+      comete: function (u) {
         return g(0, 0, 1, '',
-          ch('M0,0 L-36,-8 L-36,8 Z', '--m-et-queue') +
-          cercle(0, 0, 6, '--m-et-etoile', 'monde-pulse'));
+          fondu('M2,-5 L-44,-1.5 L-44,1.5 L2,5 Z', 'q' + u) +
+          halo('he' + u, 0, 0, 14) +
+          cercle(0, 0, 5, '--m-et-etoile', 'monde-pulse'));
       },
       constellation: function () {
         return g(0, 0, 1, '',
@@ -1097,7 +1123,7 @@ Jeu.Monde = (function () {
       var ext = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       ext.setAttribute('transform', 'translate(' + x + ',' + y + ') scale(' + s + ')');
       ext.setAttribute('class', 'monde-pousse' + (neuve ? ' neuve' : ''));
-      ext.innerHTML = '<g class="monde-pousse-c">' + forme() + '</g>';
+      ext.innerHTML = '<g class="monde-pousse-c">' + forme(u) + '</g>';
       couche.appendChild(ext);
       return ext;
     }

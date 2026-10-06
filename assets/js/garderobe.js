@@ -137,8 +137,8 @@ Jeu.Garderobe = (function () {
   D.rondes = {
     vb: '0 0 100 42',
     art: '<path d="M38 21 L62 21" stroke="var(--filou-metal)" stroke-width="5"/>' +
-      '<circle cx="24" cy="21" r="17" fill="var(--filou-verre)" stroke="var(--filou-metal)" stroke-width="5"/>' +
-      '<circle cx="76" cy="21" r="17" fill="var(--filou-verre)" stroke="var(--filou-metal)" stroke-width="5"/>'
+      '<circle cx="24" cy="21" r="17" fill="var(--filou-verre)" fill-opacity="0.4" stroke="var(--filou-metal)" stroke-width="5"/>' +
+      '<circle cx="76" cy="21" r="17" fill="var(--filou-verre)" fill-opacity="0.4" stroke="var(--filou-metal)" stroke-width="5"/>'
   };
 
   D.masque = {
@@ -153,9 +153,9 @@ Jeu.Garderobe = (function () {
     vb: '0 0 100 44',
     art: '<path d="M40 22 L60 22" stroke="var(--filou-or)" stroke-width="5"/>' +
       '<path d="M22 2 L28 16 L42 22 L28 28 L22 42 L16 28 L2 22 L16 16 Z" fill="var(--filou-gemme)" ' +
-      'stroke="var(--filou-or)" stroke-width="3"/>' +
+      'fill-opacity="0.55" stroke="var(--filou-or)" stroke-width="3"/>' +
       '<path d="M78 2 L84 16 L98 22 L84 28 L78 42 L72 28 L58 22 L72 16 Z" fill="var(--filou-gemme)" ' +
-      'stroke="var(--filou-or)" stroke-width="3"/>'
+      'fill-opacity="0.55" stroke="var(--filou-or)" stroke-width="3"/>'
   };
 
   D.echarpe = {
@@ -324,7 +324,7 @@ Jeu.Garderobe = (function () {
     { cle: 'baguette',   nom: 'Baguette magique', cat: 'tenu',    prix: 130, signe: '🪄', dessin: D.baguette, ech: 1.3, dy: -0.06 },
     { cle: 'epee',       nom: 'Épée de bois',    cat: 'tenu',     prix: 165, signe: '🗡️', dessin: D.epee, ech: 1.25, dy: -0.04 },
     { cle: 'drapeau',    nom: 'Drapeau du Royaume', cat: 'tenu',  prix: 240, signe: '🚩', dessin: D.drapeau, ech: 1.4, dy: -0.08 },
-    { cle: 'lanterne',   nom: 'Lanterne',        cat: 'tenu',     prix: 290, signe: '🏮', dessin: D.lanterne, ech: 1.2, dy: -0.02 },
+    { cle: 'lanterne',   nom: 'Lanterne',        cat: 'tenu',     prix: 290, signe: '🏮', dessin: D.lanterne, ech: 1.0, dy: -0.02 },
 
     // ---- Sur le dos
     { cle: 'cape',       nom: 'Cape',            cat: 'dos',      prix: 45,  signe: '🧥', dessin: D.cape, ech: 1.0, dy: -0.02 },
