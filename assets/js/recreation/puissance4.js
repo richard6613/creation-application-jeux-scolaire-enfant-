@@ -350,18 +350,29 @@ Jeu.Puissance4 = (function () {
 
   function defaut() { return { niveau: 'facile', gagnees: 0 }; }
 
+  /* Les parties gagnées se gardent pour toujours ; le niveau, non.
+
+     Un enfant qui a mis « Difficile » par fierté perdra toutes ses
+     parties suivantes, et la fois d'après le réglage sera encore là
+     sans qu'il se souvienne de l'avoir posé. Compter ses défaites
+     pour redescendre tout seul est précisément ce que l'application
+     s'interdit : on repart donc de « Facile » à chaque ouverture, et
+     il remonte le niveau quand il en a envie. */
+  var niveauSeance = null;
+
   function memoire() {
     var m;
     try { m = Jeu.Stockage.lire(CLE, null); } catch (e) { m = null; }
     var d = defaut();
+    if (NIVEAUX.indexOf(niveauSeance) >= 0) d.niveau = niveauSeance;
     if (!m || typeof m !== 'object') return d;
-    if (NIVEAUX.indexOf(m.niveau) >= 0) d.niveau = m.niveau;
     if (typeof m.gagnees === 'number' && m.gagnees >= 0) d.gagnees = Math.floor(m.gagnees);
     return d;
   }
 
   function retenir(m) {
-    try { Jeu.Stockage.ecrire(CLE, { niveau: m.niveau, gagnees: m.gagnees }); } catch (e) { /* tant pis */ }
+    niveauSeance = m.niveau;
+    try { Jeu.Stockage.ecrire(CLE, { gagnees: m.gagnees }); } catch (e) { /* tant pis */ }
   }
 
   /* ---------------------------------------------------------------

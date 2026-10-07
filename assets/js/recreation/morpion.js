@@ -47,16 +47,26 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
     'en bas à gauche', 'en bas au milieu', 'en bas à droite'
   ];
 
+  /* ---- Le niveau ne se garde pas d'une ouverture à l'autre ----
+
+     Un enfant met « Imbattable » par fierté, perd, et ne gagne plus
+     jamais. La fois suivante le réglage est toujours là, et il ne se
+     souvient pas de l'avoir mis : il croit simplement qu'il ne sait
+     plus jouer.
+
+     Compter ses défaites pour redescendre le niveau tout seul serait
+     exactement ce que l'application s'interdit. On fait donc le plus
+     simple : chaque ouverture repart de « Facile », et il remonte le
+     niveau s'il en a envie. Rien n'est compté, rien n'est jugé, et
+     une mauvaise série ne survit pas à la nuit. */
+  var niveauSeance = null;
+
   function reglagesLus() {
-    var r;
-    try { r = Jeu.Stockage.lire(CLE, null); } catch (e) { r = null; }
-    if (!r || typeof r !== 'object') return { niveau: DEFAUT.niveau };
-    var n = (r.niveau === 'imbattable') ? 'imbattable' : 'facile';
-    return { niveau: n };
+    return { niveau: niveauSeance === 'imbattable' ? 'imbattable' : DEFAUT.niveau };
   }
 
   function reglagesEcrits(r) {
-    try { Jeu.Stockage.ecrire(CLE, r); } catch (e) { /* on joue quand même */ }
+    niveauSeance = r && r.niveau;
   }
 
   function son(nom) {
