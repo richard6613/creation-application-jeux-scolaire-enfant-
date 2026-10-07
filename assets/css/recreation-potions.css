@@ -1,0 +1,609 @@
+/* ---------------------------------------------------------------
+   recreation-potions.css — « Le tri des potions ».
+
+   Des fioles d'apothicaire posées sur des étagères. Tout est dessiné
+   en SVG depuis le code ; cette feuille place les fioles, donne les
+   couleurs et les motifs, et fait verser.
+
+   Trois partis pris commandent le fichier.
+
+   1. CHAQUE POTION PORTE SON INFORMATION DEUX FOIS : une couleur ET
+      un motif, dessiné dans la couche. Un enfant qui distingue mal
+      le rouge du vert joue exactement comme les autres — ce n'est
+      pas un pis-aller, c'est la condition pour que ce jeu existe
+      ici. L'encre du motif change selon la clarté de la potion
+      (`--po-i4` est sombre, la potion jaune est claire), pour que le
+      motif reste lisible dans une couche de 23 px de haut.
+
+   2. AUCUNE COULEUR EN DUR AILLEURS QUE DANS LE BLOC DE VARIABLES,
+      déclinée en clair ET en sombre, pour que les six fonds de
+      lecture restent corrects.
+
+   3. LES FIOLES NE DÉFILENT JAMAIS. À 320 px, dix fioles ne tiennent
+      pas sur une ligne : elles passent sur deux ou trois étagères,
+      calculées sur la largeur réellement disponible. Faire défiler
+      un plateau de réflexion, c'est perdre le fil.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Teinte du jeu : pastille et liseré seulement, jamais sous du
+     texte, donc le contraste de lecture n'est pas touché. */
+  --jeu-potions: #6a4bb5;
+
+  /* Les neuf potions. Franches, éloignées les unes des autres, et de
+     clartés variées — mais c'est le motif qui porte l'information. */
+  --po-p1: #b83227;   /* rouge     — pois        */
+  --po-p2: #2f63c8;   /* bleue     — rayures     */
+  --po-p3: #237a33;   /* verte     — chevrons    */
+  --po-p4: #e3aa22;   /* jaune     — croisillons */
+  --po-p5: #8b55cc;   /* violette  — bulles      */
+  --po-p6: #0e93b4;   /* turquoise — vagues      */
+  --po-p7: #d9639c;   /* rose      — étoiles     */
+  --po-p8: #5a3a1e;   /* brune     — unie        */
+  --po-p9: #46505e;   /* grise     — damier      */
+
+  /* L'encre des motifs. Claire sur une potion sombre, sombre sur une
+     potion claire : c'est ce qui garde le motif lisible, et c'est la
+     raison d'une variable par potion plutôt qu'une seule encre. */
+  --po-i1: rgba(255, 255, 255, 0.92);
+  --po-i2: rgba(255, 255, 255, 0.92);
+  --po-i3: rgba(255, 255, 255, 0.92);
+  --po-i4: rgba(62, 40, 4, 0.6);
+  --po-i5: rgba(255, 255, 255, 0.92);
+  --po-i6: rgba(255, 255, 255, 0.92);
+  --po-i7: rgba(70, 14, 44, 0.6);
+  --po-i8: rgba(255, 255, 255, 0.92);
+  --po-i9: rgba(255, 255, 255, 0.92);
+
+  /* Le verre. Une fiole vide doit se lire comme un récipient VIDE :
+     trop de blanc dans le creux et elle semble pleine de lait sur un
+     fond crème — c'était le défaut de la première version, mesuré à
+     l'écran, et c'est ce qui a fait tomber le creux de 46 % à 20 %. */
+  --po-creux-a: rgba(255, 255, 255, 0.2);
+  --po-creux-b: rgba(116, 138, 162, 0.055);
+  --po-paroi: rgba(84, 96, 114, 0.4);
+  --po-paroi-clair: rgba(255, 255, 255, 0.5);
+  --po-reflet: rgba(255, 255, 255, 0.42);
+  --po-surface: rgba(255, 255, 255, 0.3);
+  --po-ombre-fiole: rgba(70, 54, 34, 0.26);
+  --po-col: #c6d2da;
+  --po-bouchon: #c08f51;
+  --po-sep: rgba(24, 18, 12, 0.24);
+
+  /* L'étagère : du bois, en papier découpé, deux tons et un liseré. */
+  --po-etagere: #c4a173;
+  --po-etagere-2: #a58255;
+  --po-etagere-trait: #856842;
+
+  /* La fiole en main : un plateau clair derrière elle. */
+  --po-choix: #ece3fb;
+
+  /* Cible tactile : 64 px de large sur 148 de haut, soit bien plus
+     que les 62 px exigés, et on appuie n'importe où dessus. */
+  --po-cible: 62px;
+  --po-l: 64px;
+  --po-gap: 8px;
+}
+
+@media (min-width: 420px) { :root { --po-l: 72px; } }
+@media (min-width: 620px) { :root { --po-l: 80px; } }
+
+html[data-fond="sombre"] {
+  --jeu-potions: #b49ae8;
+  --po-p1: #ef7a68;
+  --po-p2: #6f99ec;
+  --po-p3: #4fa75e;
+  --po-p4: #efbe4c;
+  --po-p5: #b088e4;
+  --po-p6: #3fb2cf;
+  --po-p7: #e58cb7;
+  --po-p8: #ab7c50;
+  --po-p9: #79859a;
+  /* En sombre les potions sont plus claires : l'encre passe au
+     sombre pour garder le même contraste de motif. */
+  --po-i1: rgba(32, 18, 14, 0.66);
+  --po-i2: rgba(14, 20, 40, 0.66);
+  --po-i3: rgba(10, 32, 16, 0.66);
+  --po-i4: rgba(54, 34, 4, 0.72);
+  --po-i5: rgba(26, 14, 42, 0.66);
+  --po-i6: rgba(4, 34, 34, 0.66);
+  --po-i7: rgba(44, 12, 28, 0.66);
+  --po-i8: rgba(34, 20, 8, 0.66);
+  --po-i9: rgba(20, 24, 30, 0.66);
+  --po-creux-a: rgba(255, 255, 255, 0.11);
+  --po-creux-b: rgba(255, 255, 255, 0.02);
+  --po-paroi: rgba(200, 212, 226, 0.5);
+  --po-paroi-clair: rgba(255, 255, 255, 0.2);
+  --po-reflet: rgba(255, 255, 255, 0.34);
+  --po-surface: rgba(255, 255, 255, 0.26);
+  --po-ombre-fiole: rgba(0, 0, 0, 0.42);
+  --po-col: #79838f;
+  --po-bouchon: #a9814c;
+  --po-sep: rgba(0, 0, 0, 0.42);
+  --po-etagere: #5c5346;
+  --po-etagere-2: #49423a;
+  --po-etagere-trait: #312c26;
+  --po-choix: #3b3357;
+}
+/* Appareil en sombre avant tout choix de fond : même traitement. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --jeu-potions: #b49ae8;
+    --po-p1: #ef7a68;
+    --po-p2: #6f99ec;
+    --po-p3: #4fa75e;
+    --po-p4: #efbe4c;
+    --po-p5: #b088e4;
+    --po-p6: #3fb2cf;
+    --po-p7: #e58cb7;
+    --po-p8: #ab7c50;
+    --po-p9: #79859a;
+    --po-i1: rgba(32, 18, 14, 0.66);
+    --po-i2: rgba(14, 20, 40, 0.66);
+    --po-i3: rgba(10, 32, 16, 0.66);
+    --po-i4: rgba(54, 34, 4, 0.72);
+    --po-i5: rgba(26, 14, 42, 0.66);
+    --po-i6: rgba(4, 34, 34, 0.66);
+    --po-i7: rgba(44, 12, 28, 0.66);
+    --po-i8: rgba(34, 20, 8, 0.66);
+    --po-i9: rgba(20, 24, 30, 0.66);
+    --po-creux-a: rgba(255, 255, 255, 0.11);
+    --po-creux-b: rgba(255, 255, 255, 0.02);
+    --po-paroi: rgba(200, 212, 226, 0.5);
+    --po-paroi-clair: rgba(255, 255, 255, 0.2);
+    --po-reflet: rgba(255, 255, 255, 0.34);
+    --po-surface: rgba(255, 255, 255, 0.26);
+    --po-ombre-fiole: rgba(0, 0, 0, 0.42);
+    --po-col: #79838f;
+    --po-bouchon: #a9814c;
+    --po-sep: rgba(0, 0, 0, 0.42);
+    --po-etagere: #5c5346;
+    --po-etagere-2: #49423a;
+    --po-etagere-trait: #312c26;
+    --po-choix: #3b3357;
+  }
+}
+
+/* ------------------------------ ossature ------------------------------ */
+
+.po { display: flex; flex-direction: column; gap: 8px; }
+.po-scene { display: flex; flex-direction: column; gap: 10px; }
+
+/* Les définitions de motifs : à zéro pixel, mais PAS en
+   `display: none` — certains navigateurs refusent alors de servir
+   un motif référencé depuis un autre SVG. */
+.po-defs {
+  position: absolute;
+  width: 0; height: 0;
+  overflow: hidden;
+}
+
+.po-entete { display: flex; align-items: center; gap: 12px; }
+.po-consigne {
+  margin: 0;
+  font-weight: 600;
+  max-width: var(--largeur-ligne);
+}
+
+/* L'annonce est lisible à l'œil autant qu'au lecteur d'écran : c'est
+   le fil de ce qui vient de se passer. Sa hauteur est réservée, pour
+   qu'une phrase qui apparaît ne décale pas les boutons du dessous. */
+.po-annonce {
+  margin: 0;
+  min-height: calc(1em * var(--interligne));
+  color: var(--texte-doux);
+  max-width: var(--largeur-ligne);
+}
+.po-annonce.po-muette {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ------------------------- les repères -------------------------
+   Le numéro du tableau est une PLACE, pas une note. Les potions
+   rangées ne font que monter, depuis toujours : ni annuler, ni
+   recommencer, ni fermer l'application n'en retire une. Il n'y a
+   rien d'autre à afficher — ni coups, ni temps, ni étoiles. */
+.po-repere {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.po-numero {
+  font-size: 0.92rem;
+  font-weight: 700;
+  white-space: nowrap;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.06);
+}
+.po-total {
+  font-size: 0.92rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--texte-doux);
+}
+.po-total-icone { font-size: 1.1rem; line-height: 1; }
+
+/* ------------------------- le plateau ------------------------- */
+
+.po-plateau {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.po-rang {
+  position: relative;
+  padding-bottom: 15px;
+  max-width: 100%;
+}
+/* L'étagère. Posée en absolu : elle ne participe pas à la rangée,
+   elle la porte. */
+.po-etagere {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 15px;
+  border-radius: 5px;
+  background: linear-gradient(var(--po-etagere) 0 58%, var(--po-etagere-2) 58% 100%);
+  border-bottom: 3px solid var(--po-etagere-trait);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+}
+.po-bac {
+  position: relative;
+  margin-bottom: -2px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: var(--po-gap);
+  min-width: 0;
+}
+
+/* Une fiole : grande cible, aucune précision demandée. */
+.po-fiole {
+  flex: 0 0 auto;
+  width: var(--po-l);
+  height: calc(var(--po-l) * 137 / 64);
+  min-width: var(--po-cible);
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+  display: block;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--duree-anim);
+}
+.po-corps {
+  display: block;
+  width: 100%; height: 100%;
+  transform-origin: 50% 88%;
+  transition: transform 180ms cubic-bezier(.34, 1.56, .64, 1);
+}
+.po-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* La fiole en main : elle se soulève et se pose sur un plateau
+   clair. Deux signes, pas un seul, et aucun des deux n'est une
+   couleur à reconnaître. */
+.po-fiole.po-pris {
+  background: var(--po-choix);
+  box-shadow: inset 0 0 0 3px var(--jeu-potions);
+}
+.po-fiole.po-pris .po-corps { transform: translateY(-14px); }
+.po-fiole:focus-visible { outline: 4px solid var(--accent); outline-offset: 2px; }
+
+/* Les morceaux de verre et de potion. */
+.po-ombre { fill: var(--po-ombre-fiole); }
+/* Le creux reçoit son dégradé par attribut (il est propre à chaque
+   fiole) ; les deux teintes, elles, restent ici. */
+.po-gv-a { stop-color: var(--po-creux-a); }
+.po-gv-b { stop-color: var(--po-creux-b); }
+.po-paroi { fill: none; stroke: var(--po-paroi); stroke-width: 4; }
+/* Le liseré clair à l'intérieur du trait de verre : c'est lui qui
+   donne l'épaisseur du verre, sur les six fonds comme en sombre. */
+.po-paroi-clair { fill: none; stroke: var(--po-paroi-clair); stroke-width: 1.4; }
+.po-reflet { stroke: var(--po-reflet); stroke-width: 3.2; fill: none; }
+.po-reflet-col { stroke-width: 3; }
+/* La surface du liquide : c'est ce liseré qui fait lire « potion »
+   plutôt que « blocs empilés ». */
+.po-surface { fill: var(--po-surface); }
+.po-col { fill: var(--po-col); }
+.po-bouchon { fill: var(--po-bouchon); }
+.po-sep { fill: var(--po-sep); }
+
+.po-p1 { fill: var(--po-p1); }
+.po-p2 { fill: var(--po-p2); }
+.po-p3 { fill: var(--po-p3); }
+.po-p4 { fill: var(--po-p4); }
+.po-p5 { fill: var(--po-p5); }
+.po-p6 { fill: var(--po-p6); }
+.po-p7 { fill: var(--po-p7); }
+.po-p8 { fill: var(--po-p8); }
+.po-p9 { fill: var(--po-p9); }
+
+/* L'encre du motif voyage par variable : les enfants du motif
+   héritent de la variable posée sur le motif lui-même. */
+.po-encre-1 { --po-encre: var(--po-i1); }
+.po-encre-2 { --po-encre: var(--po-i2); }
+.po-encre-3 { --po-encre: var(--po-i3); }
+.po-encre-4 { --po-encre: var(--po-i4); }
+.po-encre-5 { --po-encre: var(--po-i5); }
+.po-encre-6 { --po-encre: var(--po-i6); }
+.po-encre-7 { --po-encre: var(--po-i7); }
+.po-encre-8 { --po-encre: var(--po-i8); }
+.po-encre-9 { --po-encre: var(--po-i9); }
+.po-pl { fill: var(--po-encre); stroke: none; }
+.po-tr { fill: none; stroke: var(--po-encre); }
+
+/* Une fiole rangée : la paroi passe au vert ET un bouchon de liège
+   apparaît. Deux signes, dont un de forme. */
+.po-fiole.po-rangee .po-paroi { stroke: var(--succes); stroke-width: 4.5; }
+
+/* Un versement refusé : la fiole se cerne le temps de l'annonce.
+   Le signe ne dépend pas de l'animation — animations coupées, le
+   cerne est là quand même. */
+.po-fiole.po-refus .po-paroi { stroke: var(--attention); stroke-width: 5; }
+
+/* ------------------------- les boutons -------------------------
+   « Annuler » en premier et en grand : c'est le bouton qui enlève
+   la peur de se tromper, il doit être le plus facile à trouver. */
+.po-actions,
+.po-pied,
+.po-suite {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.po-actions > .btn,
+.po-pied > .btn,
+.po-suite > .btn {
+  flex: 1 1 8ch;
+  width: auto;
+  min-height: var(--po-cible);
+  padding-left: 12px;
+  padding-right: 12px;
+  gap: 8px;
+  justify-content: center;
+  text-align: center;
+}
+.po-ic {
+  font-size: 1.3rem;
+  line-height: 1;
+  letter-spacing: normal;
+}
+.po-annuler {
+  background: var(--accent-doux);
+  border-color: var(--accent);
+  color: var(--texte);
+  font-weight: 700;
+  flex: 1 1 100%;
+}
+.po-annuler[disabled] { opacity: 0.45; }
+/* Position bloquée : on ne gronde pas, on montre où aller. */
+.po-annuler.po-souligne {
+  box-shadow: 0 0 0 4px var(--jeu-potions), var(--ombre);
+}
+.po-plus { background: var(--surface-2); }
+.po-actions > .btn > span { white-space: nowrap; }
+.po-quitter { background: var(--surface-2); }
+
+/* ------------------------- le choix du tableau ------------------------- */
+
+.po-tableaux {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 10px;
+}
+.po-tableau {
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--po-cible);
+  padding: 10px 6px;
+  border: 3px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+}
+.po-tableau-num {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+/* La vignette dit la difficulté sans un mot : une pastille par
+   potion, un creux par fiole vide. */
+.po-vignette {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px;
+  max-width: 64px;
+}
+.po-vp {
+  display: block;
+  width: 10px; height: 14px;
+  border-radius: 3px;
+}
+.po-vp-vide {
+  background: transparent;
+  border: 2px dashed var(--bordure);
+}
+.po-tableau.po-fait { border-color: var(--succes); background: var(--succes-doux); }
+.po-tableau.po-ici {
+  border-color: var(--jeu-potions);
+  box-shadow: inset 0 0 0 3px var(--surface), var(--ombre);
+}
+/* Un tableau pas encore ouvert n'est pas une punition : il est
+   seulement calme, et le cadenas le dit sans mot. */
+.po-tableau.po-ferme {
+  background: var(--surface-2);
+  border-style: dashed;
+  color: var(--texte-doux);
+}
+.po-tableau.po-ferme .po-vignette { opacity: 0.4; }
+.po-tableau:active { transform: translateY(2px); box-shadow: none; }
+.po-tableau:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
+.po-cadenas { font-size: 1rem; line-height: 1; }
+
+/* ------------------------------ la fin ------------------------------ */
+
+.po-fin:empty { display: none; }
+
+.po-bravo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 3px solid var(--succes);
+  border-radius: calc(var(--rayon) + 6px);
+  background: var(--succes-doux);
+  box-shadow: var(--ombre);
+}
+.po-bravo-txt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 16ch;
+}
+.po-bravo-txt p { margin: 0; font-weight: 700; }
+.po-suite { flex: 1 1 100%; }
+
+/* ------------------------------ le mouvement ------------------------------
+   Tout le mouvement est de la DÉCORATION : l'état est déjà posé
+   quand une animation commence. Aucune image-clé ne part de
+   transparent ou d'une position de repos différente du repos réel,
+   donc rien ne peut rester invisible quand les durées tombent à
+   0,001 ms. Et aucune boucle image par image : au repos, la scène
+   est au repos. */
+
+@keyframes po-arrive {
+  from { transform: translateY(-46px); }
+  to   { transform: translateY(0); }
+}
+.po-bande.po-arrive { animation: po-arrive 320ms cubic-bezier(.22, 1, .36, 1); }
+
+@keyframes po-verse {
+  0%   { transform: rotate(0deg) translateY(0); }
+  32%  { transform: rotate(calc(var(--po-sens, 1) * 14deg)) translateY(-7px); }
+  64%  { transform: rotate(calc(var(--po-sens, 1) * 14deg)) translateY(-7px); }
+  100% { transform: rotate(0deg) translateY(0); }
+}
+.po-fiole.po-verse .po-corps { animation: po-verse 440ms cubic-bezier(.4, 0, .4, 1); }
+
+/* Le filet de potion qui tombe dans la fiole d'arrivée. Au repos il
+   est à l'échelle zéro — donc invisible — et il n'est même pas
+   fabriqué quand les animations sont coupées. */
+.po-filet {
+  position: absolute;
+  width: 7px;
+  height: 26px;
+  border-radius: 4px;
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  background: var(--po-paroi);
+  pointer-events: none;
+}
+@keyframes po-filet {
+  0%   { transform: scaleY(0); }
+  28%  { transform: scaleY(1); }
+  72%  { transform: scaleY(1); }
+  100% { transform: scaleY(0); }
+}
+.po-filet { animation: po-filet 440ms linear; }
+.po-filet.po-f1 { background: var(--po-p1); }
+.po-filet.po-f2 { background: var(--po-p2); }
+.po-filet.po-f3 { background: var(--po-p3); }
+.po-filet.po-f4 { background: var(--po-p4); }
+.po-filet.po-f5 { background: var(--po-p5); }
+.po-filet.po-f6 { background: var(--po-p6); }
+.po-filet.po-f7 { background: var(--po-p7); }
+.po-filet.po-f8 { background: var(--po-p8); }
+.po-filet.po-f9 { background: var(--po-p9); }
+
+@keyframes po-refus {
+  0%, 100% { transform: translateX(0); }
+  22%      { transform: translateX(-4px); }
+  58%      { transform: translateX(4px); }
+  82%      { transform: translateX(-2px); }
+}
+.po-fiole.po-refus .po-corps { animation: po-refus 360ms ease-in-out; }
+
+/* =====================================================================
+   ANIMATIONS COUPÉES — réglage parent ou préférence de l'appareil.
+
+   Le jeu reste ENTIÈREMENT jouable : le versement se fait
+   instantanément, sans la fiole qui se penche ni le filet de potion.
+   Et rien ne disparaît : la règle générale de l'application ne
+   supprime pas les animations, elle ramène leur durée à 0,001 ms —
+   on les supprime donc ici pour de bon, et chaque élément concerné a
+   un style de repos VISIBLE et à sa place.
+   ===================================================================== */
+
+html[data-animations="non"] .po-bande.po-arrive,
+html[data-animations="non"] .po-fiole.po-verse .po-corps,
+html[data-animations="non"] .po-fiole.po-refus .po-corps,
+html[data-animations="non"] .po-filet {
+  animation: none !important;
+}
+html[data-animations="non"] .po-filet { display: none; }
+html[data-animations="non"] .po-corps,
+html[data-animations="non"] .po-fiole,
+html[data-animations="non"] .po-tableau {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .po-bande.po-arrive,
+  .po-fiole.po-verse .po-corps,
+  .po-fiole.po-refus .po-corps,
+  .po-filet {
+    animation: none !important;
+  }
+  .po-filet { display: none; }
+  .po-corps, .po-fiole, .po-tableau { transition: none !important; }
+}
+
+/* =====================================================================
+   CONFORT AU MAXIMUM, 320 px DE LARGE
+   Texte à 30 px, lettres et mots au plus espacés : les boutons
+   passent les uns sous les autres, les étiquettes gardent leur
+   espacement normal là où elles ne sont que des repères, et aucune
+   largeur de fiole ne bouge — c'est pour cela qu'elles sont en
+   pixels et non en `ch`.
+   ===================================================================== */
+@media (max-width: 400px) {
+  .po-actions > .btn,
+  .po-pied > .btn,
+  .po-suite > .btn { flex: 1 1 100%; }
+  .po-tableaux { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
+}
+.po-numero,
+.po-total,
+.po-tableau-num {
+  /* Un nombre n'est pas un mot à déchiffrer : il garde un
+     espacement normal pour rester compact et lisible. */
+  letter-spacing: normal;
+  word-spacing: normal;
+}

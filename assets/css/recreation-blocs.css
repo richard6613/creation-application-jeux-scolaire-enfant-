@@ -1,0 +1,668 @@
+/* ---------------------------------------------------------------
+   recreation-blocs.css — « Les blocs de pierre ».
+
+   Toutes les couleurs du jeu vivent ici, aucune n'est écrite dans le
+   JavaScript : c'est ce qui fait que les six fonds de lecture et le
+   mode sombre suivent sans qu'une ligne de code soit à reprendre.
+
+   Les pierres sont toutes de la même couleur, exprès. Ce qui
+   distingue un bloc d'un autre, c'est sa FORME — et les coins
+   arrondis se calculent au voisinage, donc deux blocs posés côte à
+   côte forment un vrai pan de mur. Une ligne qui va s'effacer se
+   signale par un liseré épais et un losange dans chaque case, pas
+   par une teinte : un enfant daltonien le voit aussi bien.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Teinte du jeu : elle ne porte jamais de texte, seulement la
+     pastille de la salle de jeux et un liseré. */
+  --jeu-blocs: #8a6a3c;
+
+  /* Largeur maximale du damier et du chariot : au-delà, les cases
+     deviennent énormes sur un écran large, et la main doit voyager. */
+  --bp-max: 408px;
+
+  /* Cibles tactiles de la récréation : jamais sous 62 px. */
+  --bp-cible: 62px;
+
+  /* Le damier : deux tons très proches, assez pour qu'on lise les
+     cases sans que ça papillote. */
+  --bp-cadre: #d8c39b;
+  --bp-cadre-bord: #b89f72;
+  --bp-damier-a: #f6edda;
+  --bp-damier-b: #e7d6b6;
+  --bp-mortier: rgba(123, 100, 62, 0.22);
+  --bp-creux: rgba(104, 83, 48, 0.2);
+
+  /* La pierre taillée : un grès chaud, clair en haut où la lumière
+     entre, sombre en bas. Trois tons, pas un : c'est le dégradé qui
+     donne le relief, une pastille plate ne l'imite pas. */
+  --bp-pierre-haut: #e9d2a8;
+  --bp-pierre-base: #cfae79;
+  --bp-pierre-bas: #a8854f;
+  --bp-pierre-lustre: rgba(255, 252, 240, 0.52);
+  --bp-pierre-arete: rgba(108, 82, 40, 0.42);
+  --bp-pierre-creuse: rgba(132, 102, 55, 0.5);
+  --bp-pierre-ombre: rgba(84, 62, 28, 0.34);
+
+  /* Le viseur : là où la pierre va tomber. */
+  --bp-vise-trait: #3b6f4a;
+  --bp-vise-fond: rgba(59, 111, 74, 0.16);
+
+  /* La ligne qui va s'effacer. */
+  --bp-pret-trait: #2f5d8a;
+  --bp-pret-signe: #1f4463;
+  --bp-pret-halo: rgba(255, 251, 242, 0.9);
+
+  /* Le chariot de pierres. */
+  --bp-rail: #d2bb90;
+  --bp-rail-bord: #b19868;
+  --bp-fente: #efe2c6;
+  --bp-fente-bord: #c8b188;
+  --bp-fente-choisie: #2f5d8a;
+
+  /* Le rempart bâti, en haut de l'écran. */
+  --bp-brique-vide: rgba(140, 115, 72, 0.18);
+  --bp-brique-bord: rgba(120, 95, 55, 0.3);
+}
+
+/* Fond sombre choisi. Sur de l'anthracite, un grès clair éblouit :
+   la pierre descend d'un cran et le damier remonte juste assez pour
+   qu'on distingue les cases vides des cases pleines. */
+html[data-fond="sombre"] {
+  --jeu-blocs: #d7b683;
+
+  --bp-cadre: #39414b;
+  --bp-cadre-bord: #4e5864;
+  --bp-damier-a: #3a434e;
+  --bp-damier-b: #2b323a;
+  --bp-mortier: rgba(0, 0, 0, 0.34);
+  --bp-creux: rgba(0, 0, 0, 0.4);
+
+  --bp-pierre-haut: #cbb391;
+  --bp-pierre-base: #a88f6d;
+  --bp-pierre-bas: #7a6448;
+  --bp-pierre-lustre: rgba(255, 248, 232, 0.4);
+  --bp-pierre-arete: rgba(0, 0, 0, 0.46);
+  --bp-pierre-creuse: rgba(0, 0, 0, 0.34);
+  --bp-pierre-ombre: rgba(0, 0, 0, 0.5);
+
+  --bp-vise-trait: #8fd8a6;
+  --bp-vise-fond: rgba(143, 216, 166, 0.2);
+
+  /* La pierre reste CLAIRE en fond sombre : la marque doit donc
+     foncer, pas s'éclaircir. Un bleu pâle y disparaissait. */
+  --bp-pret-trait: #16354f;
+  --bp-pret-signe: #0e2436;
+  --bp-pret-halo: rgba(255, 251, 242, 0.85);
+
+  --bp-rail: #3d454f;
+  --bp-rail-bord: #525c69;
+  --bp-fente: #333b44;
+  --bp-fente-bord: #5a6471;
+  --bp-fente-choisie: #9fc8ee;
+
+  --bp-brique-vide: rgba(255, 245, 225, 0.12);
+  --bp-brique-bord: rgba(255, 245, 225, 0.2);
+}
+
+/* Appareil en mode sombre avant tout choix de fond : même traitement,
+   pour ne pas éblouir au premier lancement. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --jeu-blocs: #d7b683;
+
+    --bp-cadre: #39414b;
+    --bp-cadre-bord: #4e5864;
+    --bp-damier-a: #3a434e;
+    --bp-damier-b: #2b323a;
+    --bp-mortier: rgba(0, 0, 0, 0.34);
+    --bp-creux: rgba(0, 0, 0, 0.4);
+
+    --bp-pierre-haut: #cbb391;
+    --bp-pierre-base: #a88f6d;
+    --bp-pierre-bas: #7a6448;
+    --bp-pierre-lustre: rgba(255, 248, 232, 0.4);
+    --bp-pierre-arete: rgba(0, 0, 0, 0.46);
+    --bp-pierre-ombre: rgba(0, 0, 0, 0.5);
+
+    --bp-vise-trait: #8fd8a6;
+    --bp-vise-fond: rgba(143, 216, 166, 0.2);
+
+    /* La pierre reste CLAIRE en fond sombre : la marque doit donc
+       foncer, pas s'éclaircir. Un bleu pâle y disparaissait. */
+    --bp-pret-trait: #16354f;
+    --bp-pret-signe: #0e2436;
+    --bp-pret-halo: rgba(255, 251, 242, 0.85);
+
+    --bp-rail: #3d454f;
+    --bp-rail-bord: #525c69;
+    --bp-fente: #333b44;
+    --bp-fente-bord: #5a6471;
+    --bp-fente-choisie: #9fc8ee;
+
+    --bp-brique-vide: rgba(255, 245, 225, 0.12);
+    --bp-brique-bord: rgba(255, 245, 225, 0.2);
+  }
+}
+
+/* Les fonds froids (bleu, vert, gris) : le grès chaud y jaunit un
+   peu trop. On le refroidit à peine, sans changer son relief. */
+html[data-fond="bleu"],
+html[data-fond="vert"],
+html[data-fond="gris"] {
+  --bp-cadre: #d2ccba;
+  --bp-cadre-bord: #b0a994;
+  --bp-damier-a: #efeadd;
+  --bp-damier-b: #e4dece;
+  --bp-pierre-haut: #e4d5bb;
+  --bp-pierre-base: #c6b090;
+  --bp-pierre-bas: #9d8a68;
+  --bp-pierre-creuse: rgba(120, 100, 68, 0.5);
+  --bp-rail: #cdc4ad;
+  --bp-rail-bord: #a9a089;
+  --bp-fente: #ece6d8;
+  --bp-fente-bord: #c0b6a0;
+}
+
+/* =====================================================================
+   OSSATURE
+   ===================================================================== */
+
+.bp {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  /* Rien ne doit dépasser en largeur, texte à 30 px compris. */
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.bp-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.bp-consigne {
+  margin: 0;
+  font-weight: 700;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* =====================================================================
+   LE REPÈRE : LE REMPART BÂTI
+
+   Il monte et ne redescend jamais. Il compte les lignes effacées
+   depuis toujours, pas celles de la partie en cours : un damier neuf
+   ne lui retire rien.
+   ===================================================================== */
+
+.bp-repere {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding: 0;
+}
+
+.bp-mur {
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+  flex: 0 0 auto;
+  padding-top: 6px;
+}
+.bp-rangee {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+.bp-brique {
+  display: block;
+  width: 15px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--bp-brique-vide);
+  box-shadow: inset 0 0 0 1px var(--bp-brique-bord);
+}
+.bp-brique.bp-posee {
+  background: linear-gradient(175deg,
+    var(--bp-pierre-haut), var(--bp-pierre-base) 55%, var(--bp-pierre-bas));
+  box-shadow: inset 0 0 0 1px var(--bp-pierre-arete);
+}
+/* Créneaux : la rangée du haut est dentelée, comme un vrai rempart. */
+.bp-creneaux .bp-brique:nth-child(odd) { height: 17px; }
+
+/* La bannière se hisse quand le rempart est complet, et ne redescend
+   jamais. Elle est dessinée, pas écrite : aucun caractère exotique à
+   charger. */
+.bp-banniere {
+  position: absolute;
+  display: none;
+  top: 0;
+  right: -3px;
+  width: 3px;
+  height: 18px;
+  background: var(--bp-pierre-bas);
+  border-radius: 2px;
+}
+.bp-banniere.bp-hissee { display: block; }
+.bp-banniere.bp-hissee::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 1px;
+  width: 0;
+  height: 0;
+  border-left: 13px solid var(--jeu-blocs);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+.bp-compte {
+  margin: 0;
+  font-weight: 700;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* =====================================================================
+   LE DAMIER
+   ===================================================================== */
+
+.bp-damier {
+  width: 100%;
+  max-width: var(--bp-max);
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  border-radius: 20px;
+  background: var(--bp-cadre);
+  border: 2px solid var(--bp-cadre-bord);
+  box-shadow: inset 0 3px 10px var(--bp-creux), var(--ombre);
+  /* Le glissé au doigt ne doit pas faire défiler la page. */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.bp-ligne { display: flex; }
+
+.bp-case {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  background: var(--bp-damier-a);
+  box-shadow: inset 0 0 0 1px var(--bp-mortier);
+}
+.bp-case.bp-sombre { background: var(--bp-damier-b); }
+
+/* Les quatre coins du damier s'arrondissent avec le cadre. */
+.bp-ligne:first-child .bp-case:first-child { border-top-left-radius: 13px; }
+.bp-ligne:first-child .bp-case:last-child { border-top-right-radius: 13px; }
+.bp-ligne:last-child .bp-case:first-child { border-bottom-left-radius: 13px; }
+.bp-ligne:last-child .bp-case:last-child { border-bottom-right-radius: 13px; }
+
+.bp-case:focus-visible {
+  outline: 4px solid var(--accent);
+  outline-offset: -2px;
+  z-index: 3;
+}
+
+/* ------------------------- la pierre -------------------------
+   Son état normal est VISIBLE. Aucune image-clé ne la fait
+   apparaître depuis le transparent : la règle de l'application ne
+   supprime pas les animations, elle ramène leur durée à 0,001 ms, et
+   une pierre qui ne serait visible qu'à la fin d'une image-clé
+   deviendrait invisible pour de bon. */
+.bp-pierre {
+  display: none;
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse 70% 52% at 30% 18%,
+      var(--bp-pierre-lustre) 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(168deg,
+      var(--bp-pierre-haut) 0%,
+      var(--bp-pierre-base) 46%,
+      var(--bp-pierre-bas) 100%);
+  box-shadow:
+    inset 0 0 0 1.5px var(--bp-pierre-arete),
+    inset 0 2.5px 0 0 var(--bp-pierre-lustre),
+    inset 0 -4px 0 0 var(--bp-pierre-creuse),
+    inset 0 -9px 10px -7px var(--bp-pierre-ombre),
+    0 1px 0 0 var(--bp-pierre-ombre);
+}
+.bp-case.bp-pleine > .bp-pierre { display: block; }
+
+/* Coins carrés là où il y a une voisine : deux pierres côte à côte
+   font un pan de mur continu. */
+.bp-case.bp-ctl > .bp-pierre { border-top-left-radius: 3px; }
+.bp-case.bp-ctr > .bp-pierre { border-top-right-radius: 3px; }
+.bp-case.bp-cbl > .bp-pierre { border-bottom-left-radius: 3px; }
+.bp-case.bp-cbr > .bp-pierre { border-bottom-right-radius: 3px; }
+
+/* ------------------------- le viseur ------------------------- */
+
+.bp-marque {
+  display: none;
+  position: absolute;
+  left: 2px; top: 2px; right: 2px; bottom: 2px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+/* Là où la pierre va tomber : trait en pointillés, fond très léger.
+   Le pointillé porte l'information autant que la couleur. */
+.bp-case.bp-vise > .bp-marque {
+  display: flex;
+  background: var(--bp-vise-fond);
+  box-shadow: inset 0 0 0 3px var(--bp-vise-trait);
+  border: 2px dashed var(--bp-vise-trait);
+}
+/* Une ligne qui va s'effacer : liseré épais ET losange au centre.
+   Jamais la couleur seule. */
+.bp-case.bp-pret > .bp-marque {
+  display: flex;
+  box-shadow: inset 0 0 0 3px var(--bp-pret-trait);
+}
+.bp-case.bp-pret > .bp-marque::after {
+  content: '';
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  background: var(--bp-pret-signe);
+  box-shadow: 0 0 0 2px var(--bp-pret-halo);
+}
+
+/* =====================================================================
+   LE CHARIOT DE PIERRES
+   Trois blocs proposés. La cible, c'est le bloc entier — jamais la
+   case du damier.
+   ===================================================================== */
+
+.bp-chariot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.bp-rail {
+  width: 100%;
+  max-width: var(--bp-max);
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 18px;
+  background: var(--bp-rail);
+  border: 2px solid var(--bp-rail-bord);
+  box-shadow: inset 0 3px 8px var(--bp-creux);
+}
+
+.bp-fente {
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  min-height: var(--bp-cible);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  padding: 0;
+  border: 2px solid var(--bp-fente-bord);
+  border-radius: 14px;
+  background: var(--bp-fente);
+  cursor: pointer;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: box-shadow var(--duree-anim) ease, transform var(--duree-anim) ease;
+}
+.bp-fente.bp-vide {
+  cursor: default;
+  background: transparent;
+  border-style: dashed;
+  box-shadow: none;
+}
+.bp-fente.bp-choisi {
+  box-shadow: 0 0 0 4px var(--bp-fente-choisie);
+  transform: translateY(-3px);
+}
+.bp-fente.bp-prise { opacity: 0.4; }
+.bp-fente:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
+
+/* La pierre miniature du chariot : même dessin que sur le damier,
+   pour qu'on reconnaisse ce qu'on va poser. */
+.bp-mp {
+  display: block;
+  border-radius: 11px;
+  background:
+    radial-gradient(ellipse 70% 52% at 30% 18%,
+      var(--bp-pierre-lustre) 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(168deg,
+      var(--bp-pierre-haut) 0%,
+      var(--bp-pierre-base) 46%,
+      var(--bp-pierre-bas) 100%);
+  box-shadow:
+    inset 0 0 0 1.5px var(--bp-pierre-arete),
+    inset 0 2.5px 0 0 var(--bp-pierre-lustre),
+    inset 0 -4px 0 0 var(--bp-pierre-creuse),
+    0 1px 0 0 var(--bp-pierre-ombre);
+}
+.bp-mp.bp-ctl { border-top-left-radius: 2px; }
+.bp-mp.bp-ctr { border-top-right-radius: 2px; }
+.bp-mp.bp-cbl { border-bottom-left-radius: 2px; }
+.bp-mp.bp-cbr { border-bottom-right-radius: 2px; }
+
+.bp-changer {
+  width: 100%;
+  max-width: 24ch;
+  min-height: var(--bp-cible);
+  justify-content: center;
+  background: var(--surface);
+  border-color: var(--bp-rail-bord);
+}
+.bp-changer[hidden] { display: none; }
+
+/* ------------------------- la pierre qui suit le doigt ------------------------- */
+
+.bp-fantome {
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+.bp-fp {
+  position: absolute;
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse 70% 52% at 30% 18%,
+      var(--bp-pierre-lustre) 0%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(168deg,
+      var(--bp-pierre-haut) 0%,
+      var(--bp-pierre-base) 46%,
+      var(--bp-pierre-bas) 100%);
+  box-shadow:
+    inset 0 0 0 1.5px var(--bp-pierre-arete),
+    inset 0 3px 0 -1px var(--bp-pierre-lustre),
+    0 8px 14px -6px var(--bp-pierre-ombre);
+  opacity: 0.93;
+}
+.bp-fp.bp-ctl { border-top-left-radius: 3px; }
+.bp-fp.bp-ctr { border-top-right-radius: 3px; }
+.bp-fp.bp-cbl { border-bottom-left-radius: 3px; }
+.bp-fp.bp-cbr { border-bottom-right-radius: 3px; }
+
+/* =====================================================================
+   ANNONCE, PANNEAU CALME, PIED
+   ===================================================================== */
+
+/* Quand le panneau calme dit déjà la phrase, l'annonce sort de la
+   vue sans sortir du document : un lecteur d'écran la lit toujours. */
+.bp-annonce.bp-muette {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.bp-annonce {
+  margin: 0;
+  color: var(--texte-doux);
+  font-size: 0.9rem;
+  /* Une hauteur réservée : l'annonce qui apparaît ne doit pas
+     pousser le damier vers le haut. */
+  min-height: 1.5em;
+  overflow-wrap: break-word;
+}
+
+/* Ni « perdu », ni « réessaie », ni score final. On dit ce qui est,
+   on montre le héros de l'enfant, on ouvre une porte. */
+.bp-panneau {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--rayon);
+  background: var(--surface);
+  border: 2px solid var(--bordure);
+  box-shadow: var(--ombre);
+}
+.bp-panneau-txt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.bp-panneau-txt p {
+  margin: 0;
+  font-weight: 700;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.bp-actions,
+.bp-pied {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+.bp-actions > .btn,
+.bp-pied > .btn {
+  flex: 1 1 11ch;
+  min-width: 0;
+  min-height: var(--bp-cible);
+  justify-content: center;
+}
+.bp-neuf, .bp-quitter { background: var(--surface-2); }
+
+/* =====================================================================
+   ANIMATIONS
+
+   Deux seules, et aucune en boucle : au repos, la scène est au
+   repos. Toutes les deux partent de l'état visible ou y arrivent, et
+   toutes les deux ont leur règle de coupure plus bas.
+   ===================================================================== */
+
+@keyframes bp-pose {
+  0%   { transform: scale(0.58); }
+  62%  { transform: scale(1.09); }
+  100% { transform: scale(1); }
+}
+.bp-case.bp-neuve > .bp-pierre {
+  animation: bp-pose 300ms cubic-bezier(.34, 1.56, .64, 1);
+}
+
+@keyframes bp-partir {
+  0%   { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.18); opacity: 0; }
+}
+.bp-case.bp-part > .bp-pierre {
+  animation: bp-partir 340ms cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+/* =====================================================================
+   MOUVEMENT COUPÉ
+
+   Réglage de l'espace parent, ou préférence de l'appareil. Plus rien
+   ne bouge, et le jeu reste entièrement jouable : la pierre est
+   posée tout de suite, la ligne s'efface tout de suite.
+
+   Attention au piège : la règle générale de l'application ne
+   supprime pas les animations, elle ramène leur durée à 0,001 ms.
+   Une pierre dont la première image-clé serait transparente
+   deviendrait donc invisible. On annule donc franchement les
+   animations ET on remet à plat transform et opacity, de façon que
+   l'état visible soit celui qui reste.
+   ===================================================================== */
+
+html[data-animations="non"] .bp-case > .bp-pierre,
+html[data-animations="non"] .bp-mp,
+html[data-animations="non"] .bp-fp {
+  animation: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+html[data-animations="non"] .bp-fente,
+html[data-animations="non"] .bp-marque {
+  transition: none !important;
+}
+html[data-animations="non"] .bp-fente.bp-choisi { transform: none !important; }
+/* Le losange de la ligne prête reste tourné : ce n'est pas un
+   mouvement, c'est sa forme. */
+html[data-animations="non"] .bp-case.bp-pret > .bp-marque::after {
+  transform: rotate(45deg) !important;
+  opacity: 1 !important;
+}
+html[data-animations="non"] .bp-fente.bp-prise { opacity: 0.4 !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bp-case > .bp-pierre,
+  .bp-mp,
+  .bp-fp {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .bp-fente, .bp-marque { transition: none !important; }
+  .bp-fente.bp-choisi { transform: none !important; }
+  .bp-case.bp-pret > .bp-marque::after {
+    transform: rotate(45deg) !important;
+    opacity: 1 !important;
+  }
+  .bp-fente.bp-prise { opacity: 0.4 !important; }
+}
+
+/* =====================================================================
+   PETITS ÉCRANS ET GROS RÉGLAGES
+   Texte jusqu'à 30 px, espacement des lettres et des mots au
+   maximum : rien ne doit déborder en largeur à 320 px.
+   ===================================================================== */
+
+@media (max-width: 420px) {
+  .bp { gap: 12px; }
+  .bp-brique { width: 13px; height: 10px; }
+  .bp-creneaux .bp-brique:nth-child(odd) { height: 15px; }
+  .bp-case.bp-pret > .bp-marque::after { width: 9px; height: 9px; }
+  .bp-pierre { border-radius: 10px; }
+  .bp-repere { padding: 8px 10px; }
+  .bp-rail { gap: 6px; padding: 6px; }
+}
+
+/* Au-delà de 30 ch de texte par bouton, on empile plutôt que de
+   laisser deux mots se couper. */
+/* Les boutons s'empilent tout seuls : leur base est donnée en `ch`,
+   donc elle grandit avec le texte. Au réglage maximum, deux boutons ne
+   tiennent plus côte à côte et passent l'un sous l'autre sans qu'une
+   largeur d'écran ait à être devinée. */
+@media (max-width: 330px) {
+  .bp-brique { width: 12px; }
+}

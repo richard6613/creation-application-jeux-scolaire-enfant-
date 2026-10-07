@@ -9,7 +9,7 @@
    récupérée en arrière-plan quand il y en a une.
    --------------------------------------------------------------- */
 
-var VERSION = 'mes-jeux-2a2f7bdd8b31';
+var VERSION = 'mes-jeux-04095342dce3';
 
 var FICHIERS = [
   './',
@@ -30,6 +30,7 @@ var FICHIERS = [
   './assets/css/recreation-gemmes.css',
   './assets/css/recreation-cristaux.css',
   './assets/css/recreation-parking.css',
+  './assets/css/recreation-tuyaux.css',
   './assets/js/version.js',
   './assets/js/stockage.js',
   './assets/js/reglages.js',
@@ -83,6 +84,7 @@ var FICHIERS = [
   './assets/js/recreation/gemmes.js',
   './assets/js/recreation/cristaux.js',
   './assets/js/recreation/parking.js',
+  './assets/js/recreation/tuyaux.js',
   './assets/js/parent.js',
   './assets/js/app.js',
   './assets/icone.svg',

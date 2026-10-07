@@ -1,0 +1,555 @@
+/* ---------------------------------------------------------------
+   recreation-tuyaux.css — « Les tuyaux ».
+
+   Une grille de canalisations vue de dessus. Tout est dessiné en
+   SVG depuis le code ; cette feuille ne fait que trois choses :
+   poser les tuiles sur la grille, donner leurs couleurs, et régler
+   le peu de mouvement qu'il y a.
+
+   TROIS PARTIS PRIS COMMANDENT LE FICHIER
+
+   1. **Aucune couleur en dur ailleurs qu'ici.** Les deux blocs de
+      variables ci-dessous — clair et sombre — sont les seuls
+      endroits où une couleur est écrite. Les six fonds de lecture
+      et le mode sombre suivent donc tout seuls, et le JavaScript
+      n'en connaît aucune.
+
+   2. **L'eau ne se reconnaît jamais à sa seule teinte.** Un tuyau
+      vide montre un sillon étroit et creux (13 unités de large).
+      Un tuyau alimenté montre un flot large (24), qui remplit tout
+      le canal, PLUS un liseré clair au milieu (7) qui n'existe pas
+      quand il est vide. Épaisseur, remplissage, trait intérieur :
+      trois différences de forme. Une fontaine qui coule lève en
+      plus un jet et deux gouttes. Un enfant daltonien ne perd rien.
+
+   3. **Tout le mouvement est une TRANSITION, jamais une
+      animation en boucle.** Conséquence voulue : la règle de
+      l'application qui ramène les durées à 0,001 ms rend le jeu
+      instantané sans rien faire disparaître, puisque l'état
+      d'arrivée est celui des règles de base. Au repos, pas un
+      pixel ne bouge — aucune eau qui ondule, aucune boucle
+      d'images. Les deux blocs de coupure en fin de fichier
+      enlèvent en plus tout retard et toute animation ponctuelle.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Teinte du jeu : pastille et liseré seulement, jamais sous du
+     texte, donc le contraste de lecture n'est pas touché. */
+  --jeu-tuyaux: #0d7490;
+
+  /* Le plateau : une dalle de béton clair, bordée. Deux tons de
+     case très proches font un damier qui découpe la grille sans
+     ajouter un seul trait. */
+  --tx-dalle: #d3cdc0;
+  --tx-case-a: #dad4c7;
+  --tx-case-b: #d4cec1;
+  --tx-case-appui: #c3bcab;
+  --tx-cadre: #a79e8c;
+
+  /* Le tube : quatre anneaux concentriques font le relief d'un
+     tuyau de fonte, sans dégradé ni filtre. */
+  --tx-cerne: rgba(34, 30, 24, 0.42);
+  --tx-gaine: #949ca3;
+  --tx-lustre: #bcc3c8;
+  --tx-creux: #5a6168;
+
+  /* L'eau. Franche, et non une teinte pâle : c'est la récompense
+     visuelle du jeu, elle doit se voir de loin. */
+  --tx-eau: #0fa3cb;
+  --tx-eau-vive: #2ec7ea;
+  --tx-reflet: #eafcff;
+
+  /* La pompe — clin d'œil au métier du père. */
+  --tx-pompe: #3b4651;
+  --tx-pompe-haut: #55626e;
+  --tx-pompe-cadran: #f4e4b6;
+  --tx-pompe-aiguille: #2a3138;
+
+  /* La fontaine. */
+  --tx-vasque: #ece5d4;
+  --tx-trait: rgba(30, 26, 20, 0.62);
+
+  /* Cible tactile de ce jeu. La tuile entière est la cible : on
+     appuie n'importe où dessus, et un appui à côté ne fait que
+     tourner la voisine — ce qui se défait en trois autres appuis. */
+  --tx-cible: 62px;
+}
+
+/* En sombre, la pompe est plus CLAIRE que la dalle : un bloc presque
+   noir sur un fond anthracite ne se verrait pas. */
+html[data-fond="sombre"] {
+  --jeu-tuyaux: #66c9e2;
+  --tx-dalle: #353c44;
+  --tx-case-a: #3a424b;
+  --tx-case-b: #353d45;
+  --tx-case-appui: #4a535e;
+  --tx-cadre: #555f6b;
+  --tx-cerne: rgba(8, 10, 14, 0.6);
+  --tx-gaine: #78828c;
+  --tx-lustre: #97a2ac;
+  --tx-creux: #2b3137;
+  --tx-eau: #22b4dc;
+  --tx-eau-vive: #5bd8f5;
+  --tx-reflet: #ddf9ff;
+  --tx-pompe: #4c5763;
+  --tx-pompe-haut: #697684;
+  --tx-pompe-cadran: #e9d7a6;
+  --tx-pompe-aiguille: #14181c;
+  --tx-vasque: #cdd4da;
+  --tx-trait: rgba(5, 8, 12, 0.72);
+}
+/* Appareil en sombre avant tout choix de fond : même traitement. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --jeu-tuyaux: #66c9e2;
+    --tx-dalle: #353c44;
+    --tx-case-a: #3b434c;
+    --tx-case-b: #343b43;
+    --tx-case-appui: #4a535e;
+    --tx-cadre: #555f6b;
+    --tx-cerne: rgba(8, 10, 14, 0.6);
+    --tx-gaine: #78828c;
+    --tx-lustre: #97a2ac;
+    --tx-creux: #2b3137;
+    --tx-eau: #22b4dc;
+    --tx-eau-vive: #5bd8f5;
+    --tx-reflet: #ddf9ff;
+    --tx-pompe: #4c5763;
+    --tx-pompe-haut: #697684;
+    --tx-pompe-cadran: #e9d7a6;
+    --tx-pompe-aiguille: #14181c;
+    --tx-vasque: #cdd4da;
+    --tx-trait: rgba(5, 8, 12, 0.72);
+  }
+}
+
+/* ------------------------------ ossature ------------------------------ */
+
+.tx {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+/* Le bouton d'écoute garde sa place ; la consigne passe sous lui
+   dès qu'elle n'a plus assez de large. Sans ce retour à la ligne,
+   à 320 px et 30 px de texte, le mot « fontaines » est plus large
+   que la place qui reste et la page déborde sur le côté. On ne coupe
+   jamais un mot : un enfant dyslexique photographie ce qu'il voit. */
+.tx-entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.tx-consigne {
+  flex: 1 1 12ch;
+  min-width: 0;
+  margin: 0;
+  font-weight: 600;
+  max-width: var(--largeur-ligne);
+}
+
+/* L'annonce est lisible à l'œil autant qu'au lecteur d'écran : c'est
+   le fil de ce qui vient de se passer, pas un texte caché. */
+.tx-annonce {
+  margin: 0;
+  min-height: calc(1em * var(--interligne));
+  color: var(--texte-doux);
+  max-width: var(--largeur-ligne);
+}
+
+.tx-bilan {
+  margin: 0;
+  color: var(--texte-doux);
+  max-width: var(--largeur-ligne);
+}
+
+.tx-pied,
+.tx-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.tx-pied > .btn,
+.tx-actions > .btn {
+  flex: 1 1 13ch;
+  width: auto;
+  min-height: var(--tx-cible);
+}
+.tx-quitter { background: var(--surface-2); }
+
+/* ------------------------- avancement -------------------------
+   Le seul repère chiffré du jeu : les fontaines ouvertes. C'est
+   l'état du plateau, pas une note — aucun coup n'est compté, aucun
+   temps n'est mesuré, et il n'y a rien à rattraper.
+   Le texte peut être poussé à 30 px : la ligne passe alors à
+   plusieurs lignes plutôt que de déborder sur le côté. */
+.tx-barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.tx-etiquette {
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  white-space: nowrap;
+  max-width: 100%;
+}
+.tx-jauge {
+  flex: 1 1 90px;
+  min-width: 70px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  overflow: hidden;
+}
+.tx-jauge-pleine {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--jeu-tuyaux);
+  transition: width 320ms cubic-bezier(.22, 1, .36, 1);
+}
+/* Largeur figée par un gabarit invisible qui porte « 12 sur 12 » :
+   le compte peut gagner un chiffre sans que la ligne se réorganise,
+   donc le plateau ne bouge JAMAIS d'un pixel pendant une partie. */
+.tx-compte-txt {
+  display: inline-grid;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.tx-compte-txt > span { grid-area: 1 / 1; }
+.tx-compte-gabarit { visibility: hidden; }
+
+/* ------------------------------ le plateau ------------------------------ */
+
+.tx-plateau {
+  display: grid;
+  grid-template-columns: repeat(var(--tx-n, 4), 1fr);
+  gap: 0;                       /* les tuyaux doivent se toucher */
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  grid-template-rows: repeat(var(--tx-n, 4), 1fr);
+  position: relative;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 5px solid var(--tx-cadre);
+  border-radius: calc(var(--rayon) + 8px);
+  background: var(--tx-dalle);
+  box-shadow: var(--ombre);
+  overflow: hidden;
+  transition: border-color 320ms cubic-bezier(.22, 1, .36, 1);
+}
+/* Sur un téléphone, le plateau reprend les marges de la page : il ne
+   reste que quatre pixels de chaque côté, et chaque case y gagne
+   autant. Le seuil est posé à 430 px, et non à la largeur d'un
+   iPhone courant, pour qu'il n'existe aucune largeur intermédiaire
+   où la case redeviendrait plus petite. La marge négative s'arrête
+   exactement sur le remplissage de `.appli` : rien ne déborde. */
+@media (max-width: 430px) {
+  .tx-plateau {
+    width: calc(100% + 24px);
+    max-width: none;
+    margin-left: -12px;
+    margin-right: -12px;
+  }
+}
+
+/* Le plateau fini garde son circuit intact : il change seulement de
+   bordure. Rien ne disparaît, rien ne clignote. */
+/* Le mur intérieur, posé AU-DESSUS des tuiles : un tuyau mal tourné
+   vient buter dessus au lieu d'avoir l'air coupé net par le bord. */
+.tx-plateau::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  border-radius: calc(var(--rayon) + 3px);
+  box-shadow: inset 0 0 0 7px var(--tx-cadre);
+  z-index: 3;
+}
+
+.tx-plateau.tx-fini { border-color: var(--succes); }
+
+.tx-tuile {
+  position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--tx-case-a);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--duree-anim);
+}
+.tx-tuile[data-pair="1"] { background: var(--tx-case-b); }
+.tx-tuile:active { background: var(--tx-case-appui); }
+/* Le liseré de focus rentre à l'intérieur de la tuile : sinon il
+   mordrait sur les voisines, qui se touchent. */
+/* Liseré de focus RENTRÉ dans la tuile : les cases se touchent, un
+   contour débordant mordrait sur les voisines. Doublé d'un halo
+   intérieur pour rester repérable au milieu d'un plateau chargé. */
+.tx-tuile:focus-visible {
+  outline: 5px solid var(--accent);
+  outline-offset: -5px;
+  box-shadow: inset 0 0 0 9px var(--accent-doux);
+  z-index: 2;
+}
+
+/* Le dessin déborde d'un pixel de chaque côté de la tuile. Les
+   colonnes d'une grille en fractions ne tombent pas sur des pixels
+   entiers : sans ce débord, une couture claire d'un pixel traverse
+   le tuyau à chaque jointure, et l'eau paraît coupée en tronçons.
+   Le débord d'une tuile est recouvert par le fond de sa voisine,
+   puis par le dessin de celle-ci : à l'endroit qui compte — deux
+   branches qui se répondent — le raccord devient invisible. */
+.tx-svg {
+  position: absolute;
+  left: -1px; top: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  display: block;
+  pointer-events: none;
+}
+
+/* L'emblème (pompe ou fontaine) est posé au-dessus des tuyaux et ne
+   tourne PAS : une vasque ou un manomètre à l'envers serait absurde.
+   Le rang est écrit noir sur blanc plutôt que laissé à l'ordre des
+   nœuds. */
+.tx-fixe { z-index: 1; }
+
+/* Le quart de tour. Un ressort court : la tuile arrive, dépasse un
+   rien, se pose. Le JavaScript cumule les quarts de tour, donc elle
+   tourne toujours vers la droite et ne revient jamais en arrière. */
+.tx-pivot {
+  transform: rotate(var(--tx-r, 0deg));
+  transition: transform 210ms cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* ------------------------------ le tube ------------------------------
+   Quatre anneaux concentriques, du plus large au plus étroit. */
+.tx-cerne,
+.tx-gaine,
+.tx-lustre,
+.tx-creux,
+.tx-eau,
+.tx-reflet,
+.tx-jet,
+.tx-goutte,
+.tx-vasque-eau,
+.tx-vasque-trait,
+.tx-pompe-aiguille,
+.tx-pompe-socle {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tx-cerne  { stroke: var(--tx-cerne);  stroke-width: 38; }
+.tx-gaine  { stroke: var(--tx-gaine);  stroke-width: 32; }
+.tx-lustre { stroke: var(--tx-lustre); stroke-width: 24; }
+/* Le sillon creux d'un tuyau vide : étroit, sombre, il se lit
+   comme un canal sec. */
+.tx-creux  { stroke: var(--tx-creux);  stroke-width: 13; }
+
+/* ------------------------------ l'eau ------------------------------
+   Au repos, les deux couches ont une épaisseur NULLE : il n'y a
+   rien à voir, et rien n'est caché par une opacité qu'une animation
+   pourrait laisser à zéro. Pleines, elles s'épaississent — c'est
+   une transition, donc instantanée quand le mouvement est coupé, et
+   la valeur d'arrivée vient de ces règles de base. L'eau reste donc
+   pleinement visible à l'arrêt. */
+.tx-eau {
+  stroke: var(--tx-eau);
+  stroke-width: 0;
+  transition: stroke-width 230ms cubic-bezier(.22, 1, .36, 1) var(--tx-retard, 0ms);
+}
+.tx-reflet {
+  stroke: var(--tx-reflet);
+  stroke-width: 0;
+  transition: stroke-width 230ms cubic-bezier(.22, 1, .36, 1) var(--tx-retard, 0ms);
+}
+.tx-tuile.tx-pleine .tx-eau    { stroke-width: 24; }
+.tx-tuile.tx-pleine .tx-reflet { stroke-width: 7; }
+
+/* ------------------------------ la pompe ------------------------------ */
+.tx-pompe-corps {
+  fill: var(--tx-pompe);
+  stroke: var(--tx-trait);
+  stroke-width: 4;
+}
+.tx-pompe-capot  { fill: var(--tx-pompe-haut); }
+.tx-pompe-axe    { fill: var(--tx-pompe-aiguille); }
+.tx-pompe-boulon { fill: var(--tx-pompe-haut); }
+.tx-pompe-cadran {
+  fill: var(--tx-pompe-cadran);
+  stroke: var(--tx-trait);
+  stroke-width: 3.5;
+}
+.tx-pompe-aiguille { stroke: var(--tx-pompe-aiguille); stroke-width: 5.5; }
+.tx-pompe-socle    { stroke: var(--tx-pompe-haut); stroke-width: 9; }
+
+/* ------------------------------ la fontaine ------------------------------
+   Vide : une vasque creuse, et rien d'autre. Alimentée : un jet
+   monte, deux gouttes sautent, la vasque se remplit. Ce sont des
+   formes qui apparaissent, pas une couleur qui change. */
+.tx-vasque {
+  fill: var(--tx-vasque);
+  stroke: none;
+}
+.tx-vasque-trait { stroke: var(--tx-trait); stroke-width: 5; }
+
+.tx-jet,
+.tx-goutte,
+.tx-vasque-eau {
+  stroke-width: 0;
+  transition: stroke-width 260ms cubic-bezier(.34, 1.56, .64, 1) var(--tx-retard, 0ms);
+}
+.tx-jet        { stroke: var(--tx-eau-vive); }
+.tx-goutte     { stroke: var(--tx-eau-vive); }
+/* Bouts droits : la vasque a des parois droites, un bout arrondi
+   déborderait du rebord. */
+.tx-vasque-eau { stroke: var(--tx-eau); stroke-linecap: butt; }
+
+.tx-tuile.tx-pleine .tx-jet        { stroke-width: 14; }
+.tx-tuile.tx-pleine .tx-goutte     { stroke-width: 10; }
+.tx-tuile.tx-pleine .tx-vasque-eau { stroke-width: 34; }
+
+/* ------------------------- choix du tableau ------------------------- */
+
+.tx-grille-niveaux {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 12px;
+}
+.tx-niveau {
+  font-family: inherit;
+  letter-spacing: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--tx-cible);
+  padding: 10px 8px;
+  border: 3px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+}
+.tx-niveau-num {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.tx-niveau-apercu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 62px;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  background: var(--tx-dalle);
+  border: 2px solid var(--tx-cadre);
+  overflow: hidden;
+}
+.tx-vignette-svg { display: block; width: 100%; height: 100%; }
+.tx-vg-tuyau {
+  fill: none;
+  stroke: var(--tx-creux);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+}
+.tx-vg-fontaine { fill: var(--tx-eau); }
+.tx-vg-pompe    { fill: var(--tx-pompe); }
+
+.tx-niveau.tx-fait { border-color: var(--succes); background: var(--succes-doux); }
+.tx-niveau.tx-ici {
+  border-color: var(--jeu-tuyaux);
+  box-shadow: inset 0 0 0 3px var(--surface), var(--ombre);
+}
+/* Un tableau pas encore ouvert n'est pas une punition : il est
+   simplement calme, et le cadenas le dit sans mot. */
+.tx-niveau.tx-ferme {
+  cursor: default;
+  background: var(--surface-2);
+  border-style: dashed;
+  color: var(--texte-doux);
+}
+.tx-niveau.tx-ferme .tx-niveau-apercu {
+  background: var(--surface-2);
+  border-style: dashed;
+}
+.tx-cadenas { font-size: 1.2rem; line-height: 1; }
+
+/* ------------------------------ la fête ------------------------------ */
+
+.tx-fin:empty { display: none; }
+.tx-bravo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px var(--gap);
+  padding: var(--gap);
+  border: 3px solid var(--succes);
+  border-radius: var(--rayon);
+  background: var(--succes-doux);
+  box-shadow: var(--ombre);
+}
+.tx-bravo-txt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 16ch;
+  min-width: 0;
+}
+.tx-bravo-txt p { margin: 0; font-weight: 700; }
+.tx-bravo .tx-actions { flex: 1 1 100%; }
+
+/* ---------------------------------------------------------------
+   LA COUPURE DU MOUVEMENT
+
+   L'application ramène déjà toutes les durées à 0,001 ms. On ajoute
+   ici les deux choses qu'elle ne couvre pas : les RETARDS de
+   transition — un retard survit à une durée nulle, et l'eau
+   arriverait en décalé — et toute animation ponctuelle, supprimée
+   plutôt que raccourcie, pour qu'aucune image-clé ne puisse laisser
+   un élément dans un état invisible.
+
+   Les transitions, elles, sont conservées : avec une durée nulle
+   elles s'appliquent d'un coup, et c'est exactement ce qu'on veut —
+   la tuile pivote instantanément, l'eau se remplit instantanément,
+   et le jeu reste entièrement jouable.
+   --------------------------------------------------------------- */
+html[data-animations="non"] .tx,
+html[data-animations="non"] .tx *,
+html[data-animations="non"] .tx *::before,
+html[data-animations="non"] .tx *::after {
+  animation: none !important;
+  transition-delay: 0s !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tx,
+  .tx *,
+  .tx *::before,
+  .tx *::after {
+    animation: none !important;
+    transition-delay: 0s !important;
+  }
+}

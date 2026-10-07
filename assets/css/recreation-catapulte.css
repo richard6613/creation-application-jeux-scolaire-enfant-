@@ -1,0 +1,732 @@
+/* ---------------------------------------------------------------
+   recreation-catapulte.css — « La catapulte ».
+
+   Une colline du Royaume, un chevalet, une planche en équilibre et
+   des blocs de glace. Tout est dessiné en SVG par le JavaScript ;
+   cette feuille ne fait que peindre.
+
+   Trois partis pris commandent le fichier.
+
+   1. AUCUNE COULEUR EN DUR AILLEURS QUE DANS LES DEUX BLOCS DE
+      VARIABLES ci-dessous, déclinés en clair ET en sombre. C'est ce
+      qui permet aux six fonds de lecture de l'application de rester
+      corrects sans toucher au JavaScript.
+
+   2. LE VOLUME VIENT DU BISEAU, PAS DE LA TEXTURE. Chaque bloc de
+      glace a cinq facettes (dessus, gauche, droite, dessous, cœur) :
+      la lumière du Royaume vient toujours du haut-gauche, donc le
+      dessus est le plus clair et le dessous le plus sombre. Un enfant
+      daltonien voit le relief exactement comme les autres, puisque
+      c'est une affaire de clair et de sombre, pas de teinte.
+
+   3. AUCUNE ANIMATION PERMANENTE. Pas une. Au repos, la scène est
+      strictement immobile : les seules animations du fichier sont
+      celles des éclats, qui vivent moins d'une seconde et dont le
+      JavaScript ne crée même pas les nœuds quand le mouvement est
+      coupé.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Teinte du jeu : pastille et liseré de la carte seulement, jamais
+     sous du texte, donc le contraste de lecture n'est pas touché.
+     Un vert olive : aucune autre teinte de jeu n'occupe cette
+     plage-là, la carte ne se confond donc avec aucune autre. */
+  --jeu-catapulte: #5c7f1c;
+
+  /* ---- Le ciel et le lointain ---- */
+  --ct-ciel-1: #2a7cc8;
+  --ct-ciel-2: #76bfec;
+  --ct-ciel-3: #cdeaf8;
+  --ct-soleil: #ffd845;
+  --ct-halo: rgba(255, 226, 120, 0.4);
+  --ct-nuage: #ffffff;
+  --ct-nuage-opacite: 0.9;
+
+  --ct-mur-loin: #a2b2d6;
+  --ct-mur-loin-clair: #c0cce6;
+  --ct-toit-loin: #7d8dc2;
+  --ct-mur-pres: #7b84ae;
+  --ct-mur-pres-clair: #9aa2c6;
+  --ct-toit-pres: #4e58a2;
+  --ct-fenetre: #2a2d52;
+
+  /* ---- La colline ---- */
+  --ct-colline: #2f7533;
+  --ct-herbe-1: #74bf52;
+  --ct-herbe-2: #4d9436;
+  --ct-herbe-lisere: #8bd062;
+  --ct-touffe: #3c8632;
+  --ct-tige: #3c8632;
+  --ct-petale-1: #ffd243;
+  --ct-petale-2: #f4749c;
+  --ct-coeur-fleur: #c4631a;
+  --ct-caillou: #9d9789;
+
+  /* ---- Le bois et la pierre ---- */
+  --ct-bois-1: #b87a32;
+  --ct-bois-2: #86501c;
+  --ct-bois-m: #9a601f;
+  --ct-bois-clair: #dba055;
+  --ct-ferrure: #585761;
+  --ct-butee: #c9553a;
+  --ct-corde: #cdb183;
+  --ct-corde-clair: #e5cfa6;
+  --ct-ferrure-clair: #7d7c88;
+  --ct-pierre: #a8a296;
+  --ct-pierre-clair: #c8c2b4;
+
+  /* ---- Le pivot : orange franc, comme sur la capture du père ----
+     C'est le repère qui dit « ça tourne ici ». */
+  --ct-pivot: #f08a1e;
+  --ct-pivot-clair: #ffbb63;
+  --ct-clou: #6c4a1e;
+
+  /* ---- La planche : violette, comme sur la capture ---- */
+  --ct-pl-1: #9f6fdd;
+  --ct-pl-2: #6c40ab;
+  --ct-pl-haut: #c7a6f2;
+  --ct-pl-bas: #4a2a7e;
+  --ct-pl-veine: rgba(255, 255, 255, 0.26);
+
+  /* ---- La glace : cinq facettes, du plus clair au plus sombre ---- */
+  --ct-glace-1: #c4efff;
+  --ct-glace-2: #6ccdf1;
+  --ct-glace-coeur: #a4e5fb;
+  --ct-glace-haut: #ecfdff;
+  --ct-glace-gauche: #b0e7f8;
+  --ct-glace-droite: #4bafdb;
+  --ct-glace-bas: #2d90c2;
+  --ct-glace-trait: #ffffff;
+  --ct-glace-reflet: rgba(255, 255, 255, 0.7);
+  --ct-glace-bulle: rgba(255, 255, 255, 0.55);
+  --ct-glace-corps-opacite: 0.88;
+
+  /* ---- Le boulet ---- */
+  --ct-boulet-1: #869099;
+  --ct-boulet-2: #323944;
+  --ct-boulet-luisant: rgba(255, 255, 255, 0.55);
+
+  /* ---- Ombres, traits, aperçu ---- */
+  --ct-ombre: rgba(30, 44, 22, 0.28);
+  --ct-ombre-sol: rgba(34, 58, 26, 0.3);
+  --ct-trait: rgba(22, 28, 38, 0.42);
+  --ct-pointille: #fff3b8;
+  --ct-pointille-trait: rgba(48, 36, 10, 0.5);
+  --ct-mire-trait: #1f2733;
+  --ct-mire-clair: #ffffff;
+
+  /* ---- La jauge de force ---- */
+  --ct-jauge-fond: rgba(20, 30, 44, 0.3);
+  --ct-jauge-trait: rgba(255, 255, 255, 0.45);
+  --ct-cran-off: rgba(255, 255, 255, 0.32);
+  --ct-cran-on: #ffd341;
+  --ct-cran-trait: rgba(40, 30, 8, 0.55);
+
+  /* ---- Les éclats ---- */
+  --ct-eclat: #eafcff;
+  --ct-flash: rgba(255, 255, 255, 0.8);
+}
+
+/* ===================================================================
+   FOND SOMBRE
+   La colline passe au crépuscule : le ciel se calme, mais la glace
+   et le pivot restent francs, sinon il n'y a plus rien à viser.
+   =================================================================== */
+html[data-fond="sombre"] {
+  --jeu-catapulte: #b7d36e;
+
+  --ct-ciel-1: #1a2644;
+  --ct-ciel-2: #32507c;
+  --ct-ciel-3: #62809c;
+  --ct-soleil: #f3d784;
+  --ct-halo: rgba(243, 215, 132, 0.2);
+  --ct-nuage: #93a7c1;
+  --ct-nuage-opacite: 0.72;
+
+  --ct-mur-loin: #56638a;
+  --ct-mur-loin-clair: #6e7b9f;
+  --ct-toit-loin: #434d74;
+  --ct-mur-pres: #41496c;
+  --ct-mur-pres-clair: #555e84;
+  --ct-toit-pres: #2f3666;
+  --ct-fenetre: #ffd98a;
+
+  --ct-colline: #27512a;
+  --ct-herbe-1: #3f7b3c;
+  --ct-herbe-2: #2d5a2c;
+  --ct-herbe-lisere: #589a4c;
+  --ct-touffe: #2a5728;
+  --ct-tige: #2a5728;
+  --ct-petale-1: #e0b63c;
+  --ct-petale-2: #cf6c89;
+  --ct-coeur-fleur: #a85617;
+  --ct-caillou: #6d6a63;
+
+  --ct-bois-1: #92612a;
+  --ct-bois-2: #653d15;
+  --ct-bois-m: #784a18;
+  --ct-bois-clair: #b07f42;
+  --ct-ferrure: #46454e;
+  --ct-butee: #a44430;
+  --ct-corde: #a28a63;
+  --ct-corde-clair: #bda77f;
+  --ct-ferrure-clair: #65646f;
+  --ct-pierre: #7c776e;
+  --ct-pierre-clair: #969086;
+
+  --ct-pivot: #e07f1b;
+  --ct-pivot-clair: #ffb455;
+  --ct-clou: #4d3415;
+
+  --ct-pl-1: #8b5ec9;
+  --ct-pl-2: #5a3493;
+  --ct-pl-haut: #b391e4;
+  --ct-pl-bas: #3b2168;
+
+  --ct-glace-1: #a9e4f8;
+  --ct-glace-2: #52b4da;
+  --ct-glace-coeur: #85d2ef;
+  --ct-glace-haut: #d6f6ff;
+  --ct-glace-gauche: #93d6ed;
+  --ct-glace-droite: #3b94bd;
+  --ct-glace-bas: #2376a2;
+  --ct-glace-trait: #e8fbff;
+  --ct-glace-reflet: rgba(255, 255, 255, 0.52);
+  --ct-glace-bulle: rgba(255, 255, 255, 0.4);
+
+  --ct-boulet-1: #6c757e;
+  --ct-boulet-2: #242a33;
+
+  --ct-ombre: rgba(0, 0, 0, 0.38);
+  --ct-ombre-sol: rgba(0, 0, 0, 0.4);
+  --ct-trait: rgba(8, 12, 18, 0.5);
+  --ct-pointille: #ffe89a;
+  --ct-pointille-trait: rgba(20, 14, 4, 0.55);
+  --ct-mire-trait: #0f141c;
+  --ct-mire-clair: #ffffff;
+
+  --ct-jauge-fond: rgba(8, 14, 24, 0.44);
+  --ct-cran-off: rgba(255, 255, 255, 0.24);
+  --ct-cran-on: #ffcf37;
+
+  --ct-eclat: #d9f6ff;
+  --ct-flash: rgba(230, 250, 255, 0.72);
+}
+
+/* Appareil en mode sombre, avant tout choix de fond : on reprend la
+   même déclinaison plutôt que d'éblouir. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --jeu-catapulte: #b7d36e;
+    --ct-ciel-1: #1a2644;
+    --ct-ciel-2: #32507c;
+    --ct-ciel-3: #62809c;
+    --ct-soleil: #f3d784;
+    --ct-halo: rgba(243, 215, 132, 0.2);
+    --ct-nuage: #93a7c1;
+    --ct-nuage-opacite: 0.72;
+    --ct-mur-loin: #56638a;
+    --ct-mur-loin-clair: #6e7b9f;
+    --ct-toit-loin: #434d74;
+    --ct-mur-pres: #41496c;
+    --ct-mur-pres-clair: #555e84;
+    --ct-toit-pres: #2f3666;
+    --ct-fenetre: #ffd98a;
+    --ct-colline: #27512a;
+    --ct-herbe-1: #3f7b3c;
+    --ct-herbe-2: #2d5a2c;
+    --ct-herbe-lisere: #589a4c;
+    --ct-touffe: #2a5728;
+    --ct-tige: #2a5728;
+    --ct-petale-1: #e0b63c;
+    --ct-petale-2: #cf6c89;
+    --ct-coeur-fleur: #a85617;
+    --ct-caillou: #6d6a63;
+    --ct-bois-1: #92612a;
+    --ct-bois-2: #653d15;
+    --ct-bois-m: #784a18;
+    --ct-bois-clair: #b07f42;
+    --ct-ferrure: #46454e;
+    --ct-butee: #a44430;
+    --ct-corde: #a28a63;
+    --ct-corde-clair: #bda77f;
+  --ct-butee: #a44430;
+  --ct-corde: #a28a63;
+  --ct-corde-clair: #bda77f;
+    --ct-ferrure-clair: #65646f;
+    --ct-pierre: #7c776e;
+    --ct-pierre-clair: #969086;
+    --ct-pivot: #e07f1b;
+    --ct-pivot-clair: #ffb455;
+    --ct-clou: #4d3415;
+    --ct-pl-1: #8b5ec9;
+    --ct-pl-2: #5a3493;
+    --ct-pl-haut: #b391e4;
+    --ct-pl-bas: #3b2168;
+    --ct-glace-1: #a9e4f8;
+    --ct-glace-2: #52b4da;
+    --ct-glace-coeur: #85d2ef;
+    --ct-glace-haut: #d6f6ff;
+    --ct-glace-gauche: #93d6ed;
+    --ct-glace-droite: #3b94bd;
+    --ct-glace-bas: #2376a2;
+    --ct-glace-trait: #e8fbff;
+    --ct-glace-reflet: rgba(255, 255, 255, 0.52);
+    --ct-glace-bulle: rgba(255, 255, 255, 0.4);
+    --ct-boulet-1: #6c757e;
+    --ct-boulet-2: #242a33;
+    --ct-ombre: rgba(0, 0, 0, 0.38);
+    --ct-ombre-sol: rgba(0, 0, 0, 0.4);
+    --ct-trait: rgba(8, 12, 18, 0.5);
+    --ct-pointille: #ffe89a;
+    --ct-pointille-trait: rgba(20, 14, 4, 0.55);
+    --ct-mire-trait: #0f141c;
+    --ct-jauge-fond: rgba(8, 14, 24, 0.44);
+    --ct-cran-off: rgba(255, 255, 255, 0.24);
+    --ct-cran-on: #ffcf37;
+    --ct-eclat: #d9f6ff;
+    --ct-flash: rgba(230, 250, 255, 0.72);
+  }
+}
+
+/* ===================================================================
+   L'ÉCRAN
+   =================================================================== */
+
+.ct {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  /* Rien ne doit jamais dépasser en largeur, même avec le texte à
+     30 px et les espacements au maximum. */
+  max-width: 100%;
+  min-width: 0;
+}
+
+.ct-entete {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.ct-consigne {
+  margin: 0;
+  flex: 1 1 14ch;
+  min-width: 0;
+  font-weight: 700;
+  overflow-wrap: break-word;
+}
+
+/* ---- Les deux compteurs. Ils montent, rien ne les fait descendre.
+   Le dessin n'est jamais seul : le mot est écrit à côté. ---- */
+.ct-compteurs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+}
+.ct-compteur {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 13ch;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 2px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  box-shadow: var(--ombre);
+}
+.ct-c-icone {
+  font-size: 1.35em;
+  line-height: 1;
+  flex: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+.ct-c-txt {
+  min-width: 0;
+  font-weight: 700;
+  font-size: 0.92em;
+  overflow-wrap: break-word;
+}
+.ct-c-glace { border-left: 7px solid var(--ct-glace-2); }
+.ct-c-tour { border-left: 7px solid var(--jeu-catapulte); }
+
+/* ---- La scène. Cible tactile : tout l'écran de jeu. ---- */
+.ct-scene {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  border: 3px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--ct-ciel-3);
+  overflow: hidden;
+  /* Sans cela, tirer la catapulte vers le bas fait défiler la page
+     au lieu de viser. */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  box-shadow: var(--ombre);
+}
+.ct-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- Le gros bouton de tir. Les boulets sont illimités : il n'y a
+   donc jamais de raison de le désactiver. ---- */
+.ct-commandes {
+  display: flex;
+  min-width: 0;
+}
+.ct-tirer {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 66px;
+  font-size: 1.05em;
+  font-weight: 700;
+}
+
+.ct-annonce {
+  margin: 0;
+  min-height: 1.6em;
+  padding: 8px 14px;
+  border-radius: var(--rayon);
+  background: var(--surface-2);
+  color: var(--texte);
+  overflow-wrap: break-word;
+}
+
+/* ---- La carte de la tour abattue ---- */
+/* Quand la carte de fête dit déjà la phrase, l'annonce sort de la vue
+   plutôt que de l'écrire deux fois à dix centimètres d'intervalle —
+   elle reste entière pour les lecteurs d'écran. */
+.ct-annonce-muette {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ct-fin:empty { display: none; }
+.ct-bravo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 3px solid var(--succes);
+  border-radius: var(--rayon);
+  background: var(--succes-doux);
+  min-width: 0;
+}
+.ct-bravo-txt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 14ch;
+  min-width: 0;
+}
+.ct-bravo-txt p {
+  margin: 0;
+  font-weight: 700;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.ct-autre {
+  flex: 1 1 100%;
+  min-height: 62px;
+}
+
+/* ---- Le pied. « J'ai fini de jouer » est visible en permanence :
+   l'enfant n'a jamais à chercher comment sortir. ---- */
+.ct-pied {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+}
+.ct-neuf, .ct-quitter {
+  flex: 1 1 14ch;
+  min-width: 0;
+  min-height: 62px;
+  justify-content: center;
+  text-align: center;
+}
+
+/* ===================================================================
+   LE DÉGRADÉS ET LE DÉCOR
+   =================================================================== */
+
+.ct-s-ciel-1 { stop-color: var(--ct-ciel-1); }
+.ct-s-ciel-2 { stop-color: var(--ct-ciel-2); }
+.ct-s-ciel-3 { stop-color: var(--ct-ciel-3); }
+.ct-s-herbe-1 { stop-color: var(--ct-herbe-1); }
+.ct-s-herbe-2 { stop-color: var(--ct-herbe-2); }
+.ct-s-glace-1 { stop-color: var(--ct-glace-1); }
+.ct-s-glace-2 { stop-color: var(--ct-glace-2); }
+.ct-s-bois-1 { stop-color: var(--ct-bois-1); }
+.ct-s-bois-2 { stop-color: var(--ct-bois-2); }
+.ct-s-boulet-1 { stop-color: var(--ct-boulet-1); }
+.ct-s-boulet-2 { stop-color: var(--ct-boulet-2); }
+
+.ct-ciel { fill: url(#ct-g-ciel); }
+.ct-soleil { fill: var(--ct-soleil); }
+.ct-halo { fill: url(#ct-g-halo); }
+.ct-s-halo-1 { stop-color: var(--ct-soleil); stop-opacity: 0.5; }
+.ct-s-halo-2 { stop-color: var(--ct-soleil); stop-opacity: 0; }
+.ct-nuage { fill: var(--ct-nuage); opacity: var(--ct-nuage-opacite); }
+
+.ct-remparts .ct-mur { fill: var(--ct-mur-pres); }
+.ct-remparts .ct-mur-clair { fill: var(--ct-mur-pres-clair); }
+.ct-remparts .ct-toit { fill: var(--ct-toit-pres); }
+.ct-remparts .ct-fenetre { fill: var(--ct-fenetre); }
+.ct-remparts .ct-hampe { fill: var(--ct-ferrure); }
+.ct-remparts .ct-banniere { fill: var(--jeu-catapulte); }
+/* Les remparts du fond sont plus pâles : la profondeur se lit à la
+   brume, pas à la perspective. */
+.ct-loin .ct-mur { fill: var(--ct-mur-loin); }
+.ct-loin .ct-mur-clair { fill: var(--ct-mur-loin-clair); }
+.ct-loin .ct-toit { fill: var(--ct-toit-loin); }
+.ct-loin .ct-fenetre { fill: var(--ct-toit-loin); }
+.ct-loin .ct-banniere { fill: var(--ct-toit-loin); }
+.ct-loin .ct-hampe { fill: var(--ct-toit-loin); }
+
+.ct-colline { fill: var(--ct-colline); }
+.ct-herbe { fill: url(#ct-g-herbe); }
+.ct-herbe-lisere { fill: var(--ct-herbe-lisere); }
+.ct-touffe { fill: var(--ct-touffe); }
+.ct-tige { fill: var(--ct-tige); }
+.ct-f1 .ct-petale { fill: var(--ct-petale-1); }
+.ct-f2 .ct-petale { fill: var(--ct-petale-2); }
+.ct-coeur-fleur { fill: var(--ct-coeur-fleur); }
+.ct-caillou { fill: var(--ct-caillou); }
+
+/* ===================================================================
+   LE CHEVALET, LA PLANCHE
+   =================================================================== */
+
+.ct-ombre-sol { fill: var(--ct-ombre-sol); }
+.ct-pierre { fill: var(--ct-pierre); }
+.ct-pierre-clair { fill: var(--ct-pierre-clair); }
+.ct-bois-f { fill: url(#ct-g-bois); }
+.ct-bois-m { fill: var(--ct-bois-m); }
+.ct-bois-clair { fill: var(--ct-bois-clair); }
+.ct-ferrure { fill: var(--ct-ferrure); }
+.ct-pivot { fill: var(--ct-pivot); }
+.ct-pivot-clair { fill: var(--ct-pivot-clair); }
+.ct-clou { fill: var(--ct-clou); }
+.ct-axe { fill: var(--ct-ferrure); stroke: var(--ct-trait); stroke-width: 2; }
+
+.ct-pl-ombre { fill: var(--ct-ombre); }
+.ct-pl-corps { fill: var(--ct-pl-1); stroke: var(--ct-pl-bas); stroke-width: 3; }
+.ct-pl-haut { fill: var(--ct-pl-haut); }
+.ct-pl-bas { fill: var(--ct-pl-2); }
+.ct-pl-veine { fill: var(--ct-pl-veine); }
+
+/* ===================================================================
+   LES BLOCS DE GLACE
+   Cinq facettes : dessus le plus clair, dessous le plus sombre. La
+   lumière du Royaume vient toujours du haut-gauche.
+   =================================================================== */
+
+.ct-bl-corps { fill: url(#ct-g-glace); opacity: var(--ct-glace-corps-opacite); }
+.ct-bl-haut { fill: var(--ct-glace-haut); }
+.ct-bl-gauche { fill: var(--ct-glace-gauche); }
+.ct-bl-droite { fill: var(--ct-glace-droite); }
+.ct-bl-bas { fill: var(--ct-glace-bas); }
+.ct-bl-coeur { fill: var(--ct-glace-coeur); }
+.ct-bl-reflet { fill: var(--ct-glace-reflet); }
+.ct-bl-bulle { fill: var(--ct-glace-bulle); }
+.ct-bl-etincelle { fill: var(--ct-glace-trait); }
+.ct-bl-trait { fill: none; stroke: var(--ct-glace-trait); stroke-width: 3; }
+
+/* ===================================================================
+   LA CATAPULTE
+   =================================================================== */
+
+.ct-roue { fill: var(--ct-bois-2); stroke: var(--ct-trait); stroke-width: 2.5; }
+.ct-rayon { fill: var(--ct-bois-clair); }
+.ct-moyeu { fill: var(--ct-ferrure); }
+.ct-hampe-bois { fill: var(--ct-bois-m); }
+.ct-fanion { fill: var(--jeu-catapulte); stroke: var(--ct-trait); stroke-width: 1.5; }
+
+.ct-bras-poutre { fill: var(--ct-bois-2); stroke: var(--ct-trait); stroke-width: 2.5; }
+.ct-bras-clair { fill: var(--ct-bois-clair); }
+.ct-godet { fill: var(--ct-bois-m); stroke: var(--ct-trait); stroke-width: 2.5; }
+.ct-godet-levre { fill: none; stroke: var(--ct-bois-clair); stroke-width: 4; stroke-linecap: round; }
+.ct-butee { fill: var(--ct-butee); stroke: var(--ct-trait); stroke-width: 2; }
+.ct-corde { fill: var(--ct-corde); stroke: var(--ct-trait); stroke-width: 2; }
+.ct-corde-clair { fill: var(--ct-corde-clair); }
+.ct-boulet-charge { fill: url(#ct-g-boulet); stroke: var(--ct-trait); stroke-width: 2; }
+
+.ct-boulet { fill: url(#ct-g-boulet); stroke: var(--ct-trait); stroke-width: 2.5; }
+.ct-boulet-ombre { fill: var(--ct-ombre); }
+.ct-boulet-luisant { fill: var(--ct-boulet-luisant); }
+
+/* ===================================================================
+   L'APERÇU DE TRAJECTOIRE
+   La pièce maîtresse du confort : l'enfant voit où le boulet va
+   taper avant de lâcher. On ne peut donc pas « manquer de peu sans
+   comprendre pourquoi ». Le repère porte un cercle ET une croix :
+   il se lit sur le ciel comme sur l'herbe, et jamais par la couleur
+   seule.
+   =================================================================== */
+
+.ct-pointille {
+  fill: var(--ct-pointille);
+  stroke: var(--ct-pointille-trait);
+  stroke-width: 1.4;
+}
+.ct-mire-halo {
+  fill: none;
+  stroke: var(--ct-mire-clair);
+  stroke-width: 10;
+}
+.ct-mire-rond {
+  fill: none;
+  stroke: var(--ct-mire-trait);
+  stroke-width: 5;
+}
+.ct-mire-croix {
+  fill: none;
+  stroke: var(--ct-mire-clair);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+}
+
+/* ===================================================================
+   LA JAUGE DE FORCE
+   Le nombre de crans allumés ET leur hauteur croissante portent
+   l'information : la couleur n'est qu'un renfort.
+   =================================================================== */
+
+.ct-jauge-fond {
+  fill: var(--ct-jauge-fond);
+  stroke: var(--ct-jauge-trait);
+  stroke-width: 2;
+}
+.ct-cran { fill: var(--ct-cran-off); }
+.ct-cran-on { fill: var(--ct-cran-on); stroke: var(--ct-cran-trait); stroke-width: 1.5; }
+
+/* ===================================================================
+   LES ÉCLATS DE GLACE
+   Seules animations du fichier. Elles durent moins d'une seconde, et
+   quand le mouvement est coupé le JavaScript ne crée même pas leurs
+   nœuds : il n'y a donc rien à arrêter.
+   =================================================================== */
+
+.ct-eclat {
+  fill: var(--ct-eclat);
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: ct-eclat-vole 620ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.ct-flash {
+  fill: var(--ct-flash);
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: ct-flash-ouvre 320ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes ct-eclat-vole {
+  from { transform: translate(0, 0) scale(0.55) rotate(0deg); opacity: 1; }
+  to   { transform: translate(var(--ct-ex, 0), var(--ct-ey, 0)) scale(0.18) rotate(150deg); opacity: 0; }
+}
+@keyframes ct-flash-ouvre {
+  from { transform: scale(0.2); opacity: 0.95; }
+  to   { transform: scale(1.3); opacity: 0; }
+}
+
+/* Le boulet qui s'arrête s'efface : sans cela il resterait couché
+   dans l'herbe, et au tir suivant il y en aurait deux. */
+.ct-boulet-part {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  transform: scale(0.4);
+  transition: opacity 260ms linear, transform 260ms cubic-bezier(.22, 1, .36, 1);
+}
+
+/* ===================================================================
+   MOUVEMENT COUPÉ
+   Réglage de l'espace parent, ou préférence de l'appareil.
+
+   La simulation tourne quand même : le JavaScript la déroule d'un
+   seul trait et affiche l'état final. Il ne crée alors aucun éclat
+   et aucune boucle d'animation. Les règles ci-dessous sont la
+   ceinture de sécurité : si un nœud animé arrivait quand même à
+   l'écran, il serait figé, jamais en train de bouger.
+   =================================================================== */
+
+html[data-animations="non"] .ct-eclat,
+html[data-animations="non"] .ct-flash {
+  animation: none !important;
+  transform: none !important;
+  opacity: 0 !important;
+}
+html[data-animations="non"] .ct-eclats { display: none !important; }
+html[data-animations="non"] .ct-boulet-part {
+  transition: none !important;
+  transform: none !important;
+  display: none !important;
+}
+html[data-animations="non"] .ct-scene,
+html[data-animations="non"] .ct-tirer,
+html[data-animations="non"] .ct-neuf,
+html[data-animations="non"] .ct-quitter,
+html[data-animations="non"] .ct-autre {
+  transition: none !important;
+}
+html[data-animations="non"] .ct-tirer:active,
+html[data-animations="non"] .ct-neuf:active,
+html[data-animations="non"] .ct-quitter:active,
+html[data-animations="non"] .ct-autre:active {
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ct-eclat, .ct-flash {
+    animation: none !important;
+    transform: none !important;
+    opacity: 0 !important;
+  }
+  .ct-eclats { display: none !important; }
+  .ct-boulet-part {
+    transition: none !important;
+    transform: none !important;
+    display: none !important;
+  }
+  .ct-scene, .ct-tirer, .ct-neuf, .ct-quitter, .ct-autre { transition: none !important; }
+  .ct-tirer:active, .ct-neuf:active, .ct-quitter:active, .ct-autre:active {
+    transform: none !important;
+  }
+}
+
+/* ===================================================================
+   PETITS ÉCRANS ET GROS RÉGLAGES
+   Le texte peut monter à 30 px, l'espacement des lettres et des mots
+   au maximum : rien ne doit déborder en largeur, jamais.
+   =================================================================== */
+
+@media (max-width: 440px) {
+  .ct { gap: 12px; }
+  /* Sous cette largeur, deux pastilles côte à côte deviennent deux
+     colonnes de trois mots : on les empile. */
+  .ct-compteur { flex: 1 1 100%; }
+  .ct-neuf, .ct-quitter { flex: 1 1 100%; }
+  .ct-bravo { padding: 13px; }
+}
+
+@media (max-width: 360px) {
+  .ct-compteur { padding: 9px 11px; }
+  .ct-annonce { padding: 8px 11px; }
+}

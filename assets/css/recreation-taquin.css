@@ -1,0 +1,654 @@
+/* ---------------------------------------------------------------
+   recreation-taquin.css — « L'image en morceaux ».
+
+   Le dessin des huit scènes est en SVG, construit dans
+   taquin.js — mais aucune de leurs couleurs n'est dans le
+   JavaScript. Chaque forme porte une classe, et c'est ici que la
+   couleur se décide. C'est ce qui fait que les six fonds de lecture
+   et le mode sombre suivent sans qu'une ligne de JavaScript soit à
+   reprendre.
+
+   Les couleurs des images sont du CONTENU, pas de l'habillage :
+   un château n'est pas bleu nuit parce que l'écran est sombre. En
+   fond sombre on ne fait donc que baisser l'éclat des blancs et des
+   ciels, pour ne pas éblouir — les teintes, elles, ne bougent pas.
+
+   Le mouvement : une seule transition, sur la position des tuiles.
+   Elle est annulée sous `html[data-animations="non"]` et sous
+   `prefers-reduced-motion`. Rien d'autre ne bouge dans ce jeu, donc
+   il n'y a rien d'autre à couper — et surtout, aucune animation ne
+   fait apparaître un élément : tout ce qui est à l'écran est visible
+   dans son état de repos. La règle de l'application ne supprime pas
+   les animations, elle ramène leur durée à 0,001 ms : un élément qui
+   naîtrait transparent resterait transparent. Il n'y en a aucun ici.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Teinte du jeu : elle ne porte jamais de texte, seulement la
+     pastille de la salle de jeux et le liseré du plateau. */
+  --jeu-taquin: #9a5a12;
+
+  /* Cible tactile du jeu. Jamais sous 62 px : c'est cette valeur qui
+     décide des tailles de grille proposées (voir CIBLE_MIN dans
+     taquin.js — les deux doivent rester d'accord). */
+  --tq-cible: 62px;
+
+  /* Le plateau : un cadre franc et un creux sombre. Sans cela, une
+     image claire posée sur un fond crème n'aurait plus de bord, et
+     le trou ne se verrait pas. */
+  --tq-bord: #6e6256;
+  --tq-creux: #4a4238;
+  --tq-creux-bord: #2c2721;
+  --tq-interstice: 4px;
+
+  /* ---------- la palette des images ----------
+     Des rôles, pas des scènes : la même « herbe » sert au château et
+     à la forêt. Vingt-cinq couleurs suffisent aux huit images. */
+  --tq-ciel: #7fc4e8;
+  --tq-ciel2: #a8dcf4;
+  --tq-soleil: #ffd54a;
+  --tq-nuage: #fdfaf2;
+  --tq-halo: rgba(255, 224, 130, 0.5);
+
+  --tq-herbe: #3faa5c;
+  --tq-herbe-f: #268047;
+  --tq-feuille: #46b968;
+  --tq-feuille-f: #237c46;
+  --tq-feuille2: #8cc23a;
+  --tq-sapin: #1c6b45;
+  --tq-mousse: #6aa83a;
+  --tq-terre: #b5804a;
+  --tq-sable: #f0d9a4;
+
+  --tq-pierre: #cfc3ae;
+  --tq-pierre-f: #a99a84;
+  --tq-pierre-c: #e8dfce;
+  --tq-roche: #8a8fa8;
+  --tq-roche-f: #5f6478;
+  --tq-neige: #fdfdfb;
+
+  --tq-toit: #c23b3b;
+  --tq-bois: #9a6534;
+  --tq-bois-f: #74461f;
+  --tq-drapeau: #e8c427;
+  --tq-sombre: #3b3028;
+  --tq-or: #f2b818;
+  --tq-blanc: #fdfaf2;
+
+  --tq-eau: #2f86c4;
+  --tq-eau-f: #1d6499;
+  --tq-vague: rgba(255, 255, 255, 0.55);
+  --tq-ecume: #e4f4fd;
+
+  --tq-nuit: #2b3a62;
+  --tq-nuit2: #1d2947;
+  --tq-lune: #fdf4d2;
+  --tq-etoile: #ffe98a;
+  --tq-chauve: #6d7fb8;
+
+  --tq-dragon: #39a86a;
+  --tq-aile: #277c4c;
+  --tq-aile-f: #1c5e39;
+  --tq-crete: #f2c130;
+  --tq-corne: #f0e4c4;
+  --tq-oeil: #2b2320;
+  --tq-oeil-blanc: #fdfaf2;
+  --tq-feu: #f28c1c;
+  --tq-feu-f: #ffe07a;
+
+  --tq-parchemin: #f6e4bb;
+  --tq-encre: #4a3722;
+  --tq-plomb: #2f3238;
+  --tq-cadre-vitrail: #171a1f;
+
+  --tq-rouge: #d6382f;
+  --tq-rose: #e8689c;
+  --tq-ambre: #ef8c1a;
+  --tq-vert: #3aa84f;
+  --tq-turquoise: #15a7b8;
+  --tq-violet: #8a4fc4;
+}
+
+/* Fond sombre : on n'éteint pas les images, on baisse seulement
+   l'éclat de ce qui éblouirait sur de l'anthracite — les ciels, les
+   blancs, la neige, le parchemin. Les teintes restent les mêmes :
+   une image est un dessin, pas un élément d'interface. */
+html[data-fond="sombre"] {
+  --jeu-taquin: #e8ab5e;
+  --tq-mousse: #5f9a34;
+  --tq-bord: #9a9287;
+  --tq-creux: #1b1f24;
+  --tq-creux-bord: #4a535e;
+
+  --tq-ciel: #5f9ec0;
+  --tq-ciel2: #7fbcd8;
+  --tq-nuage: #e4ddd0;
+  --tq-blanc: #e8e1d4;
+  --tq-neige: #e8e8e2;
+  --tq-pierre-c: #d2c9b8;
+  --tq-parchemin: #ddc9a2;
+  --tq-sable: #d8c190;
+  --tq-ecume: #c6dced;
+  --tq-lune: #e8dfbe;
+  --tq-corne: #d8ccae;
+  --tq-oeil-blanc: #e8e1d4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --jeu-taquin: #e8ab5e;
+    --tq-bord: #9a9287;
+    --tq-creux: #1b1f24;
+
+    --tq-ciel: #5f9ec0;
+    --tq-ciel2: #7fbcd8;
+    --tq-nuage: #e4ddd0;
+    --tq-blanc: #e8e1d4;
+    --tq-neige: #e8e8e2;
+    --tq-pierre-c: #d2c9b8;
+    --tq-parchemin: #ddc9a2;
+    --tq-sable: #d8c190;
+    --tq-ecume: #c6dced;
+    --tq-lune: #e8dfbe;
+    --tq-corne: #d8ccae;
+    --tq-oeil-blanc: #e8e1d4;
+  }
+}
+
+/* ------------------------------ l'écran ------------------------------ */
+
+.tq {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  /* À 320 px, avec le texte à 30 px et les espacements au maximum,
+     aucun mot ne doit pouvoir pousser l'écran de côté. */
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.tq-entete {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.tq-consigne {
+  margin: 0;
+  flex: 1 1 60%;
+  min-width: 0;
+  max-width: 100%;
+  font-weight: 700;
+}
+
+/* ------------------------- la barre du haut ------------------------- */
+
+.tq-barre {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+/* La vignette du modèle. Elle est là en permanence : c'est elle qui
+   rend un taquin illustré jouable. L'appui dessus montre l'image en
+   grand par-dessus le plateau, tant que le doigt — ou la touche —
+   reste appuyé. */
+.tq-vignette {
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--tq-cible);
+  padding: 6px 14px 6px 6px;
+  border: 3px solid var(--tq-bord);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+  min-width: 0;
+  max-width: 100%;
+}
+.tq-vignette-cadre {
+  display: block;
+  flex: 0 0 auto;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--tq-bord);
+}
+.tq-vignette-txt {
+  min-width: 0;
+  font-weight: 700;
+  color: var(--texte);
+}
+.tq-vignette:active { box-shadow: none; }
+
+.tq-compteur {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 6px 14px;
+  border-radius: var(--rayon);
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  color: var(--texte);
+}
+.tq-compteur-signe { font-size: 1.1rem; line-height: 1; }
+.tq-compteur-txt { min-width: 0; font-weight: 700; }
+
+/* ------------------------------ le plateau ------------------------------ */
+
+.tq-cadre {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.tq-plateau {
+  --tq-n: 3;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 4px solid var(--tq-bord);
+  border-radius: calc(var(--rayon) + 6px);
+  /* Le creux : il se voit à travers les interstices, et c'est lui
+     qu'on voit à la place du morceau absent. Le trou n'est donc pas
+     signalé par une couleur, il est signalé par un manque. */
+  background: var(--tq-creux);
+  box-shadow: var(--ombre), inset 0 0 0 2px var(--jeu-taquin);
+  overflow: hidden;
+  touch-action: manipulation;
+}
+/* Navigateur sans aspect-ratio : on garde un carré à l'ancienne. */
+@supports not (aspect-ratio: 1 / 1) {
+  .tq-plateau { height: 0; padding-bottom: 100%; }
+}
+
+/* Le trou, dessiné. Il occupe une case comme une tuile, mais sous
+   elles et sans jamais rien recevoir : il n'est là que pour que
+   l'enfant voie le creux, y compris sur une image sombre. Ce n'est
+   pas une couleur qui porte l'information, c'est un enfoncement. */
+.tq-creux {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  pointer-events: none;
+  width: calc((100% - (var(--tq-n) - 1) * var(--tq-interstice)) / var(--tq-n));
+  height: calc((100% - (var(--tq-n) - 1) * var(--tq-interstice)) / var(--tq-n));
+  border-radius: 8px;
+  background: var(--tq-creux);
+  box-shadow:
+    inset 0 4px 10px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 3px var(--tq-creux-bord);
+  transform: translate(
+    calc(var(--tq-x, 0) * (100% + var(--tq-interstice))),
+    calc(var(--tq-y, 0) * (100% + var(--tq-interstice)))
+  );
+  transition: transform 170ms cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Une tuile. Sa taille vient du nombre de colonnes, sa position de
+   deux entiers posés par le JavaScript (--tq-x, --tq-y). Le
+   JavaScript ne calcule donc aucun pixel : le plateau est fluide, et
+   il n'y a rien à recalculer quand l'écran change de taille. */
+.tq-piece {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc((100% - (var(--tq-n) - 1) * var(--tq-interstice)) / var(--tq-n));
+  height: calc((100% - (var(--tq-n) - 1) * var(--tq-interstice)) / var(--tq-n));
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--tq-creux);
+  cursor: pointer;
+  /* Le pas d'une case = la tuile + un interstice. Les pourcentages
+     d'une translation se comptent sur l'élément lui-même, donc sur
+     une tuile : la formule ne dépend d'aucune mesure. */
+  transform: translate(
+    calc(var(--tq-x, 0) * (100% + var(--tq-interstice))),
+    calc(var(--tq-y, 0) * (100% + var(--tq-interstice)))
+  );
+  transition: transform 170ms cubic-bezier(.22, 1, .36, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+/* Les tuiles sont hors du parcours de tabulation (le clavier joue
+   sur le plateau, aux flèches) : leur contour de focus n'apporterait
+   rien et masquerait l'image. */
+.tq-piece:focus { outline: none; }
+.tq-piece:focus-visible { outline: none; }
+
+.tq-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Le modèle en grand, posé sur le plateau pendant l'appui. Il n'a
+   aucune animation : il est là, ou il n'est pas là. */
+.tq-modele {
+  position: absolute;
+  inset: 0;
+  display: none;
+  border: 4px solid var(--jeu-taquin);
+  border-radius: calc(var(--rayon) + 6px);
+  overflow: hidden;
+  background: var(--tq-creux);
+  z-index: 3;
+}
+.tq-voit-modele .tq-modele { display: block; }
+
+/* ------------------------------ les commandes ------------------------------ */
+
+.tq-actions,
+.tq-tailles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.tq-action {
+  flex: 1 1 100%;
+  min-width: 0;
+  min-height: var(--tq-cible);
+  justify-content: center;
+  text-align: center;
+}
+/* Deux commandes côte à côte seulement quand la place le permet
+   vraiment. En dessous, elles passent l'une sous l'autre : une
+   commande coupée au milieu d'un mot ne se lit pas. */
+@media (min-width: 440px) {
+  .tq-action { flex: 1 1 calc(50% - 5px); }
+}
+
+.tq-taille {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
+  letter-spacing: inherit;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 100%;
+  min-width: 0;
+  min-height: var(--tq-cible);
+  padding: 10px 14px;
+  border-radius: var(--rayon);
+  border: 3px solid var(--bordure);
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+  text-align: left;
+}
+@media (min-width: 440px) {
+  .tq-taille { flex: 1 1 calc(33.333% - 7px); }
+}
+.tq-taille-txt { min-width: 0; font-weight: 700; flex: 1 1 auto; }
+/* Le choix retenu ne se signale jamais par la couleur seule : il y a
+   la coche, le cadre épais et aria-pressed. */
+.tq-coche {
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+  line-height: 1;
+  visibility: hidden;
+  color: var(--succes);
+}
+.tq-taille.tq-choisi {
+  border-color: var(--jeu-taquin);
+  background: var(--surface-2);
+}
+.tq-taille.tq-choisi .tq-coche { visibility: visible; }
+
+/* La maquette de grille : elle dit la taille sans qu'on ait à lire
+   un nombre. */
+.tq-apercu {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(var(--tq-ap, 3), 1fr);
+  gap: 2px;
+  width: 44px;
+  height: 44px;
+  padding: 3px;
+  border-radius: 6px;
+  background: var(--tq-creux);
+}
+.tq-apercu > span {
+  display: block;
+  border-radius: 2px;
+  background: var(--jeu-taquin);
+}
+.tq-apercu > .tq-ap-trou { background: transparent; }
+
+/* ------------------------------ la fête ------------------------------ */
+
+.tq-fin:empty { display: none; }
+
+.tq-bravo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border-radius: var(--rayon);
+  border: 3px solid var(--succes);
+  background: var(--succes-doux);
+  color: var(--texte);
+}
+.tq-bravo-txt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  flex: 1 1 60%;
+  min-width: 0;
+}
+.tq-bravo-txt p { margin: 0; min-width: 0; font-weight: 700; }
+.tq-cadeau { flex: 1 1 100%; font-weight: 400 !important; }
+.tq-bravo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1 1 100%;
+}
+.tq-bravo-actions .btn {
+  flex: 1 1 100%;
+  min-height: var(--tq-cible);
+  justify-content: center;
+  text-align: center;
+}
+@media (min-width: 440px) {
+  .tq-bravo-actions .btn { flex: 1 1 calc(50% - 5px); }
+}
+
+.tq-pied { display: flex; }
+.tq-quitter {
+  flex: 1 1 100%;
+  min-height: var(--tq-cible);
+  justify-content: center;
+  text-align: center;
+}
+
+/* ------------------------------ les images ------------------------------
+   Une classe par rôle de couleur. Les formes sont dessinées dans
+   taquin.js ; leur couleur est ici, et nulle part ailleurs.
+   ----------------------------------------------------------------------- */
+
+.tq-ciel { fill: var(--tq-ciel); }
+.tq-ciel2 { fill: var(--tq-ciel2); }
+.tq-soleil { fill: var(--tq-soleil); }
+.tq-nuage { fill: var(--tq-nuage); }
+.tq-halo { fill: var(--tq-halo); }
+
+.tq-herbe { fill: var(--tq-herbe); }
+.tq-herbe-f { fill: var(--tq-herbe-f); }
+.tq-feuille { fill: var(--tq-feuille); }
+.tq-feuille-f { fill: var(--tq-feuille-f); }
+.tq-feuille2 { fill: var(--tq-feuille2); }
+.tq-sapin { fill: var(--tq-sapin); }
+.tq-mousse { fill: var(--tq-mousse); }
+.tq-tronc-fin { fill: var(--tq-bois-f); }
+.tq-terre { fill: var(--tq-terre); }
+.tq-sable { fill: var(--tq-sable); }
+
+.tq-pierre { fill: var(--tq-pierre); }
+.tq-pierre-f { fill: var(--tq-pierre-f); }
+.tq-pierre-c { fill: var(--tq-pierre-c); }
+.tq-roche { fill: var(--tq-roche); }
+.tq-roche-f { fill: var(--tq-roche-f); }
+.tq-neige { fill: var(--tq-neige); }
+
+.tq-toit { fill: var(--tq-toit); }
+.tq-bois { fill: var(--tq-bois); }
+.tq-bois-f { fill: var(--tq-bois-f); }
+.tq-drapeau { fill: var(--tq-drapeau); }
+.tq-sombre { fill: var(--tq-sombre); }
+.tq-or { fill: var(--tq-or); }
+.tq-blanc { fill: var(--tq-blanc); }
+
+.tq-eau { fill: var(--tq-eau); }
+.tq-eau-f { fill: var(--tq-eau-f); }
+.tq-ecume { fill: var(--tq-ecume); }
+
+.tq-nuit { fill: var(--tq-nuit); }
+.tq-nuit2 { fill: var(--tq-nuit2); }
+.tq-lune { fill: var(--tq-lune); }
+.tq-etoile { fill: var(--tq-etoile); }
+
+.tq-dragon { fill: var(--tq-dragon); }
+.tq-aile { fill: var(--tq-aile); }
+.tq-crete { fill: var(--tq-crete); }
+.tq-corne { fill: var(--tq-corne); }
+.tq-oeil { fill: var(--tq-oeil); }
+.tq-oeil-blanc { fill: var(--tq-oeil-blanc); }
+.tq-feu { fill: var(--tq-feu); }
+.tq-feu-f { fill: var(--tq-feu-f); }
+
+.tq-parchemin { fill: var(--tq-parchemin); }
+.tq-encre { fill: var(--tq-encre); }
+.tq-plomb { fill: var(--tq-plomb); }
+
+.tq-rouge { fill: var(--tq-rouge); }
+.tq-rose { fill: var(--tq-rose); }
+.tq-ambre { fill: var(--tq-ambre); }
+.tq-vert { fill: var(--tq-vert); }
+.tq-turquoise { fill: var(--tq-turquoise); }
+.tq-violet { fill: var(--tq-violet); }
+
+/* Les formes dessinées au trait : un trait épais reste lisible une
+   fois l'image découpée, là où un contour fin disparaît. */
+.tq-vague {
+  fill: none;
+  stroke: var(--tq-vague);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+.tq-trait {
+  fill: none;
+  stroke: var(--tq-encre);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+.tq-jet {
+  fill: none;
+  stroke: var(--tq-ecume);
+  stroke-width: 9;
+  stroke-linecap: round;
+}
+.tq-croix {
+  fill: none;
+  stroke: var(--tq-rouge);
+  stroke-width: 11;
+  stroke-linecap: round;
+}
+.tq-tronc {
+  fill: none;
+  stroke: var(--tq-bois-f);
+  stroke-width: 11;
+  stroke-linecap: round;
+}
+.tq-corps-dragon {
+  fill: none;
+  stroke: var(--tq-dragon);
+  stroke-width: 44;
+  stroke-linecap: round;
+}
+.tq-corps-ventre {
+  fill: none;
+  stroke: var(--tq-crete);
+  stroke-width: 16;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+.tq-patte {
+  fill: none;
+  stroke: var(--tq-aile);
+  stroke-width: 15;
+  stroke-linecap: round;
+}
+.tq-cadre-vitrail {
+  fill: none;
+  stroke: var(--tq-cadre-vitrail);
+  stroke-width: 12;
+}
+.tq-chauve {
+  fill: none;
+  stroke: var(--tq-chauve);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+.tq-nervure {
+  fill: none;
+  stroke: var(--tq-aile-f);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+.tq-tentacule {
+  fill: none;
+  stroke: var(--tq-violet);
+  stroke-width: 9;
+  stroke-linecap: round;
+}
+.tq-vigne {
+  fill: none;
+  stroke: var(--tq-feuille-f);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+/* ------------------------------ mouvement coupé ------------------------------
+   Deux déclencheurs, le réglage parent et la préférence système.
+   On n'ajuste pas la durée : on annule. Une durée de 0,001 ms laisse
+   le navigateur échantillonner une animation en boucle à un endroit
+   quelconque, et deux captures d'écran prises à une seconde et demie
+   d'intervalle pourraient alors différer. Ici plus rien ne bouge, et
+   surtout plus rien ne disparaît : toutes les règles ci-dessus
+   décrivent déjà l'état de repos, visible.
+   ----------------------------------------------------------------------- */
+
+html[data-animations="non"] .tq,
+html[data-animations="non"] .tq *,
+html[data-animations="non"] .tq *::before,
+html[data-animations="non"] .tq *::after {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tq,
+  .tq *,
+  .tq *::before,
+  .tq *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
