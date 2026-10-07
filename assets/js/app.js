@@ -389,7 +389,16 @@ Jeu.App = (function () {
     /* Une leçon désignée qui n'a encore jamais été jouée passe devant
        sans tirage au sort. Quand le parent saisit la dictée du lundi,
        c'est elle qu'on attend le soir même — pas dans trois séances. */
-    var neuves = voulus.filter(function (id) { return !vues[id]; });
+    var neuves = voulus.filter(function (id) {
+      if (!vues[id]) return true;
+      /* Une dictée dont la liste a changé est neuve elle aussi : c'est
+         la liste de cette semaine qu'il faut travailler ce soir, pas
+         celle de la semaine dernière. */
+      if (id === 'dictee' && Jeu.Data.dicteeNeuve) {
+        try { return Jeu.Data.dicteeNeuve(); } catch (e) { return false; }
+      }
+      return false;
+    });
     if (neuves.length) {
       var premier = Jeu.Exercices.filter(function (e) { return e.id === neuves[0]; })[0];
       if (premier) return premier;

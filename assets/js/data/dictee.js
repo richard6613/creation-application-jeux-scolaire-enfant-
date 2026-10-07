@@ -92,6 +92,40 @@ Jeu.Data.dicteeCourante = function () {
   return Jeu.Data.dicteeParDefaut;
 };
 
+/* ---- Une liste neuve passe devant, jusqu'à ce qu'elle soit vue ----
+
+   La dictée est le mardi ou le jeudi : une liste saisie le lundi doit
+   sortir le soir même, pas la semaine suivante. On retient donc
+   l'empreinte de la liste travaillée la dernière fois. Tant qu'elle ne
+   correspond pas à la liste en cours, la dictée passe devant tout le
+   reste, sans tirage au sort.
+
+   Ça vaut pour la liste livrée avec le jeu comme pour celle que le
+   parent saisit : chaque lundi, la nouvelle liste sort d'office le
+   soir même, sans que personne ait rien à cocher. */
+var CLE_VUE = 'dicteeVue';
+
+Jeu.Data.empreinteDictee = function () {
+  var d = Jeu.Data.dicteeCourante();
+  var texte = (d.titre || '') + '|' +
+    (d.mots || []).map(function (m) { return m.mot; }).join('|');
+  // Une empreinte simple suffit : on veut savoir « est-ce la même
+  // liste ? », pas se protéger de quoi que ce soit.
+  var h = 0;
+  for (var i = 0; i < texte.length; i++) {
+    h = ((h << 5) - h + texte.charCodeAt(i)) | 0;
+  }
+  return (d.mots || []).length + '-' + (h >>> 0).toString(36);
+};
+
+Jeu.Data.dicteeNeuve = function () {
+  return Jeu.Stockage.lire(CLE_VUE, '') !== Jeu.Data.empreinteDictee();
+};
+
+Jeu.Data.marquerDicteeVue = function () {
+  Jeu.Stockage.ecrire(CLE_VUE, Jeu.Data.empreinteDictee());
+};
+
 /* Identifiant stable d'un mot, pour que le moteur adaptatif retienne
    les difficultés mot par mot. On le fabrique à partir du mot
    lui-même et non de sa place dans la liste : si « la joue » revient

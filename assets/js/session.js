@@ -109,6 +109,11 @@ Jeu.Session = (function () {
     };
     noter();
     signaler('seance.commencee', { jeu: exercice.id });
+    /* La liste de dictée de cette semaine vient d'être ouverte : elle
+       n'a plus besoin de passer devant tout le reste. */
+    try {
+      if (exercice.id === 'dictee' && Jeu.Data.marquerDicteeVue) Jeu.Data.marquerDicteeVue();
+    } catch (e) { /* rien */ }
     afficherItem();
   }
 
