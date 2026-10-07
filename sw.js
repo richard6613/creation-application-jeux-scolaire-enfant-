@@ -9,7 +9,7 @@
    récupérée en arrière-plan quand il y en a une.
    --------------------------------------------------------------- */
 
-var VERSION = 'mes-jeux-6b9cd0d24cd4';
+var VERSION = 'mes-jeux-38c42e85e324';
 
 var FICHIERS = [
   './',

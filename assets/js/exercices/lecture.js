@@ -190,9 +190,17 @@ function estDecoupable(motBrut) {
   return Jeu.Data.lexique.some(function (m) { return m.mot === net && m.syl.length > 1; });
 }
 
+/* Un compteur de lecture : une nouvelle lecture, un changement
+   d'exercice ou un appui sur le haut-parleur annulent la précédente,
+   y compris les morceaux qui n'ont pas encore commencé. */
+var lectureEnCours = 0;
+
 function lireEnSuivant(phrase, mots, spans, guide, cadre) {
   if (!Jeu.Reglages.get('audio') || !window.speechSynthesis) return;
   Jeu.Voix.stop();
+
+  lectureEnCours += 1;
+  var moi = lectureEnCours;
 
   function eteindre() { spans.forEach(function (s) { s.classList.remove('actif'); }); }
   function allumer(i) {
@@ -202,53 +210,108 @@ function lireEnSuivant(phrase, mots, spans, guide, cadre) {
     if (guide && cadre) placerGuide(guide, cadre, spans[i]);
   }
 
-  var u = new SpeechSynthesisUtterance(phrase);
-  u.lang = 'fr-FR';
-  u.rate = Jeu.Reglages.get('vitesseVoix') || 0.85;
+  /* La phrase est dite par groupes de souffle, coupés aux
+     ponctuations, avec un vrai silence entre eux. C'est ce qui
+     distingue une phrase lue d'une phrase récitée par une machine :
+     un moteur de synthèse qui débite une phrase entière d'un trait
+     sonne mécanique, quelle que soit la voix.
 
-  /* La voix choisie, comme partout ailleurs. Sans cette ligne, le
-     navigateur prend la voix par défaut du système — sur iPhone, une
-     voix d'homme : c'est exactement d'où venait le « la voix est
-     toujours un homme » signalé après plusieurs mises à jour, alors
-     que le reste de l'application parlait bien avec la bonne voix.
-     La hauteur suit le même réglage, pour que ce soit la même
-     personne qui lit d'un écran à l'autre. */
+     On découpe la phrase TELLE QU'ELLE EST ÉCRITE, sans la préparer :
+     les mots restent exactement ceux affichés à l'écran, donc le mot
+     surligné est toujours le bon. */
+  var bouts;
   try {
-    var choisie = Jeu.Voix.choisirVoix ? Jeu.Voix.choisirVoix() : null;
-    if (choisie) u.voice = choisie;
-    var hauteur = Jeu.Reglages.get('hauteurVoix');
-    if (hauteur) u.pitch = hauteur;
-    var vol = Jeu.Reglages.get('volumeVoix');
-    if (vol !== undefined && vol !== null) u.volume = vol;
-  } catch (e) { /* une voix absente ne doit pas empêcher la lecture */ }
+    bouts = Jeu.Voix.morceaux ? Jeu.Voix.morceaux(phrase) : null;
+  } catch (e) { bouts = null; }
+  if (!bouts || !bouts.length) bouts = [{ texte: phrase, pause: 0 }];
+
+  // Combien de mots avant chaque groupe : le surlignage doit continuer
+  // de compter dans la phrase entière, pas repartir à zéro.
+  var depart = [];
+  var cumul = 0;
+  bouts.forEach(function (b) {
+    depart.push(cumul);
+    cumul += String(b.texte).split(/\s+/).filter(Boolean).length;
+  });
+
+  /* Ralentir un moteur de synthèse étire les sons, et c'est justement
+     ce qui fait « robot ». Si le parent n'a pas touché au curseur, on
+     lit à un débit presque normal : la lenteur utile vient des
+     silences entre les groupes, pas de la voix traînante. */
+  var reglee = Jeu.Reglages.get('vitesseVoix');
+  var vitesse = (!reglee || Math.abs(reglee - 0.9) < 0.001) ? 0.96 : reglee;
 
   var minuteurs = [];
-  var parRepere = false;
-
-  u.onboundary = function (ev) {
-    if (ev.name && ev.name !== 'word') return;
-    parRepere = true;
+  function nettoyerMinuteurs() {
     minuteurs.forEach(clearTimeout);
     minuteurs = [];
-    // On situe le mot à partir du nombre de caractères déjà lus.
-    var avant = phrase.slice(0, ev.charIndex);
-    var i = avant.split(/\s+/).filter(Boolean).length;
-    allumer(Math.min(i, spans.length - 1));
-  };
-  u.onend = eteindre;
-  u.onerror = eteindre;
+  }
 
-  // Repli si le navigateur n'émet pas de repères de mots.
-  var cumul = 0;
-  var vitesse = u.rate;
-  mots.forEach(function (m, i) {
-    var duree = (260 + m.length * 62) / vitesse;
-    minuteurs.push(setTimeout(function () { if (!parRepere) allumer(i); }, cumul));
-    cumul += duree;
-  });
-  minuteurs.push(setTimeout(function () { if (!parRepere) eteindre(); }, cumul));
+  function direGroupe(k) {
+    if (moi !== lectureEnCours) return;
+    if (k >= bouts.length) { eteindre(); return; }
 
-  try { window.speechSynthesis.speak(u); } catch (e) { eteindre(); }
+    var texte = String(bouts[k].texte);
+    var u = new SpeechSynthesisUtterance(texte);
+    u.lang = 'fr-FR';
+    u.rate = vitesse;
+
+    /* La voix choisie, comme partout ailleurs. Sans cette ligne, le
+       navigateur prend la voix par défaut du système — sur iPhone, une
+       voix d'homme. */
+    try {
+      var choisie = Jeu.Voix.choisirVoix ? Jeu.Voix.choisirVoix() : null;
+      if (choisie) u.voice = choisie;
+      /* Même hauteur que partout ailleurs : si le parent n'a pas
+         touché au curseur, on relève très légèrement, ce qui s'entend
+         comme « posée » plutôt que comme « grave et traînante ».
+         C'est la même valeur de repli que le reste de l'application,
+         pour que ce soit la même personne qui lit d'un écran à
+         l'autre. */
+      var hauteur = Jeu.Reglages.get('hauteurVoix');
+      u.pitch = (!hauteur || Math.abs(hauteur - 1) < 0.001) ? 1.06 : hauteur;
+      var vol = Jeu.Reglages.get('volumeVoix');
+      if (vol !== undefined && vol !== null) u.volume = vol;
+    } catch (e) { /* une voix absente ne doit pas empêcher la lecture */ }
+
+    var parRepere = false;
+
+    u.onboundary = function (ev) {
+      if (moi !== lectureEnCours) return;
+      if (ev.name && ev.name !== 'word') return;
+      parRepere = true;
+      nettoyerMinuteurs();
+      var avant = texte.slice(0, ev.charIndex);
+      var i = depart[k] + avant.split(/\s+/).filter(Boolean).length;
+      allumer(Math.min(i, spans.length - 1));
+    };
+
+    function suite() {
+      if (moi !== lectureEnCours) return;
+      nettoyerMinuteurs();
+      // Le silence entre deux groupes : c'est lui qui fait respirer.
+      minuteurs.push(setTimeout(function () { direGroupe(k + 1); },
+        bouts[k].pause || 0));
+    }
+    u.onend = suite;
+    u.onerror = suite;
+
+    // Repli si le navigateur n'émet pas de repères de mots : on avance
+    // au rythme de la longueur des mots, comme avant.
+    var motsGroupe = texte.split(/\s+/).filter(Boolean);
+    var avance = 0;
+    motsGroupe.forEach(function (m, i) {
+      minuteurs.push(setTimeout(function () {
+        if (!parRepere && moi === lectureEnCours) allumer(depart[k] + i);
+      }, avance));
+      avance += (260 + m.length * 62) / vitesse;
+    });
+
+    try { window.speechSynthesis.speak(u); }
+    catch (e) { eteindre(); }
+  }
+
+  direGroupe(0);
 }
 
 /* Coupe ou recolle les syllabes à l'écran, sans changer le mot. */
