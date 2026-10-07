@@ -392,8 +392,13 @@ html[data-fond="gris"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
+
+/* Tant qu'il n'y a pas de panneau, cette zone ne doit pas occuper de
+   place : sur un téléphone, chaque dizaine de pixels gagnée rapproche
+   le bouton « J'ai fini de jouer » du bas de l'écran. */
+.bp-fin:empty { display: none; }
 
 .bp-rail {
   width: 100%;
@@ -519,7 +524,7 @@ html[data-fond="gris"] {
   font-size: 0.9rem;
   /* Une hauteur réservée : l'annonce qui apparaît ne doit pas
      pousser le damier vers le haut. */
-  min-height: 1.5em;
+  min-height: 1.25em;
   overflow-wrap: break-word;
 }
 

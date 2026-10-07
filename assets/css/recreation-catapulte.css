@@ -108,7 +108,7 @@
 
   /* ---- Ombres, traits, aperçu ---- */
   --ct-ombre: rgba(30, 44, 22, 0.28);
-  --ct-ombre-sol: rgba(34, 58, 26, 0.3);
+  --ct-ombre-sol: rgba(34, 58, 26, 0.18);
   --ct-trait: rgba(22, 28, 38, 0.42);
   --ct-pointille: #fff3b8;
   --ct-pointille-trait: rgba(48, 36, 10, 0.5);
@@ -118,7 +118,7 @@
   /* ---- La jauge de force ---- */
   --ct-jauge-fond: rgba(20, 30, 44, 0.3);
   --ct-jauge-trait: rgba(255, 255, 255, 0.45);
-  --ct-cran-off: rgba(255, 255, 255, 0.32);
+  --ct-cran-off: rgba(255, 255, 255, 0.42);
   --ct-cran-on: #ffd341;
   --ct-cran-trait: rgba(40, 30, 8, 0.55);
 
@@ -198,7 +198,7 @@ html[data-fond="sombre"] {
   --ct-boulet-2: #242a33;
 
   --ct-ombre: rgba(0, 0, 0, 0.38);
-  --ct-ombre-sol: rgba(0, 0, 0, 0.4);
+  --ct-ombre-sol: rgba(0, 0, 0, 0.26);
   --ct-trait: rgba(8, 12, 18, 0.5);
   --ct-pointille: #ffe89a;
   --ct-pointille-trait: rgba(20, 14, 4, 0.55);
@@ -276,7 +276,7 @@ html[data-fond="sombre"] {
     --ct-boulet-1: #6c757e;
     --ct-boulet-2: #242a33;
     --ct-ombre: rgba(0, 0, 0, 0.38);
-    --ct-ombre-sol: rgba(0, 0, 0, 0.4);
+    --ct-ombre-sol: rgba(0, 0, 0, 0.26);
     --ct-trait: rgba(8, 12, 18, 0.5);
     --ct-pointille: #ffe89a;
     --ct-pointille-trait: rgba(20, 14, 4, 0.55);
@@ -526,7 +526,6 @@ html[data-fond="sombre"] {
 .ct-clou { fill: var(--ct-clou); }
 .ct-axe { fill: var(--ct-ferrure); stroke: var(--ct-trait); stroke-width: 2; }
 
-.ct-pl-ombre { fill: var(--ct-ombre); }
 .ct-pl-corps { fill: var(--ct-pl-1); stroke: var(--ct-pl-bas); stroke-width: 3; }
 .ct-pl-haut { fill: var(--ct-pl-haut); }
 .ct-pl-bas { fill: var(--ct-pl-2); }
@@ -547,7 +546,7 @@ html[data-fond="sombre"] {
 .ct-bl-reflet { fill: var(--ct-glace-reflet); }
 .ct-bl-bulle { fill: var(--ct-glace-bulle); }
 .ct-bl-etincelle { fill: var(--ct-glace-trait); }
-.ct-bl-trait { fill: none; stroke: var(--ct-glace-trait); stroke-width: 3; }
+.ct-bl-trait { fill: none; stroke: var(--ct-glace-trait); stroke-width: 2.2; opacity: 0.72; }
 
 /* ===================================================================
    LA CATAPULTE

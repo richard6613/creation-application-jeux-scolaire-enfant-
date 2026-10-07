@@ -373,10 +373,17 @@ html[data-fond="sombre"] {
 .po-suite > .btn {
   flex: 1 1 8ch;
   width: auto;
+  /* Sans `min-width: 0`, un mot long comme « Recommencer » impose sa
+     largeur et fait déborder la page : à 320 px avec le texte à
+     30 px et l'espacement des lettres au maximum, ce seul mot mesure
+     plus que l'écran. Il descend alors sous son icône plutôt que de
+     pousser la page — mesuré, pas supposé. */
+  min-width: 0;
+  flex-wrap: wrap;
   min-height: var(--po-cible);
-  padding-left: 12px;
-  padding-right: 12px;
-  gap: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+  gap: 4px 8px;
   justify-content: center;
   text-align: center;
 }
@@ -398,7 +405,6 @@ html[data-fond="sombre"] {
   box-shadow: 0 0 0 4px var(--jeu-potions), var(--ombre);
 }
 .po-plus { background: var(--surface-2); }
-.po-actions > .btn > span { white-space: nowrap; }
 .po-quitter { background: var(--surface-2); }
 
 /* ------------------------- le choix du tableau ------------------------- */

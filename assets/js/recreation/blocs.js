@@ -1132,6 +1132,16 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       var f = fentes[i];
       f.addEventListener('pointerdown', function (ev) {
         if (verrou || !main[i]) return;
+        /* Le chariot est en bas de l'écran. Quand le navigateur donne
+           le focus à un bouton qui dépasse, il fait DÉFILER la page
+           pour l'amener en entier — et le haut du damier sort de
+           l'écran entre le moment où l'enfant choisit son bloc et
+           celui où il touche la case. On prend donc le focus
+           nous-mêmes, sans défilement. */
+        ev.preventDefault();
+        try { f.focus({ preventScroll: true }); } catch (e) {
+          try { f.focus(); } catch (e2) { /* rien */ }
+        }
         /* On ne capture pas le pointeur tout de suite : il faut
            pouvoir distinguer un appui d'un glissé. */
         var m = mesure();

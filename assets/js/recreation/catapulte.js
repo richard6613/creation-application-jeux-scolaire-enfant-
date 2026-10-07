@@ -1060,22 +1060,21 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
        « ça tourne ici », comme dans la capture montrée par le père. */
     g.appendChild(sv('path', {
       'class': 'ct-pivot',
-      d: 'M' + (PIVX - 32) + ' ' + (PIVY + 26) + ' L' + PIVX + ' ' + (PIVY - 14) +
-         ' L' + (PIVX + 32) + ' ' + (PIVY + 26) + ' Z'
+      d: 'M' + (PIVX - 40) + ' ' + (PIVY + 38) + ' L' + PIVX + ' ' + (PIVY - 6) +
+         ' L' + (PIVX + 40) + ' ' + (PIVY + 38) + ' Z'
     }));
     g.appendChild(sv('path', {
       'class': 'ct-pivot-clair',
-      d: 'M' + (PIVX - 17) + ' ' + (PIVY + 12) + ' L' + PIVX + ' ' + (PIVY - 10) +
-         ' L' + (PIVX + 4) + ' ' + (PIVY + 12) + ' Z'
+      d: 'M' + (PIVX - 22) + ' ' + (PIVY + 26) + ' L' + PIVX + ' ' + (PIVY - 2) +
+         ' L' + (PIVX + 2) + ' ' + (PIVY + 26) + ' Z'
     }));
-    g.appendChild(sv('circle', { 'class': 'ct-clou', cx: PIVX, cy: PIVY + 2, r: 7 }));
+    g.appendChild(sv('circle', { 'class': 'ct-clou', cx: PIVX, cy: PIVY + 16, r: 7 }));
     return g;
   }
 
   function planche() {
     var g = sv('g', { 'class': 'ct-planche' });
     var x0 = PIVX - BRAS, y0 = PIVY - EPAIS, w = BRAS * 2, h = EPAIS * 2;
-    g.appendChild(sv('rect', { 'class': 'ct-pl-ombre', x: x0 + 3, y: y0 + 8, width: w, height: h, rx: 10 }));
     g.appendChild(sv('rect', { 'class': 'ct-pl-corps', x: x0, y: y0, width: w, height: h, rx: 10 }));
     /* Le chant de la planche : une bande sombre sur toute la
        longueur, c'est elle qui donne l'épaisseur. */
@@ -1159,12 +1158,12 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
     /* La butée rembourrée : c'est elle qui arrête le bras et envoie
        le boulet. Sans elle, la machine ne se lit pas. */
     g.appendChild(sv('rect', {
-      'class': 'ct-bois-m', x: bx + 18, y: AXEY - 52, width: 15, height: 58, rx: 7,
-      transform: 'rotate(22 ' + (bx + 25) + ' ' + (AXEY - 24) + ')'
+      'class': 'ct-bois-m', x: bx + 18, y: AXEY - 44, width: 14, height: 50, rx: 7,
+      transform: 'rotate(22 ' + (bx + 25) + ' ' + (AXEY - 20) + ')'
     }));
     g.appendChild(sv('rect', {
-      'class': 'ct-butee', x: bx + 24, y: AXEY - 62, width: 30, height: 17, rx: 8,
-      transform: 'rotate(22 ' + (bx + 39) + ' ' + (AXEY - 54) + ')'
+      'class': 'ct-butee', x: bx + 23, y: AXEY - 52, width: 24, height: 15, rx: 7,
+      transform: 'rotate(22 ' + (bx + 35) + ' ' + (AXEY - 45) + ')'
     }));
 
     /* Un fanion aux couleurs du jeu. Il ne bouge pas : au repos,
