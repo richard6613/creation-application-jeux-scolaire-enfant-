@@ -88,6 +88,15 @@ Jeu.Reglages = (function () {
      fois, et le parent reste libre de décocher ensuite. */
   var COUPS_DE_POUCE = [
     {
+      // Nouvelle dictée, nouvelle semaine : elle repasse devant.
+      cle: 'dictee-arts-5',
+      faire: function (e) {
+        var liste = (e.jeuxPrioritaires || []).slice();
+        if (liste.indexOf('dictee') < 0) liste.unshift('dictee');
+        e.jeuxPrioritaires = liste;
+      }
+    },
+    {
       cle: 'dictee-arts-3',
       faire: function (e) {
         var liste = (e.jeuxPrioritaires || []).slice();

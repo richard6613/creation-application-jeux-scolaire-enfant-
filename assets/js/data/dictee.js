@@ -33,59 +33,55 @@ Jeu.Data = Jeu.Data || {};
    morceau décisif à faire choisir entre plusieurs graphies
    possibles — celles qui existent vraiment en français. */
 Jeu.Data.dicteeParDefaut = {
-  titre: 'Dictée des arts n° 3 — le visage',
+  titre: 'Dictée des arts n° 5 — l\'automne',
   mots: [
-    { mot: 'le visage',   syl: ['le', 'vi', 'sa', 'ge'],
-      trou: { morceau: 'g', autres: ['j'] },
-      phrase: 'Elle a un beau ___.' },
+    /* ---- Pour le jeudi (dictée flash sur l'ardoise) ---- */
+    { mot: 'le nom',      syl: ['le', 'nom'],
+      trou: { morceau: 'm', autres: ['n'] },
+      phrase: 'J\'écris ___ de l\'artiste.' },
 
-    { mot: 'les épaules', syl: ['les', 'é', 'pau', 'les'],
+    { mot: 'l\'automne',  syl: ['l\'au', 'tom', 'ne'],
+      // Le m de « automne » ne s'entend pas : c'est toute la difficulté.
+      trou: { morceau: 'm', autres: ['n'] },
+      phrase: 'Les feuilles tombent à ___.' },
+
+    { mot: 'le portrait', syl: ['le', 'por', 'trait'],
+      // On fait choisir la finale entière : viser le seul t final est
+      // impossible, il y en a un autre au milieu du mot.
+      trou: { morceau: 'ait', autres: ['ai', 'ais'] },
+      phrase: 'Le peintre a fini ___.' },
+
+    { mot: 'important',   syl: ['im', 'por', 'tant'],
+      // m devant p : la règle travaillée toute l'année en CE2.
+      trou: { morceau: 'im', autres: ['in', 'em'] },
+      phrase: 'C\'est un travail très ___.' },
+
+    /* ---- Pour le vendredi (dictée flash sur le cahier de brouillon) ---- */
+    { mot: 'assembler',   syl: ['as', 'sem', 'bler'],
+      trou: { morceau: 'em', autres: ['en', 'am'] },
+      phrase: 'Il faut ___ les morceaux.' },
+
+    { mot: 'nombreux',    syl: ['nom', 'breux'],
+      trou: { morceau: 'eux', autres: ['eu', 'eus'] },
+      phrase: 'Les visiteurs sont ___.' },
+
+    { mot: 'un fruit',    syl: ['un', 'fruit'],
+      trou: { morceau: 'uit', autres: ['ui', 'uis'] },
+      phrase: 'La poire est ___.' },
+
+    { mot: 'un légume',   syl: ['un', 'lé', 'gu', 'me'],
       trou: { morceau: 'é', autres: ['e', 'è'] },
-      phrase: 'Elle a ___ droites.' },
+      phrase: 'La carotte est ___.' },
 
-    { mot: 'petite',      syl: ['pe', 'ti', 'te'],
-      phrase: 'La ___ fille sourit.' },
+    /* ---- Pour le lundi (jour de la dictée bilan) ---- */
+    { mot: 'composer',    syl: ['com', 'po', 'ser'],
+      // La finale de l'infinitif : -er, et pas -é ni -ez.
+      trou: { morceau: 'er', autres: ['é', 'ez'] },
+      phrase: 'Elle va ___ une chanson.' },
 
-    { mot: 'une fille',   syl: ['une', 'fi', 'lle'],
-      trou: { morceau: 'll', autres: ['l', 'y'] },
-      phrase: 'C\'est ___ qui regarde.' },
-
-    { mot: 'la bouche',   syl: ['la', 'bou', 'che'],
-      trou: { morceau: 'ch', autres: ['j', 'g'] },
-      phrase: 'Elle ouvre ___.' },
-
-    { mot: 'le nez',      syl: ['le', 'nez'],
-      trou: { morceau: 'z', autres: ['s', 'x'] },
-      phrase: 'Elle a ___ tout droit.' },
-
-    { mot: 'la joue',     syl: ['la', 'joue'],
-      trou: { morceau: 'j', autres: ['g'] },
-      phrase: 'Elle pose la main sur ___.' },
-
-    { mot: 'belle',       syl: ['bel', 'le'],
-      trou: { morceau: 'll', autres: ['l'] },
-      phrase: 'La sculpture est très ___.' },
-
-    { mot: 'dans',        syl: ['dans'],
-      trou: { morceau: 'an', autres: ['en', 'on'] },
-      phrase: 'Le visage est sculpté ___ le marbre.' },
-
-    /* Les deux homophones. « et » et « est » sont deux mots français
-       parfaitement corrects : les mettre côte à côte ne montre aucune
-       faute, cela demande seulement de comprendre la phrase. C'est la
-       seule façon de travailler ces deux mots-là. */
-    { mot: 'et', homophone: ['et', 'est'], seulementPhrase: true,
-      phrase: 'Le nez ___ la bouche.',
-      pourquoi: 'On écrit « et » quand on peut dire « et puis ».' },
-    { mot: 'est', homophone: ['et', 'est'], seulementPhrase: true,
-      phrase: 'La fille ___ petite.',
-      pourquoi: 'On écrit « est » quand on peut dire « était ».' },
-    { mot: 'et', homophone: ['et', 'est'], seulementPhrase: true,
-      phrase: 'Elle a les épaules ___ le cou droits.',
-      pourquoi: 'On écrit « et » quand on peut dire « et puis ».' },
-    { mot: 'est', homophone: ['et', 'est'], seulementPhrase: true,
-      phrase: 'Le marbre ___ beau.',
-      pourquoi: 'On écrit « est » quand on peut dire « était ».' }
+    { mot: 'ainsi',       syl: ['ain', 'si'],
+      trou: { morceau: 'ain', autres: ['in', 'en'] },
+      phrase: 'C\'est ___ qu\'on écrit ce mot.' }
   ]
 };
 
