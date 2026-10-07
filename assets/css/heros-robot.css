@@ -184,9 +184,8 @@ html:not([data-animations="non"]) .heros-robot .rb-antenne {
   animation: rb-penche-antenne var(--rb-ant, 5.4s) ease-in-out infinite;
 }
 html:not([data-animations="non"]) .heros-robot .rb-visage {
-  animation: rb-cligne var(--rb-bille, 7.4s) ease-in-out infinite;
-  animation-duration: 7.4s;
-  animation-delay: var(--rb-flot-retard, 0s);
+  animation: rb-cligne var(--rb-cligne, 7.4s) ease-in-out infinite;
+  animation-delay: var(--rb-cligne-retard, 0s);
 }
 html:not([data-animations="non"]) .heros-robot .rb-coeur {
   animation: rb-bat-coeur 2.8s ease-in-out infinite;

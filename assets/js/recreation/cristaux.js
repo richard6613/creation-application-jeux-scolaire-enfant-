@@ -454,7 +454,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
   function facettes(d) {
     if (d.forme === 'perle') return '';     // une perle est lisse : pas de facette
 
-    var v = sommets(d, 1, 0), out = '', aretes = '', i, a, b, ang, l, couleur, op;
+    var v = sommets(d, 1, 0), out = '', aretes = '', plateau = '', i, a, b, ang;
 
     function teinte(angle) {
       var c = Math.cos(angle - LUMIERE);
@@ -488,17 +488,50 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
         }
         aretes += 'M' + pt(w[i][0], w[i][1]) + 'L' + pt(a[0], a[1]);
       }
-      /* La table, posée par-dessus la couronne : c'est elle qui fait
-         lire « pierre taillée » plutôt que « pastille colorée ». */
-      out += '<path d="' + chemin(w) + '" fill="url(#cx-table)" stroke="#ffffff" ' +
-             'stroke-opacity=".34" stroke-width="1.2" stroke-linejoin="round"/>';
+      plateau = '<path d="' + chemin(w) + '" fill="url(#cx-table)" stroke="#ffffff" ' +
+                'stroke-opacity=".34" stroke-width="1.2" stroke-linejoin="round"/>';
     }
 
-    out = '<path d="' + aretes + '" fill="none" stroke="#ffffff" ' +
-          'stroke-opacity=".28" stroke-width=".9" stroke-linecap="round"/>' + out;
-    /* Les arêtes passent SOUS les facettes claires et la table : une
-       arête qui traverserait la table la ferait disparaître. */
-    return out;
+    /* L'ordre compte : les facettes, puis les arêtes qui les séparent,
+       puis la table par-dessus. Une arête tracée après la table la
+       barrerait et ferait disparaître le dessus de la pierre. */
+    return out +
+      '<path d="' + aretes + '" fill="none" stroke="#ffffff" ' +
+      'stroke-opacity=".3" stroke-width=".9" stroke-linecap="round"/>' +
+      plateau;
+  }
+
+  /* L'éclat spéculaire : un dégradé radial, jamais une ellipse pleine.
+     Une ellipse blanche à bord net se lit comme une étiquette collée
+     sur le cristal ; il faut que la lumière s'éteigne sur ses bords
+     pour qu'elle ait l'air posée dessus. Le tout est découpé à la
+     forme : sur un triangle ou une étoile, un reflet qui dépasserait
+     casserait net l'illusion de volume. */
+  function eclats(d, rang) {
+    var r = d.rayon;
+    var cx = 50 + Math.cos(LUMIERE) * r * 0.42;
+    var cy = 50 + Math.sin(LUMIERE) * r * 0.42;
+    var bx = 50 - Math.cos(LUMIERE) * r * 0.54;
+    var by = 50 - Math.sin(LUMIERE) * r * 0.54;
+    var out = '<g clip-path="url(#cx-clip-' + rang + ')">';
+    out += '<ellipse cx="' + a2(cx) + '" cy="' + a2(cy) + '" rx="' + a2(r * 0.46) +
+           '" ry="' + a2(r * 0.21) + '" transform="rotate(-34 ' + a2(cx) + ' ' + a2(cy) +
+           ')" fill="url(#cx-brillant)"/>';
+    /* Le reflet du bas : la lumière qui remonte du plan posé dessous.
+       Discret, mais c'est lui qui donne le volume. */
+    out += '<ellipse cx="' + a2(bx) + '" cy="' + a2(by) + '" rx="' + a2(r * 0.28) +
+           '" ry="' + a2(r * 0.13) + '" transform="rotate(-28 ' + a2(bx) + ' ' +
+           a2(by) + ')" fill="url(#cx-reflet)"/>';
+    /* À partir du rang 7 le cristal scintille : un éclat net, qui dit
+       « celui-ci est rare » sans qu'on ait rien à lire. */
+    if (rang >= 7) {
+      var g = r * 0.26, m = g * 0.17;
+      out += '<path d="M' + pt(cx, cy - g) + 'L' + pt(cx + m, cy - m) + 'L' + pt(cx + g, cy) +
+             'L' + pt(cx + m, cy + m) + 'L' + pt(cx, cy + g) + 'L' + pt(cx - m, cy + m) +
+             'L' + pt(cx - g, cy) + 'L' + pt(cx - m, cy - m) +
+             'Z" fill="#ffffff" fill-opacity=".95"/>';
+    }
+    return out + '</g>';
   }
 
   var cacheGem = {};
@@ -514,7 +547,6 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       facettes(d) +
       silhouette(d, 'fill="url(#cx-lustre)"') +
       silhouette(d, 'fill="url(#cx-vignette)"') +
-      table(d) +
       eclats(d, rang) +
       silhouette(d, 'class="cx-arete"') +
       '</svg>';
@@ -554,7 +586,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
          '<stop offset=".5" stop-color="#ffffff" stop-opacity=".34"/>' +
          '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>';
     m += '<radialGradient id="cx-reflet" cx=".5" cy=".5" r=".5">' +
-         '<stop offset="0" stop-color="#ffffff" stop-opacity=".40"/>' +
+         '<stop offset="0" stop-color="#ffffff" stop-opacity=".3"/>' +
          '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>';
     m += '<linearGradient id="cx-table" x1="0" y1="0" x2=".7" y2="1">' +
          '<stop offset="0" stop-color="#ffffff" stop-opacity=".34"/>' +
@@ -592,6 +624,14 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
 
     /* --- la commande : le cristal demandé, en grand --- */
     var cadre = el('div', 'cx-commande');
+
+    /* La recette, sans un mot : deux petits cristaux, un plus, une
+       flèche, et le gros à fabriquer. C'est la phrase « fusionne deux
+       de ceux-là pour avoir celui-ci », écrite en images. */
+    var recette = el('div', 'cx-recette');
+    recette.setAttribute('aria-hidden', 'true');
+    cadre.appendChild(recette);
+
     var vitrineCible = el('div', 'cx-cible');
     vitrineCible.setAttribute('role', 'img');
     var coche = el('span', 'cx-coche');
@@ -781,13 +821,37 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
         '. Glisse avec un doigt, ou utilise les flèches.');
     }
 
+    function signe(quoi) {
+      var e = el('span', 'cx-signe');
+      e.appendChild(noeudDepuis(quoi === 'plus'
+        ? '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+          '<path d="M12 5 V19 M5 12 H19" fill="none" stroke="currentColor" ' +
+          'stroke-width="4" stroke-linecap="round"/></svg>'
+        : '<svg viewBox="0 0 28 24" aria-hidden="true" focusable="false">' +
+          '<path d="M3 12 H21 M15 5 L22 12 L15 19" fill="none" stroke="currentColor" ' +
+          'stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>'));
+      return e;
+    }
+
     function majCommande() {
+      var ingredient = Math.max(1, commande - 1);
+      vider(recette);
+      var m1 = el('span', 'cx-mini cx-t' + ingredient);
+      m1.appendChild(gem(ingredient));
+      recette.appendChild(m1);
+      recette.appendChild(signe('plus'));
+      var m2 = el('span', 'cx-mini cx-t' + ingredient);
+      m2.appendChild(gem(ingredient));
+      recette.appendChild(m2);
+      recette.appendChild(signe('fleche'));
+
       vider(vitrineCible);
       var g = gem(commande);
       vitrineCible.appendChild(g);
       vitrineCible.className = 'cx-cible cx-t' + commande;
       vitrineCible.appendChild(coche);
-      vitrineCible.setAttribute('aria-label', 'À fabriquer : ' + avecArticle(commande));
+      vitrineCible.setAttribute('aria-label',
+        'À fabriquer : ' + avecArticle(commande) + ', avec deux fois ' + avecArticle(ingredient));
       compteurTxt.textContent = sauve.commandes > 0
         ? (sauve.commandes + (sauve.commandes > 1 ? ' commandes' : ' commande'))
         : '';
@@ -1059,45 +1123,62 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
 
     /* ------------------------- les entrées ------------------------- */
 
-    var SEUIL = 22;          // en dessous, c'est un appui, pas un glissement
+    /* Le coup part DÈS que le doigt a franchi le seuil, sans attendre
+       qu'il se relève. Deux raisons : la grille répond tout de suite,
+       ce qui rend le geste vivant ; et surtout le navigateur annule
+       parfois un pointeur en cours de route (il croit à un glisser-
+       déposer), auquel cas un coup attendu au relâchement serait
+       simplement perdu. Un appui franc ne bouge donc rien, et un
+       glissement ne peut pas se perdre. */
+    var SEUIL = 22;
     var depart = null;
 
     function debutGeste(x, y) { depart = { x: x, y: y }; }
 
-    function finGeste(x, y) {
+    function bougerGeste(x, y) {
       if (!depart) return;
       var dx = x - depart.x, dy = y - depart.y;
-      depart = null;
       var ax = Math.abs(dx), ay = Math.abs(dy);
-      if (Math.max(ax, ay) < SEUIL) {
-        /* Un appui sans direction : l'enfant n'a peut-être pas
-           compris qu'il faut glisser. Au deuxième, on remontre le
-           geste — sans un mot. */
-        tapsSansGeste++;
-        if (tapsSansGeste >= 2 && !finie) {
-          tapsSansGeste = 0;
-          montrerGeste(true);
-          setTimeout(function () { if (!depart) cacherGesteDoux(); }, 4200);
-        }
-        return;
-      }
+      if (Math.max(ax, ay) < SEUIL) return;
+      depart = null;                       // un glissement, un coup
       tapsSansGeste = 0;
       jouerCoup(ax > ay ? (dx > 0 ? 'droite' : 'gauche') : (dy > 0 ? 'bas' : 'haut'));
     }
 
+    function finGeste() {
+      if (!depart) return;                 // le coup est déjà parti
+      depart = null;
+      /* Un appui sans direction : l'enfant n'a peut-être pas compris
+         qu'il faut glisser. Au deuxième, on remontre le geste — sans
+         un mot, et sans jamais le lui reprocher. */
+      tapsSansGeste++;
+      if (tapsSansGeste >= 2 && !finie) {
+        tapsSansGeste = 0;
+        montrerGeste(true);
+        setTimeout(function () { if (!depart) cacherGesteDoux(); }, 4200);
+      }
+    }
+
     function cacherGesteDoux() { geste.classList.add('cx-parti'); }
+
+    function vivant() { return document.body.contains(bloc); }
 
     if (window.PointerEvent) {
       plateau.addEventListener('pointerdown', function (ev) {
         if (ev.pointerType === 'mouse' && ev.button !== 0) return;
         debutGeste(ev.clientX, ev.clientY);
       });
-      /* La fin est écoutée sur la fenêtre : un glissement qui sort du
+      /* Le suivi est écouté sur la fenêtre : un glissement qui sort du
          plateau doit compter quand même. */
-      window.addEventListener('pointerup', function (ev) {
+      window.addEventListener('pointermove', function (ev) {
         if (!depart) return;
-        if (!document.body.contains(bloc)) { depart = null; return; }
-        finGeste(ev.clientX, ev.clientY);
+        if (!vivant()) { depart = null; return; }
+        bougerGeste(ev.clientX, ev.clientY);
+      });
+      window.addEventListener('pointerup', function () {
+        if (!depart) return;
+        if (!vivant()) { depart = null; return; }
+        finGeste();
       });
       window.addEventListener('pointercancel', function () { depart = null; });
     } else {
@@ -1105,15 +1186,22 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
         var t = ev.touches[0];
         if (t) debutGeste(t.clientX, t.clientY);
       });
-      plateau.addEventListener('touchend', function (ev) {
-        var t = ev.changedTouches[0];
-        if (t) finGeste(t.clientX, t.clientY);
+      plateau.addEventListener('touchmove', function (ev) {
+        var t = ev.touches[0];
+        if (t) bougerGeste(t.clientX, t.clientY);
       });
+      plateau.addEventListener('touchend', function () { finGeste(); });
+      plateau.addEventListener('touchcancel', function () { depart = null; });
       plateau.addEventListener('mousedown', function (ev) { debutGeste(ev.clientX, ev.clientY); });
-      window.addEventListener('mouseup', function (ev) {
+      window.addEventListener('mousemove', function (ev) {
         if (!depart) return;
-        if (!document.body.contains(bloc)) { depart = null; return; }
-        finGeste(ev.clientX, ev.clientY);
+        if (!vivant()) { depart = null; return; }
+        bougerGeste(ev.clientX, ev.clientY);
+      });
+      window.addEventListener('mouseup', function () {
+        if (!depart) return;
+        if (!vivant()) { depart = null; return; }
+        finGeste();
       });
     }
 

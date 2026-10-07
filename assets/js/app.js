@@ -675,7 +675,12 @@ Jeu.App = (function () {
     }
     var b = Jeu.Ui.vider(bas());
     b.hidden = false;
-    b.appendChild(Jeu.Ui.bouton('Autre jeu', 'btn', function () { aller('recreation'); }));
+    /* Un seul bouton ici. Chaque jeu porte déjà son « J'ai fini de
+       jouer » qui ramène à la salle : deux boutons voisins qui font
+       exactement la même chose avec des mots différents, c'est une
+       question de plus à se poser pour un enfant qui déchiffre
+       lentement. La barre ne garde donc que la sortie qui n'est
+       offerte nulle part ailleurs. */
     b.appendChild(Jeu.Ui.bouton('Retour au chemin', 'btn', function () { aller('accueil'); }));
   }
 

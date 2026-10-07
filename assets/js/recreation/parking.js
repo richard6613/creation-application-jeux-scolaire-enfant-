@@ -213,9 +213,23 @@ Jeu.Parking = (function () {
     return ((def[0] + def[1] + rang) % 2) ? 'bus' : 'camionnette';
   }
 
-  var NOMS = { voiture: 'La voiture', camionnette: 'La camionnette', bus: 'L\'autobus' };
-  var COULEURS = ['', 'rouge', 'bleue', 'jaune', 'verte', 'violette', 'turquoise'];
+  /* Le genre est porté par le modèle, pas deviné : un enfant
+     dyslexique entend « l'autobus bleue » comme une faute, et la voix
+     de synthèse le dirait tel quel. */
+  var MODELES = {
+    voiture:     { nom: 'La voiture', feminin: true },
+    camionnette: { nom: 'La camionnette', feminin: true },
+    bus:         { nom: 'L\'autobus', feminin: false }
+  };
+  var COULEURS_F = ['', 'rouge', 'bleue', 'jaune', 'verte', 'violette', 'turquoise'];
+  var COULEURS_M = ['', 'rouge', 'bleu', 'jaune', 'vert', 'violet', 'turquoise'];
   var VERS = { d: 'vers la droite', g: 'vers la gauche', h: 'vers le haut', b: 'vers le bas' };
+
+  function nommer(v) {
+    var m = MODELES[v.modele];
+    return m.nom + ' ' + (m.feminin ? COULEURS_F : COULEURS_M)[v.teinte];
+  }
+  function estSorti(v) { return MODELES[v.modele].feminin ? 'est sortie' : 'est sorti'; }
 
   /* Deux véhicules qui se touchent bord à bord ne doivent jamais
      porter la même couleur : on croirait voir un seul véhicule long.
@@ -254,9 +268,13 @@ Jeu.Parking = (function () {
       for (j = 0; j < vs.length; j++) {
         if (j !== i && vs[j].teinte && seTouchent(vs[i], vs[j])) pris[vs[j].teinte] = 1;
       }
+      /* On part d'une couleur différente pour chaque véhicule, et on
+         avance seulement s'il y a conflit : les six teintes sont donc
+         réellement toutes employées, au lieu de retomber sans cesse
+         sur la première libre. */
       var t = 0;
       for (var k = 0; k < 6; k++) {
-        var essai = ((k + (decalage || 0)) % 6) + 1;
+        var essai = ((i + k + (decalage || 0)) % 6) + 1;
         if (!pris[essai]) { t = essai; break; }
       }
       vs[i].teinte = t || ((i % 6) + 1);
@@ -307,8 +325,8 @@ Jeu.Parking = (function () {
      s'en sert pour retrouver le contour sans le redessiner. */
   var GABARITS = {
     voiture:     { bout: 9, flanc: 11, rNez: 36, rCul: 16 },
-    camionnette: { bout: 8, flanc: 9,  rNez: 30, rCul: 10 },
-    bus:         { bout: 7, flanc: 6,  rNez: 26, rCul: 22 }
+    camionnette: { bout: 8, flanc: 9,  rNez: 32, rCul: 8 },
+    bus:         { bout: 7, flanc: 6,  rNez: 30, rCul: 12 }
   };
 
   function corpsVoiture(g) {
@@ -331,7 +349,7 @@ Jeu.Parking = (function () {
   function corpsCamionnette(g) {
     g.appendChild(roue(38, 0)); g.appendChild(roue(38, 82));
     g.appendChild(roue(222, 0)); g.appendChild(roue(222, 82));
-    g.appendChild(sv('path', { 'class': 'pk-corps', d: galet(8, 9, 284, 82, 10, 30, 30, 10) }));
+    g.appendChild(sv('path', { 'class': 'pk-corps', d: galet(8, 9, 284, 82, 8, 32, 32, 8) }));
     g.appendChild(sv('rect', { 'class': 'pk-reflet', x: 20, y: 13, width: 258, height: 9, rx: 4 }));
     g.appendChild(sv('rect', { 'class': 'pk-feu', x: 10, y: 17, width: 11, height: 18, rx: 5 }));
     g.appendChild(sv('rect', { 'class': 'pk-feu', x: 10, y: 65, width: 11, height: 18, rx: 5 }));
@@ -350,16 +368,17 @@ Jeu.Parking = (function () {
   function corpsBus(g) {
     g.appendChild(roue(44, 0)); g.appendChild(roue(44, 82));
     g.appendChild(roue(216, 0)); g.appendChild(roue(216, 82));
-    g.appendChild(sv('path', { 'class': 'pk-corps', d: galet(7, 6, 286, 88, 22, 26, 26, 22) }));
-    g.appendChild(sv('rect', { 'class': 'pk-toit', x: 26, y: 18, width: 214, height: 64, rx: 12 }));
+    g.appendChild(sv('path', { 'class': 'pk-corps', d: galet(7, 6, 286, 88, 12, 30, 30, 12) }));
     /* La bande de vitres sur le flanc : c'est ELLE qui dit « autobus »
-       vu de dessus, bien avant la longueur. */
-    [9, 83].forEach(function (y) {
-      g.appendChild(sv('rect', { 'class': 'pk-vitre', x: 34, y: y, width: 206, height: 9, rx: 4 }));
-      [78, 120, 162, 204].forEach(function (x) {
-        g.appendChild(sv('rect', { 'class': 'pk-corps', x: x, y: y - 1, width: 6, height: 11 }));
+       vu de dessus, bien avant la longueur. Elle est posée en retrait
+       du bord, sinon le contour de la silhouette la mange. */
+    [11, 77].forEach(function (y) {
+      g.appendChild(sv('rect', { 'class': 'pk-bande', x: 30, y: y, width: 212, height: 12, rx: 5 }));
+      [96, 152, 208].forEach(function (x) {
+        g.appendChild(sv('rect', { 'class': 'pk-corps', x: x, y: y - 1, width: 7, height: 14 }));
       });
     });
+    g.appendChild(sv('rect', { 'class': 'pk-toit', x: 26, y: 26, width: 214, height: 48, rx: 10 }));
     g.appendChild(sv('polygon', { 'class': 'pk-vitre', points: '246,15 276,25 276,75 246,85' }));
     g.appendChild(sv('rect', { 'class': 'pk-feu', x: 9, y: 24, width: 11, height: 17, rx: 5 }));
     g.appendChild(sv('rect', { 'class': 'pk-feu', x: 9, y: 59, width: 11, height: 17, rx: 5 }));
@@ -396,7 +415,7 @@ Jeu.Parking = (function () {
     });
     /* L'ombre d'abord, décalée vers le bas-droite dans le repère de
        l'écran : la lumière du Royaume vient toujours du haut-gauche. */
-    svg.appendChild(sv('path', { 'class': 'pk-ombre', d: contour(v, 4, 7) }));
+    svg.appendChild(sv('path', { 'class': 'pk-ombre', d: contour(v, 5, 9) }));
 
     var g = sv('g');
     var t = '';
@@ -454,6 +473,10 @@ Jeu.Parking = (function () {
     try {
       if (window.Jeu && Jeu.Reglages && Jeu.Reglages.get &&
           Jeu.Reglages.get('animations') === false) return false;
+      /* L'attribut est l'interrupteur visible du projet : on le lit
+         aussi, pour que le jeu suive même si quelqu'un le pose sans
+         passer par les réglages. */
+      if (document.documentElement.getAttribute('data-animations') === 'non') return false;
       if (window.matchMedia &&
           window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
     } catch (e) { /* par défaut on anime */ }
@@ -611,7 +634,7 @@ Jeu.Parking = (function () {
         var course = ((N + v.L) / v.L) * 100;
         btn.style.setProperty('--pk-tx', (v.axe === 'h' ? (v.dir === 'd' ? course : -course) : 0) + '%');
         btn.style.setProperty('--pk-ty', (v.axe === 'v' ? (v.dir === 'b' ? course : -course) : 0) + '%');
-        btn.setAttribute('aria-label', NOMS[v.modele] + ' ' + COULEURS[v.teinte] + ', ' + VERS[v.dir]);
+        btn.setAttribute('aria-label', nommer(v) + ', sort ' + VERS[v.dir]);
         btn.appendChild(dessiner(v));
         btn.addEventListener('click', function () { toucher(v); });
         v.noeud = btn;
@@ -703,7 +726,7 @@ Jeu.Parking = (function () {
         btn.classList.add('pk-sort');
 
         son('piece');
-        annonce.textContent = NOMS[v.modele] + ' ' + COULEURS[v.teinte] + ' est sortie. ' +
+        annonce.textContent = nommer(v) + ' ' + estSorti(v) + '. ' +
           sortis + ' sur ' + total + '.';
         majCompteur();
 
@@ -740,8 +763,7 @@ Jeu.Parking = (function () {
         /* 'refus' est volontairement neutre et doux : un véhicule
            bloqué est une information, jamais une sanction. */
         son('refus');
-        annonce.textContent = NOMS[v.modele] + ' ' + COULEURS[v.teinte] +
-          ' ne peut pas passer. Essaie un autre véhicule.';
+        annonce.textContent = nommer(v) + ' ne peut pas passer. Essaie un autre véhicule.';
       }
 
       function fete() {
@@ -784,11 +806,10 @@ Jeu.Parking = (function () {
           principal.type = 'button';
           principal.addEventListener('click', function () { son('tap'); ecranChoix(); });
         }
+        /* Un seul bouton ici : « Recommencer » et « Changer de
+           parking » sont déjà juste en dessous, et ne bougent pas
+           d'un écran à l'autre. */
         suite.appendChild(principal);
-        var rejouer = el('button', 'btn', 'Rejouer celui-là');
-        rejouer.type = 'button';
-        rejouer.addEventListener('click', function () { son('tap'); ecranJeu(index); });
-        suite.appendChild(rejouer);
         carte.appendChild(suite);
 
         vider(zoneFin);

@@ -546,7 +546,10 @@ Jeu.Puissance4 = (function () {
       son('tap');
       if (typeof fini === 'function') fini();
     });
-    btnFini.hidden = true;
+    /* Toujours visible, comme dans les cinq autres jeux : c'est la
+       sortie vers la salle. La cacher pendant la partie obligeait à
+       passer par « Retour au chemin », qui referme la salle — et
+       rouvrir la porte coûte un deuxième jeton. */
 
     var trophees = el('span', 'p4-trophees');
     trophees.setAttribute('aria-hidden', 'true');
@@ -754,7 +757,7 @@ Jeu.Puissance4 = (function () {
         son('fin');
       }
 
-      btnFini.hidden = false;
+      /* déjà visible : il n'y a rien à montrer de plus */
       btnRejouer.classList.add('p4-rejouer-fort');
 
       if (window.Jeu && Jeu.Voix && Jeu.Voix.enchainer) {
@@ -775,7 +778,7 @@ Jeu.Puissance4 = (function () {
         apercus[i].classList.remove('vu');
       }
       for (var c = 0; c < COLONNES; c++) colonnes[c].classList.remove('visee', 'pleine');
-      btnFini.hidden = true;
+      /* la sortie reste offerte pendant toute la partie */
       btnRejouer.classList.remove('p4-rejouer-fort');
       pion(MOI);
       annoncer('À toi de jouer.');

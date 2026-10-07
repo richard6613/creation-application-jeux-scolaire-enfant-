@@ -89,7 +89,20 @@ a { color: var(--accent); }
   min-width: 0;
 }
 
-.ecran { padding-top: 18px; }
+/* La barre du bas est fixée à l'écran : sans cette réserve, elle
+   recouvre la fin de tout écran un peu long — et c'est justement là
+   que se trouvent les boutons d'un jeu de récréation (« Recommencer »,
+   « Changer de parking »). Un bouton à moitié caché sous une barre,
+   un enfant ne le voit pas : il croit qu'il n'existe pas.
+
+   La réserve est posée sans condition. Quand la barre est masquée,
+   elle ne laisse qu'un peu de vide en bas de page, ce qui ne gêne
+   personne ; quand elle est là, elle garantit qu'on peut faire
+   défiler jusqu'au dernier bouton. */
+.ecran {
+  padding-top: 18px;
+  padding-bottom: calc(104px + env(safe-area-inset-bottom));
+}
 .ecran[hidden] { display: none; }
 
 .pile { display: flex; flex-direction: column; gap: var(--gap); }

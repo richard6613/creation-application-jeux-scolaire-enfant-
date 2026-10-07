@@ -369,7 +369,10 @@ html[data-fond="sombre"] {
 .gm-marque { pointer-events: none; }
 .gm-marque-fond {
   fill: var(--gm-creux);
-  opacity: 0.35;
+  stroke: var(--gm-creux);
+  stroke-width: 7;
+  stroke-linejoin: round;
+  opacity: 0.5;
 }
 .gm-marque-trait {
   fill: var(--gm-lustre);
@@ -451,7 +454,7 @@ html[data-fond="sombre"] {
 }
 @keyframes gm-flash {
   0%   { opacity: 0; }
-  22%  { opacity: 0.85; }
+  22%  { opacity: 0.72; }
   100% { opacity: 0; }
 }
 
@@ -459,9 +462,10 @@ html[data-fond="sombre"] {
    couleur de la gemme qui vient d'éclater. */
 .gm-particule {
   position: absolute;
-  width: 11px;
-  height: 11px;
-  margin: -5.5px 0 0 -5.5px;
+  width: 13px;
+  height: 13px;
+  margin: -6.5px 0 0 -6.5px;
+  box-shadow: 0 0 0 2px var(--gm-lustre);
   left: calc((var(--gm-c, 0) + 0.5) * 100% / var(--gm-col));
   top: calc((var(--gm-r, 0) + 0.5) * 100% / var(--gm-lig));
   border-radius: 50%;

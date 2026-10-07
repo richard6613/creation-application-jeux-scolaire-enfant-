@@ -36,7 +36,7 @@
   /* 1 — perle de quartz */
   --cx-r1-clair: #f4f8fc; --cx-r1-base: #ccd8e6; --cx-r1-fond: #8fa3b8;
   /* 2 — triangle de citrine */
-  --cx-r2-clair: #ffdc7a; --cx-r2-base: #eca91c; --cx-r2-fond: #a86c07;
+  --cx-r2-clair: #ffe289; --cx-r2-base: #f0b228; --cx-r2-fond: #bd7a0b;
   /* 3 — losange de jade */
   --cx-r3-clair: #86e4b4; --cx-r3-base: #1fa06c; --cx-r3-fond: #0d6342;
   /* 4 — pentagone turquoise */
@@ -54,7 +54,7 @@
   /* 10 — soleil d'or à huit branches */
   --cx-r10-clair: #fbe79a; --cx-r10-base: #d2a018; --cx-r10-fond: #8c650a;
   /* 11 — grand cristal à douze branches */
-  --cx-r11-clair: #ffffff; --cx-r11-base: #aee6fa; --cx-r11-fond: #7e9ae0;
+  --cx-r11-clair: #ffffff; --cx-r11-base: #b6ecfa; --cx-r11-fond: #8a7fe0;
 }
 
 /* Fond sombre : les pierres doivent rester lumineuses sur de
@@ -76,7 +76,7 @@ html[data-fond="sombre"] {
   --cx-r8-clair: #fcbcbc; --cx-r8-base: #e8676f; --cx-r8-fond: #9e2a34;
   --cx-r9-clair: #fdd4a8; --cx-r9-base: #f08a44; --cx-r9-fond: #a8521a;
   --cx-r10-clair: #fdefb8; --cx-r10-base: #e8c252; --cx-r10-fond: #a2791c;
-  --cx-r11-clair: #ffffff; --cx-r11-base: #c6f1fc; --cx-r11-fond: #92b6e8;
+  --cx-r11-clair: #ffffff; --cx-r11-base: #cdf3fd; --cx-r11-fond: #a79af0;
 }
 
 /* Appareil en mode sombre avant tout choix de fond : même traitement,
@@ -97,7 +97,7 @@ html[data-fond="sombre"] {
     --cx-r8-clair: #fcbcbc; --cx-r8-base: #e8676f; --cx-r8-fond: #9e2a34;
     --cx-r9-clair: #fdd4a8; --cx-r9-base: #f08a44; --cx-r9-fond: #a8521a;
     --cx-r10-clair: #fdefb8; --cx-r10-base: #e8c252; --cx-r10-fond: #a2791c;
-    --cx-r11-clair: #ffffff; --cx-r11-base: #c6f1fc; --cx-r11-fond: #92b6e8;
+    --cx-r11-clair: #ffffff; --cx-r11-base: #cdf3fd; --cx-r11-fond: #a79af0;
   }
 }
 
@@ -209,12 +209,36 @@ html[data-fond="sombre"] {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 10px 14px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
   border: 3px solid var(--bordure);
   border-radius: calc(var(--rayon) + 6px);
   background: var(--surface);
   box-shadow: var(--ombre);
 }
+
+/* La recette : deux petits, un plus, une flèche. Elle se lit de
+   gauche à droite comme une phrase, mais il n'y a rien à lire. */
+.cx-recette {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+.cx-mini {
+  display: block;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+}
+.cx-signe {
+  display: block;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  color: var(--texte-doux);
+}
+.cx-signe svg { display: block; width: 100%; height: 100%; }
 
 .cx-cible {
   position: relative;
@@ -253,12 +277,13 @@ html[data-fond="sombre"] {
 .cx-coche svg { display: block; width: 100%; height: 100%; }
 
 .cx-compteur {
-  flex: 1 1 auto;
+  flex: 1 1 6ch;
   min-width: 0;
+  text-align: right;
 }
 .cx-compteur-txt {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--texte-doux);
 }
 
@@ -274,7 +299,20 @@ html[data-fond="sombre"] {
      navigateur ferait défiler la page au premier geste vertical. */
   touch-action: none;
   -ms-touch-action: none;
-  border-radius: calc(var(--rayon) + 6px);
+  /* Le plateau est une surface de geste : sélectionner du texte ou
+     faire glisser une image dessus ferait annuler le mouvement en
+     cours par le navigateur, et le coup serait perdu. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  /* Le plateau est un objet posé, pas un fond : un liseré et une
+     surface à lui, pour qu'on voie où le jeu commence et s'arrête.
+     La bordure ne change pas la largeur utile (clientWidth), donc le
+     calcul des positions en pixels reste exact. */
+  background: var(--surface);
+  border: 3px solid var(--bordure);
+  border-radius: calc(var(--rayon) + 8px);
+  box-shadow: var(--ombre);
 }
 .cx-plateau:focus-visible {
   outline: 4px solid var(--accent);
@@ -292,11 +330,14 @@ html[data-fond="sombre"] {
   grid-template-rows: repeat(var(--cx-n, 5), 1fr);
   gap: var(--cx-gap, 10px);
 }
+/* Les alvéoles vides : des creux, pas des cases de damier. L'ombre
+   intérieure suffit à les enfoncer d'un cran sous les cristaux. */
 .cx-case {
   display: block;
   border-radius: calc(var(--rayon) - 2px);
   background: var(--surface-2);
-  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.07),
+              inset 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 .cx-tuiles {
@@ -537,7 +578,7 @@ html[data-fond="sombre"] {
 }
 /* Pas encore découvert : la silhouette reste là, en creux. On voit
    donc ce qui reste à trouver, sans que ce soit un manque. */
-.cx-slot.cx-inconnu { opacity: 0.17; }
+.cx-slot.cx-inconnu { opacity: 0.22; }
 .cx-slot.cx-inconnu .cx-gem { filter: none; }
 
 /* ------------------------- fin de grille et pied ------------------------- */
@@ -653,7 +694,10 @@ html[data-animations="non"] .cx-eclats {
    ===================================================================== */
 
 @media (max-width: 420px) {
-  .cx-cible { width: 62px; height: 62px; }
+  .cx-cible { width: 64px; height: 64px; }
+  .cx-mini { width: 29px; height: 29px; }
+  .cx-signe { width: 15px; height: 15px; }
+  .cx-commande { gap: 10px; }
   .cx-slot { width: 23px; height: 23px; }
   .cx-vitrine { gap: 5px; padding: 7px 8px; }
   .cx-pied { flex-wrap: wrap; }

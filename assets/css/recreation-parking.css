@@ -50,7 +50,8 @@
 
   /* Ombres et voiles : du modelé, pas des couleurs. Déclinés aussi
      en sombre pour que les véhicules ne deviennent pas plats. */
-  --pk-ombre-portee: rgba(40, 34, 26, 0.3);
+  --pk-trait: rgba(24, 20, 16, 0.42);
+  --pk-ombre-portee: rgba(40, 34, 26, 0.34);
   --pk-voile-sombre: rgba(0, 0, 0, 0.2);
   --pk-voile-clair: rgba(255, 255, 255, 0.3);
   --pk-barre-trait: #fff4d6;
@@ -80,6 +81,7 @@ html[data-fond="sombre"] {
   --pk-feu: #e2614c;
   --pk-fleche: #fffdf7;
   --pk-fleche-trait: rgba(10, 10, 12, 0.6);
+  --pk-trait: rgba(8, 10, 14, 0.55);
   --pk-ombre-portee: rgba(0, 0, 0, 0.45);
   --pk-voile-sombre: rgba(0, 0, 0, 0.26);
   --pk-voile-clair: rgba(255, 255, 255, 0.24);
@@ -106,6 +108,7 @@ html[data-fond="sombre"] {
     --pk-feu: #e2614c;
     --pk-fleche: #fffdf7;
     --pk-fleche-trait: rgba(10, 10, 12, 0.6);
+    --pk-trait: rgba(8, 10, 14, 0.55);
     --pk-ombre-portee: rgba(0, 0, 0, 0.45);
     --pk-voile-sombre: rgba(0, 0, 0, 0.26);
     --pk-voile-clair: rgba(255, 255, 255, 0.24);
@@ -158,13 +161,17 @@ html[data-fond="sombre"] {
 /* ------------------------- avancement -------------------------
    Un repère qui MONTE : les véhicules sortis. Rien ne descend,
    aucun compte de coups, aucun chronomètre — jamais. */
+/* Le texte peut être poussé à 30 px : la ligne d'avancement passe
+   alors à deux lignes plutôt que de déborder sur le côté. */
 .pk-compteur {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 8px 12px;
 }
 .pk-jauge {
-  flex: 1 1 auto;
+  flex: 1 1 90px;
+  min-width: 70px;
   height: 14px;
   border-radius: 999px;
   background: var(--surface-2);
@@ -189,6 +196,7 @@ html[data-fond="sombre"] {
 .pk-etiquette {
   font-weight: 700;
   white-space: nowrap;
+  max-width: 100%;
   padding: 2px 10px;
   border-radius: 999px;
   background: var(--surface-2);
@@ -286,6 +294,9 @@ html[data-fond="sombre"] {
 .pk-reflet  { fill: var(--pk-voile-clair); }
 .pk-roue    { fill: var(--pk-roue); }
 .pk-vitre   { fill: var(--pk-vitre); stroke: var(--pk-vitre-trait); stroke-width: 2.5; }
+/* Les vitres latérales de l'autobus : bandes fines, donc sans
+   cerne — un trait de 2,5 les remplirait entièrement. */
+.pk-bande   { fill: var(--pk-vitre); }
 .pk-phare   { fill: var(--pk-phare); }
 .pk-feu     { fill: var(--pk-feu); }
 
@@ -299,11 +310,14 @@ html[data-fond="sombre"] {
   stroke-linejoin: round;
 }
 
-/* Contour de signalement, invisible au repos. */
+/* Le contour. Au repos il n'est qu'un trait sombre fin, qui détache
+   la silhouette de l'asphalte et des véhicules voisins — sans lui,
+   deux carrosseries côte à côte se confondent. Il sert aussi de
+   signalement quand ce véhicule barre la route à un autre. */
 .pk-contour {
   fill: none;
-  stroke: none;
-  stroke-width: 7;
+  stroke: var(--pk-trait);
+  stroke-width: 3;
   stroke-linejoin: round;
 }
 
@@ -345,11 +359,12 @@ html[data-fond="sombre"] {
 /* Qui bloque qui : les gêneurs se cernent un instant. C'est l'aide
    au raisonnement du jeu — elle se montre, elle ne se lit pas. */
 @keyframes pk-pulse {
-  0%, 100% { stroke-opacity: 0; }
+  0%, 100% { stroke-opacity: 0.25; }
   30%, 70% { stroke-opacity: 1; }
 }
 .pk-vehicule.pk-barre .pk-contour {
   stroke: var(--pk-barre-trait);
+  stroke-width: 7;
   animation: pk-pulse 900ms ease-in-out 2;
 }
 

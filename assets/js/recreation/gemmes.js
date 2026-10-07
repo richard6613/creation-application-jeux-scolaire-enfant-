@@ -612,10 +612,32 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
   /* Les deux pouvoirs se lisent d'abord au dessin : une croix
      d'éclairs pour « toute la ligne », un anneau d'étoiles pour
      « toute la zone ». La couleur n'est qu'un renfort. */
+  /* La flèche à quatre branches dit « toute la ligne et toute la
+     colonne » sans un mot ; l'anneau dit « tout autour ». Un enfant
+     qui ne lit pas comprend les deux du premier coup d'œil. */
+  function flecheCroix() {
+    var L = 36, hl = 14, w = 6, h = 13, p = [], i, dx, dy, px, py;
+    var bras = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+    for (i = 0; i < 4; i++) {
+      dx = bras[i][0]; dy = bras[i][1];
+      px = -dy; py = dx;                 /* perpendiculaire au bras */
+      /* Un bras : le flanc, la barbe, la pointe, l'autre barbe,
+         l'autre flanc, puis le creux qui rejoint le bras suivant. */
+      p.push([50 + dx * (L - hl) - px * w, 50 + dy * (L - hl) - py * w]);
+      p.push([50 + dx * (L - hl) - px * h, 50 + dy * (L - hl) - py * h]);
+      p.push([50 + dx * L, 50 + dy * L]);
+      p.push([50 + dx * (L - hl) + px * h, 50 + dy * (L - hl) + py * h]);
+      p.push([50 + dx * (L - hl) + px * w, 50 + dy * (L - hl) + py * w]);
+      p.push([50 + dx * w + px * w, 50 + dy * w + py * w]);
+    }
+    return chemin(p);
+  }
+
+  var CROIX = flecheCroix();
   var MARQUE_ECLAIR =
     '<svg class="gm-svg gm-marque" viewBox="0 0 100 100" aria-hidden="true" focusable="false">' +
-      '<path class="gm-marque-fond" d="M50 6L59 41L94 50L59 59L50 94L41 59L6 50L41 41Z"/>' +
-      '<path class="gm-marque-trait" d="M50 14L56 44L86 50L56 56L50 86L44 56L14 50L44 44Z"/>' +
+      '<path class="gm-marque-fond" d="' + CROIX + '"/>' +
+      '<path class="gm-marque-trait" d="' + CROIX + '"/>' +
     '</svg>';
   var MARQUE_ETOILE =
     '<svg class="gm-svg gm-marque" viewBox="0 0 100 100" aria-hidden="true" focusable="false">' +
@@ -878,7 +900,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       for (k = 0; k < n; k++) {
         p = el('span', 'gm-particule gm-pt' + t);
         a = (Math.PI * 2 * k) / n + Math.random() * 0.9;
-        d = 22 + Math.random() * 24;
+        d = 24 + Math.random() * 26;
         poserBrut(p, colonne(i), ligne(i));
         p.style.setProperty('--gm-dx', arr(Math.cos(a) * d) + 'px');
         p.style.setProperty('--gm-dy', arr(Math.sin(a) * d) + 'px');
@@ -1026,7 +1048,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       var i, sp, nb = plan.cases.length;
       /* On allège les particules quand l'explosion est énorme : un
          combo de trente gemmes ne doit pas faire deux cents nœuds. */
-      var parGemme = nb > 16 ? 2 : (nb > 8 ? 3 : 5);
+      var parGemme = nb > 16 ? 3 : (nb > 8 ? 4 : 6);
 
       for (i = 0; i < plan.effets.length; i++) onde(plan.effets[i]);
       for (i = 0; i < nb; i++) {
@@ -1218,9 +1240,13 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       else if (ev.key === 'ArrowUp') pas = -COL;
       else if (ev.key === 'Escape') { deselect(); return; }
       else return;
-      /* Pas de retour à la ligne : on ne saute pas d'un bord à
-         l'autre, le déplacement reste prévisible. */
-      var i = focusCourant, c = colonne(i), l = ligne(i);
+      /* On repart de la case réellement sous le focus, et pas d'un
+         repère interne : un lecteur d'écran, ou un simple Tab, peut
+         très bien déplacer le focus sans passer par nous. */
+      var cible = cibleCase(ev.target);
+      var i = cible ? parseInt(cible.getAttribute('data-i'), 10) : focusCourant;
+      focusCourant = i;
+      var c = colonne(i), l = ligne(i);
       if (pas === 1 && c + 1 >= COL) return;
       if (pas === -1 && c <= 0) return;
       if (pas === COL && l + 1 >= LIG) return;

@@ -9,7 +9,7 @@
    récupérée en arrière-plan quand il y en a une.
    --------------------------------------------------------------- */
 
-var VERSION = 'mes-jeux-2148683ff9fd';
+var VERSION = 'mes-jeux-2a2f7bdd8b31';
 
 var FICHIERS = [
   './',
@@ -20,9 +20,16 @@ var FICHIERS = [
   './assets/css/composants.css',
   './assets/css/monde.css',
   './assets/css/filou.css',
+  './assets/css/heros-blocky.css',
+  './assets/css/heros-dragon.css',
+  './assets/css/heros-robot.css',
+  './assets/css/heros-renard.css',
   './assets/css/quetes.css',
   './assets/css/recreation-mm.css',
   './assets/css/recreation-p4.css',
+  './assets/css/recreation-gemmes.css',
+  './assets/css/recreation-cristaux.css',
+  './assets/css/recreation-parking.css',
   './assets/js/version.js',
   './assets/js/stockage.js',
   './assets/js/reglages.js',
@@ -31,6 +38,11 @@ var FICHIERS = [
   './assets/js/sons.js',
   './assets/js/adaptatif.js',
   './assets/js/ui.js',
+  './assets/js/heros.js',
+  './assets/js/heros/blocky.js',
+  './assets/js/heros/dragon.js',
+  './assets/js/heros/robot.js',
+  './assets/js/heros/renard.js',
   './assets/js/compagnon.js',
   './assets/js/fete.js',
   './assets/js/collection.js',
@@ -68,6 +80,9 @@ var FICHIERS = [
   './assets/js/recreation/memory.js',
   './assets/js/recreation/morpion.js',
   './assets/js/recreation/puissance4.js',
+  './assets/js/recreation/gemmes.js',
+  './assets/js/recreation/cristaux.js',
+  './assets/js/recreation/parking.js',
   './assets/js/parent.js',
   './assets/js/app.js',
   './assets/icone.svg',

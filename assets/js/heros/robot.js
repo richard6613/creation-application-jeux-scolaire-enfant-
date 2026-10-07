@@ -488,6 +488,8 @@ window.Jeu = window.Jeu || {};
     svg.style.setProperty('--rb-flot-retard', '-' + hasard(0, 3) + 's');
     svg.style.setProperty('--rb-bille', hasard(2.6, 4.4) + 's');
     svg.style.setProperty('--rb-ant', hasard(4.4, 6.8) + 's');
+    svg.style.setProperty('--rb-cligne', hasard(5.6, 9.8) + 's');
+    svg.style.setProperty('--rb-cligne-retard', '-' + hasard(0, 6) + 's');
 
     var art = [];
     /* Un seul groupe à l'échelle : la géométrie d'origine n'est
