@@ -97,7 +97,7 @@ html[data-fond="sombre"] {
   --po-p5: #b088e4;
   --po-p6: #3fb2cf;
   --po-p7: #e58cb7;
-  --po-p8: #ab7c50;
+  --po-p8: #926840;
   --po-p9: #79859a;
   /* En sombre les potions sont plus claires : l'encre passe au
      sombre pour garder le même contraste de motif. */
@@ -136,7 +136,7 @@ html[data-fond="sombre"] {
     --po-p5: #b088e4;
     --po-p6: #3fb2cf;
     --po-p7: #e58cb7;
-    --po-p8: #ab7c50;
+    --po-p8: #926840;
     --po-p9: #79859a;
     --po-i1: rgba(32, 18, 14, 0.66);
     --po-i2: rgba(14, 20, 40, 0.66);
@@ -325,6 +325,7 @@ html[data-fond="sombre"] {
 .po-bouchon { fill: var(--po-bouchon); }
 .po-sep { fill: var(--po-sep); }
 
+/* `fill` pour ce qui est dessiné en SVG (les couches de potion)… */
 .po-p1 { fill: var(--po-p1); }
 .po-p2 { fill: var(--po-p2); }
 .po-p3 { fill: var(--po-p3); }
@@ -334,6 +335,20 @@ html[data-fond="sombre"] {
 .po-p7 { fill: var(--po-p7); }
 .po-p8 { fill: var(--po-p8); }
 .po-p9 { fill: var(--po-p9); }
+/* …et `background` pour ce qui est en HTML : les pastilles de la
+   vignette d'un tableau et le filet qui tombe pendant un versement.
+   Les deux jeux de règles existent parce que `fill` ne peint pas un
+   `span` — les pastilles étaient invisibles, vu sur une capture de
+   l'écran de choix. */
+.po-t1 { background: var(--po-p1); }
+.po-t2 { background: var(--po-p2); }
+.po-t3 { background: var(--po-p3); }
+.po-t4 { background: var(--po-p4); }
+.po-t5 { background: var(--po-p5); }
+.po-t6 { background: var(--po-p6); }
+.po-t7 { background: var(--po-p7); }
+.po-t8 { background: var(--po-p8); }
+.po-t9 { background: var(--po-p9); }
 
 /* L'encre du motif voyage par variable : les enfants du motif
    héritent de la variable posée sur le motif lui-même. */
@@ -396,20 +411,22 @@ html[data-fond="sombre"] {
 }
 /* « Annuler » occupe sa propre ligne, en entier : c'est le bouton
    qui enlève la peur de se tromper, il doit être le plus facile à
-   trouver et le plus facile à viser. */
-.po-annuler {
+   trouver et le plus facile à viser. Le sélecteur porte `.po-actions`
+   pour passer devant la règle commune juste au-dessus — sans quoi il
+   reste à côté de « Recommencer » (vu sur une capture). */
+.po-actions > .po-annuler {
   background: var(--accent-doux);
   border-color: var(--accent);
   color: var(--texte);
   font-weight: 700;
   flex: 0 0 100%;
 }
-.po-annuler[disabled] { opacity: 0.45; }
 /* Position bloquée : on ne gronde pas, on montre où aller. */
 .po-annuler.po-souligne {
   box-shadow: 0 0 0 4px var(--jeu-potions), var(--ombre);
 }
 .po-plus { background: var(--surface-2); }
+.po-actions[hidden] { display: none; }
 .po-quitter { background: var(--surface-2); }
 
 /* ------------------------- le choix du tableau ------------------------- */
@@ -448,17 +465,23 @@ html[data-fond="sombre"] {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 3px;
-  max-width: 64px;
+  align-items: flex-end;
+  gap: 4px;
+  max-width: 74px;
 }
+/* Une pastille par potion, un creux par fiole vide : la difficulté
+   d'un tableau se lit d'un coup d'œil, sans un mot à déchiffrer. */
 .po-vp {
   display: block;
-  width: 10px; height: 14px;
+  width: 11px; height: 18px;
   border-radius: 3px;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.16);
 }
 .po-vp-vide {
   background: transparent;
-  border: 2px dashed var(--bordure);
+  border: 2px dashed var(--texte-doux);
+  box-shadow: none;
+  opacity: 0.7;
 }
 .po-tableau.po-fait { border-color: var(--succes); background: var(--succes-doux); }
 .po-tableau.po-ici {
@@ -543,15 +566,6 @@ html[data-fond="sombre"] {
   100% { transform: scaleY(0); }
 }
 .po-filet { animation: po-filet 440ms linear; }
-.po-filet.po-f1 { background: var(--po-p1); }
-.po-filet.po-f2 { background: var(--po-p2); }
-.po-filet.po-f3 { background: var(--po-p3); }
-.po-filet.po-f4 { background: var(--po-p4); }
-.po-filet.po-f5 { background: var(--po-p5); }
-.po-filet.po-f6 { background: var(--po-p6); }
-.po-filet.po-f7 { background: var(--po-p7); }
-.po-filet.po-f8 { background: var(--po-p8); }
-.po-filet.po-f9 { background: var(--po-p9); }
 
 @keyframes po-refus {
   0%, 100% { transform: translateX(0); }

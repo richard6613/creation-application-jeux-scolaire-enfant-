@@ -164,6 +164,11 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
      n'a rien à défaire, on n'a simplement rien écrit.
      =================================================================== */
 
+  /* Six couleurs de pierre. Le damier du jeu montré par le père
+     avait des pièces franchement colorées sur un plateau sombre :
+     c'est ça qui donne envie d'y toucher. */
+  var NB_TEINTES = 6;
+
   function grilleNeuve() {
     var g = [], i;
     for (i = 0; i < TAILLE; i++) g.push(0);
@@ -263,12 +268,21 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
   /* Le coup complet, en une fonction pure, pour pouvoir le malmener
      de l'extérieur. Rend `null` si le coup est impossible : dans ce
      cas l'appelant garde forcément son damier d'avant. */
-  function jouer(g, bloc, r, c) {
+  function jouer(g, bloc, r, c, teinte) {
     if (!peutPoser(g, bloc, r, c)) return null;
+    /* La case retient la couleur de la pierre qu'on vient d'y poser,
+       entre 1 et NB_TEINTES. Toute la logique du jeu ne lit cette
+       valeur que comme « occupée ou non », donc rien ne change pour
+       elle : la couleur n'est que du plaisir des yeux. C'est la
+       FORME qui porte l'information, jamais la teinte — poser une
+       pierre, reconnaître un bloc, voir une ligne partir : tout
+       reste vrai pour un enfant qui ne distingue pas les couleurs. */
+    var t = Math.round(teinte);
+    if (!(t >= 1 && t <= NB_TEINTES)) t = 1;
     var pose = g.slice(), poses = [], k, a;
     for (k = 0; k < bloc.cases.length; k++) {
       a = (r + bloc.cases[k][0]) * N + (c + bloc.cases[k][1]);
-      pose[a] = 1;
+      pose[a] = t;
       poses.push(a);
     }
     var comp = completes(pose);
@@ -306,6 +320,20 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
     return BLOCS[0];
   }
 
+  /* Une couleur par emplacement du chariot, tirée au sort mais
+     jamais deux fois la même dans une main : trois pierres de la
+     même teinte côte à côte feraient croire qu'elles vont ensemble. */
+  function teintesMain(hasard) {
+    var reste = [], i, k, t = [];
+    for (i = 1; i <= NB_TEINTES; i++) reste.push(i);
+    for (i = 0; i < 3; i++) {
+      k = Math.floor(hasard() * reste.length);
+      if (!(k >= 0 && k < reste.length)) k = 0;
+      t.push(reste.splice(k, 1)[0]);
+    }
+    return t;
+  }
+
   function tirerMain(g, hasard) {
     var essai, m;
     for (essai = 0; essai < 60; essai++) {
@@ -323,18 +351,23 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
      de ce qui est relu n'est cru sur parole. */
 
   function serialiser(g) {
-    var s = '', i;
-    for (i = 0; i < TAILLE; i++) s += g[i] ? '1' : '0';
+    var s = '', i, v;
+    for (i = 0; i < TAILLE; i++) {
+      v = Math.round(g[i]);
+      s += (v >= 1 && v <= NB_TEINTES) ? String(v) : '0';
+    }
     return s;
   }
 
   function deserialiser(s) {
     if (typeof s !== 'string' || s.length !== TAILLE) return null;
-    var g = [], i, ch;
+    var g = [], i, v;
     for (i = 0; i < TAILLE; i++) {
-      ch = s.charAt(i);
-      if (ch !== '0' && ch !== '1') return null;
-      g.push(ch === '1' ? 1 : 0);
+      v = s.charCodeAt(i) - 48;
+      /* Une sauvegarde d'avant les couleurs ne contient que des 0 et
+         des 1 : elle se relit telle quelle, la pierre sort grise. */
+      if (!(v >= 0 && v <= NB_TEINTES)) return null;
+      g.push(v);
     }
     return g;
   }
@@ -604,6 +637,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       if (verrou) return;
       son('piece');
       main = tirerMain(grille);
+      tourMain += 1;
       choisi = -1;
       dessinerChariot();
       effacerVise();
@@ -671,7 +705,8 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
             b = r < N - 1 && grille[i + N];
             g = c > 0 && grille[i - 1];
             d = c < N - 1 && grille[i + 1];
-            cl += ' bp-pleine';
+            cl += ' bp-pleine bp-t' + (grille[i] >= 1 && grille[i] <= NB_TEINTES
+              ? grille[i] : 1);
             if (h || g) cl += ' bp-ctl';
             if (h || d) cl += ' bp-ctr';
             if (b || g) cl += ' bp-cbl';
@@ -701,7 +736,15 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       }
     }
 
-    function dessinerBloc(hote, b, unite) {
+    /* La couleur d'une fente du chariot. Elle avance d'une main à
+       l'autre, donc deux mains de suite ne se ressemblent pas, et
+       les trois fentes d'une même main sont toujours de trois
+       teintes différentes. Rien de tout cela ne porte la moindre
+       information : c'est la forme qui dit tout. */
+    var tourMain = 0;
+    function teinteFente(i) { return ((tourMain * 3 + i) % NB_TEINTES) + 1; }
+
+    function dessinerBloc(hote, b, unite, teinte) {
       vider(hote);
       if (!b) return;
       /* L'emplacement est une grille carrée dont le côté suit la
@@ -732,7 +775,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
         if (h || d) cl += ' bp-ctr';
         if (ba || g) cl += ' bp-cbl';
         if (ba || d) cl += ' bp-cbr';
-        p.className = cl;
+        p.className = cl + (teinte ? ' bp-t' + teinte : '');
         if (unite) { p.style.width = unite + 'px'; p.style.height = unite + 'px'; }
         hote.appendChild(p);
       }
@@ -757,7 +800,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       for (i = 0; i < 3; i++) {
         var f = fentes[i], b = main[i];
         f.className = 'bp-fente' + (b ? '' : ' bp-vide') + (choisi === i ? ' bp-choisi' : '');
-        dessinerBloc(f, b, 0);
+        dessinerBloc(f, b, 0, teinteFente(i));
         if (b) {
           f.disabled = false;
           f.setAttribute('aria-label', 'Bloc ' + (i + 1) + ' : ' + b.nom + ', ' +
@@ -831,7 +874,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       if (verrou) return false;
       var b = main[i];
       if (!b) return false;
-      var res = jouer(grille, b, r, c);
+      var res = jouer(grille, b, r, c, teinteFente(i));
       if (!res) { refuser(); return false; }
 
       main[i] = null;
@@ -904,6 +947,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
     function apresCoup() {
       if (!main[0] && !main[1] && !main[2]) {
         main = tirerMain(grille);
+      tourMain += 1;
         dessinerChariot();
         son('piece');
       }
@@ -924,6 +968,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       verrou = false;
       grille = grilleNeuve();
       main = tirerMain(grille);
+      tourMain += 1;
       choisi = -1;
       curseur = { r: 3, c: 3 };
       effacerVise();
@@ -985,6 +1030,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
         principal.addEventListener('click', function () {
           son('piece');
           main = tirerMain(grille);
+      tourMain += 1;
           choisi = -1;
           dessinerChariot();
           cacherPanneau();

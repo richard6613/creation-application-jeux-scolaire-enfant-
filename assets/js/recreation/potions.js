@@ -1010,13 +1010,14 @@ Jeu.Potions = (function () {
           ap.setAttribute('aria-hidden', 'true');
           var k;
           for (k = 0; k < def.c; k++) {
-            ap.appendChild(el('span', 'po-vp po-p' + (k + 1)));
+            ap.appendChild(el('span', 'po-vp po-t' + (k + 1)));
           }
           for (k = 0; k < def.v; k++) ap.appendChild(el('span', 'po-vp po-vp-vide'));
           btn.appendChild(ap);
 
           btn.setAttribute('aria-label', 'Tableau ' + (index + 1) + ', ' +
-            accord(def.c, 'potion') + ', ' + accord(def.v, 'fiole vide') +
+            accord(def.c, 'potion') + ', ' +
+            accord(def.v, 'fiole vide', 'fioles vides') +
             (ouvert ? ((index + 1) < memoire.atteint ? ', déjà rangé' : '')
                     : ', pas encore ouvert'));
           if (!ouvert) {
@@ -1198,11 +1199,14 @@ Jeu.Potions = (function () {
       bFiole.addEventListener('click', function () { ajouterFiole(); });
       actions.appendChild(bFiole);
 
-      scene.appendChild(actions);
-      scene.appendChild(annonce);
-
+      /* La carte de réussite se glisse entre le plateau et les
+         boutons : c'est elle qu'on doit voir en premier quand le
+         tableau est rangé, pas une rangée de boutons devenus
+         inutiles. */
       var zoneFin = el('div', 'po-fin');
       scene.appendChild(zoneFin);
+      scene.appendChild(actions);
+      scene.appendChild(annonce);
 
       var bChoix = el('button', 'btn po-choisir', 'Choisir un tableau');
       bChoix.type = 'button';
@@ -1341,7 +1345,7 @@ Jeu.Potions = (function () {
         var rp = plateau.getBoundingClientRect();
         /* La teinte du filet vient du CSS, par une classe : aucune
            couleur n'est écrite dans ce fichier. */
-        var filet = el('span', 'po-filet po-f' + (sommet(etat[cible]) + 1));
+        var filet = el('span', 'po-filet po-t' + (sommet(etat[cible]) + 1));
         filet.setAttribute('aria-hidden', 'true');
         filet.style.left = (rb.left - rp.left + rb.width / 2 - 3) + 'px';
         filet.style.top = (rb.top - rp.top - 10) + 'px';
@@ -1513,6 +1517,10 @@ Jeu.Potions = (function () {
 
         vider(zoneFin);
         zoneFin.appendChild(carte);
+        /* Les trois boutons de jeu n'ont plus rien à faire sur un
+           tableau rangé : ils s'effacent plutôt que de rester là
+           sans répondre. Jamais un bouton mort. */
+        actions.hidden = true;
         /* La carte dit déjà la phrase : l'annonce sort de la vue
            plutôt que de la répéter juste au-dessus, tout en restant
            lisible par les lecteurs d'écran. */
@@ -1568,7 +1576,17 @@ Jeu.Potions = (function () {
     }
 
     var surTaille = null;
-    window.addEventListener('resize', function () { if (surTaille) surTaille(); });
+    /* Un seul écouteur pour toute la récréation, et il se retire de
+       lui-même dès que l'écran a été quitté : sans cela, chaque
+       entrée dans le jeu en laisserait un derrière elle. */
+    function surRedimension() {
+      if (!document.body.contains(bloc)) {
+        window.removeEventListener('resize', surRedimension);
+        return;
+      }
+      if (surTaille) surTaille();
+    }
+    window.addEventListener('resize', surRedimension);
 
     /* On ouvre directement sur le tableau en cours : c'est une
        récompense, elle ne commence pas par un menu. */

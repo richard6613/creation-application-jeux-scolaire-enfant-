@@ -671,3 +671,72 @@ html[data-animations="non"] .bp-fente.bp-prise { opacity: 0.4 !important; }
 @media (max-width: 330px) {
   .bp-brique { width: 12px; }
 }
+
+/* ------------------------- Les six couleurs -------------------------
+
+   Pourquoi de la couleur ici, alors que l'application répète
+   « jamais la couleur seule » : cette règle interdit qu'une
+   information soit portée UNIQUEMENT par la teinte. Ce n'est pas le
+   cas. Ce qu'il faut savoir pour jouer — quelle forme est proposée,
+   où elle tombera, quelle ligne va partir — est porté par la forme,
+   par la position et par le viseur. La couleur, ici, ne dit rien :
+   elle ne fait que donner envie d'y toucher. Un enfant qui ne
+   distingue aucune de ces teintes joue exactement la même partie.
+
+   Elles sont reprises des couleurs de jeu de l'application, et
+   chacune garde le même modelé en trois temps que la pierre :
+   lumière en haut, masse au milieu, arête sombre en bas. */
+.bp-t1 { --bp-pierre-haut: #8fc4ea; --bp-pierre-base: #4a8fc8; --bp-pierre-bas: #2f5d8a; }
+.bp-t2 { --bp-pierre-haut: #f0b18f; --bp-pierre-base: #e0704f; --bp-pierre-bas: #a8432a; }
+.bp-t3 { --bp-pierre-haut: #8fd9ab; --bp-pierre-base: #45b074; --bp-pierre-bas: #28724a; }
+.bp-t4 { --bp-pierre-haut: #f5cf7e; --bp-pierre-base: #e0a52e; --bp-pierre-bas: #9a6a12; }
+.bp-t5 { --bp-pierre-haut: #c8a8e8; --bp-pierre-base: #9566c8; --bp-pierre-bas: #633d8e; }
+.bp-t6 { --bp-pierre-haut: #88dbdd; --bp-pierre-base: #35a8ab; --bp-pierre-bas: #1b6c6e; }
+
+/* Le plateau s'assombrit. Sur un damier crème, des pierres claires
+   ne ressortent pas : c'est le contraste entre un fond profond et
+   des pièces franches qui donne au jeu son allure de jeu, et c'est
+   exactement ce qu'on voit sur les block puzzles du commerce.
+
+   Ces trois tons-là ne portent eux non plus aucune information : ils
+   ne servent qu'à faire ressortir ce qui est posé dessus. Le creux
+   d'une case vide et le relief d'une pierre restent, eux, lisibles
+   sans aucune couleur. */
+:root,
+html[data-fond="sombre"],
+html[data-fond="bleu"],
+html[data-fond="vert"],
+html[data-fond="gris"] {
+  --bp-cadre: #4b5666;
+  --bp-cadre-bord: #333d4b;
+  --bp-damier-a: #39434f;
+  --bp-damier-b: #313a45;
+  --bp-mortier: rgba(0, 0, 0, 0.32);
+  --bp-creux: rgba(0, 0, 0, 0.36);
+  --bp-rail: #4b5666;
+  --bp-rail-bord: #333d4b;
+  --bp-fente: #39434f;
+  --bp-fente-bord: #2b333d;
+  /* Le viseur et la marque « cette ligne va partir » doivent rester
+     francs sur ce fond profond. */
+  --bp-vise-trait: #7fd9a2;
+  --bp-vise-fond: rgba(127, 217, 162, 0.2);
+  --bp-pret-trait: #ffd979;
+  --bp-pret-signe: #fff3d2;
+  --bp-pret-halo: rgba(0, 0, 0, 0.55);
+  /* Le petit rempart du compteur, lui, reste posé sur le fond de la
+     page et non sur le plateau : il garde donc ses tons d'origine. */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --bp-cadre: #4b5666;
+    --bp-cadre-bord: #333d4b;
+    --bp-damier-a: #39434f;
+    --bp-damier-b: #313a45;
+    --bp-rail: #4b5666;
+    --bp-rail-bord: #333d4b;
+    --bp-fente: #39434f;
+    --bp-fente-bord: #2b333d;
+  }
+}

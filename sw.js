@@ -9,7 +9,7 @@
    récupérée en arrière-plan quand il y en a une.
    --------------------------------------------------------------- */
 
-var VERSION = 'mes-jeux-6db0cd9bad66';
+var VERSION = 'mes-jeux-2e89e842421c';
 
 var FICHIERS = [
   './',
@@ -33,6 +33,8 @@ var FICHIERS = [
   './assets/css/recreation-tuyaux.css',
   './assets/css/recreation-taquin.css',
   './assets/css/recreation-catapulte.css',
+  './assets/css/recreation-blocs.css',
+  './assets/css/recreation-potions.css',
   './assets/js/version.js',
   './assets/js/stockage.js',
   './assets/js/reglages.js',
@@ -89,6 +91,8 @@ var FICHIERS = [
   './assets/js/recreation/tuyaux.js',
   './assets/js/recreation/taquin.js',
   './assets/js/recreation/catapulte.js',
+  './assets/js/recreation/blocs.js',
+  './assets/js/recreation/potions.js',
   './assets/js/parent.js',
   './assets/js/app.js',
   './assets/icone.svg',
