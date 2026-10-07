@@ -22,6 +22,10 @@
    --filou-langue, --filou-trait). Ici, celles de ses petits détails
    et de ses affaires : elles n'existaient pas encore. */
 :root {
+  /* La teinte d'identité de Filou, celle de sa carte dans l'écran de
+     choix des héros — comme --heros-dragon et --heros-robot. */
+  --heros-chat: #c87f2e;
+
   --filou-reflet: #fffaf2;       /* l'étincelle dans l'œil */
   --filou-eclat: #e8ae3c;        /* les étoiles de joie */
   --filou-bulle: #b9c6d4;        /* bulles de sommeil, points de réflexion */
@@ -78,6 +82,7 @@
 /* Fond sombre choisi : les accessoires s'éclaircissent, sinon une
    cape bleu nuit sur un fond anthracite devient une tache noire. */
 :root[data-fond="sombre"] {
+  --heros-chat: #e8a558;
   --filou-reflet: #fff6e6;
   --filou-eclat: #f0c361;
   --filou-bulle: #8d9aa8;

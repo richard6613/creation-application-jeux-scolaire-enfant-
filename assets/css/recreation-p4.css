@@ -98,13 +98,16 @@ html[data-fond="sombre"] { --jeu-p4: #ef9b80; }
   box-shadow: var(--ombre);
 }
 
-/* Chaque colonne est un bouton : toute sa hauteur est touchable,
-   et au moins 44 px de large sur un téléphone. */
+/* Chaque colonne est un bouton : toute sa hauteur est touchable
+   (près de 300 px), et au moins 44 px de large dès 360 px d'écran.
+   En dessous, sept colonnes de 44 px ne tiennent tout simplement
+   pas : on reprend alors les marges de la page et on resserre les
+   intervalles plutôt que de faire déborder la grille — une barre de
+   défilement horizontale serait bien pire pour un doigt d'enfant. */
 .p4-colonne {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  min-width: 44px;
   min-height: 44px;
   padding: 20px 4px 4px;
   margin: 0;
@@ -216,7 +219,11 @@ html[data-fond="sombre"] { --jeu-p4: #ef9b80; }
   letter-spacing: 1px;
   color: var(--attention);
 }
-.p4-nom-niveau { font-size: 0.78rem; line-height: 1.2; }
+.p4-nom-niveau {
+  font-size: 0.78rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;   /* texte réglé au maximum : ça passe à la ligne, ça ne déborde pas */
+}
 .p4-niveau[aria-pressed="true"] {
   background: var(--accent);
   color: var(--accent-contraste);
@@ -306,6 +313,10 @@ html[data-animations="oui"] .p4-colonne {
 @media (max-width: 380px) {
   .p4-plateau { margin: 0 -10px; gap: 4px; padding: 5px; }
   .p4-colonne { padding: 18px 3px 3px; }
+}
+@media (max-width: 340px) {
+  .p4-plateau { margin: 0 -14px; gap: 3px; padding: 4px; }
+  .p4-colonne { padding: 16px 2px 2px; gap: 3px; }
 }
 
 /* Texte réglé très grand : les mots des niveaux passent à la ligne

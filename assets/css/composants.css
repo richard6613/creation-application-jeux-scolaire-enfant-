@@ -1498,3 +1498,124 @@ html[data-animations="oui"] .gain-jeton { animation: surgit 460ms var(--ressort)
 .porte-fermee { align-items: center; text-align: center; }
 .porte-signe { font-size: 3.4rem; line-height: 1; opacity: 0.55; }
 .porte-fermee .ligne { justify-content: center; }
+
+/* ------------------------- Le choix du héros -------------------------
+
+   Une grille de grosses cartes, et rien d'autre à l'écran. Le dessin
+   fait les trois quarts de la carte : c'est lui qu'on choisit, pas
+   un nom qu'il faudrait déchiffrer.
+
+   Deux colonnes dès 320 px et jamais plus de trois : une carte plus
+   petite que 140 px rendrait les personnages trop petits pour être
+   départagés, et c'est exactement la décision qu'on demande ici. */
+.grille-heros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  max-width: 100%;
+}
+
+.carte-heros {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 14px 10px 16px;
+  border: 3px solid var(--bordure);
+  border-radius: 20px;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  /* La couleur du héros habille la carte sans l'écraser. */
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, .06);
+  transition: transform .18s cubic-bezier(.34, 1.56, .64, 1), border-color .18s;
+}
+
+.carte-heros:hover { border-color: var(--teinte-heros, var(--accent)); }
+.carte-heros:active { transform: scale(.97); }
+
+/* Le héros en service : bordure à sa couleur, fond teinté, et une
+   pastille cochée. Trois signaux pour la même information, dont un
+   qui ne dépend pas de la couleur. */
+.carte-heros.choisi {
+  border-color: var(--teinte-heros, var(--accent));
+  background:
+    linear-gradient(0deg,
+      color-mix(in srgb, var(--teinte-heros, var(--accent)) 12%, transparent),
+      color-mix(in srgb, var(--teinte-heros, var(--accent)) 12%, transparent)),
+    var(--surface);
+}
+
+.carte-heros-dessin {
+  display: block;
+  line-height: 0;
+  overflow: visible;
+}
+
+.carte-heros-nom {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+
+.carte-heros-quoi {
+  font-size: .9rem;
+  opacity: .78;
+  line-height: 1.35;
+}
+
+/* La coche n'apparaît que sur le héros en service. */
+.carte-heros-marque {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--teinte-heros, var(--accent));
+  color: #fff;
+  font-size: .95rem;
+  font-weight: 700;
+  opacity: 0;
+  transform: scale(.4);
+  transition: opacity .18s, transform .18s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.carte-heros.choisi .carte-heros-marque { opacity: 1; transform: scale(1); }
+
+/* Le héros du bandeau est devenu un bouton : on lui retire
+   l'apparence d'un bouton de formulaire, on lui garde la zone
+   tactile et le halo de focus. */
+.hud-filou {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  border-radius: 18px;
+  transition: transform .18s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.hud-filou:active { transform: scale(.95); }
+
+html[data-animations="non"] .carte-heros,
+html[data-animations="non"] .carte-heros-marque,
+html[data-animations="non"] .hud-filou { transition: none; }
+
+html[data-animations="non"] .carte-heros:active,
+html[data-animations="non"] .hud-filou:active { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .carte-heros, .carte-heros-marque, .hud-filou { transition: none; }
+}
+
+/* L'en-tête de l'écran de choix : pas de carte, pas de cadre. Une
+   phrase et un haut-parleur, puis on laisse la place aux héros. */
+.entete-heros { margin-bottom: 14px; }
+.entete-heros .petit { margin: 6px 0 0; }

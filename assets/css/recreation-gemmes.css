@@ -1,0 +1,613 @@
+/* ---------------------------------------------------------------
+   recreation-gemmes.css — « Les gemmes du Royaume ».
+
+   Deux principes.
+
+   1. TOUT LE MOUVEMENT EST ICI. Le JavaScript ne fait que poser
+      deux nombres par gemme (--gm-c, la colonne, et --gm-r, la
+      ligne) ; c'est cette feuille qui fait le voyage, la chute, le
+      rebond et l'explosion. Un téléphone sait animer quarante-neuf
+      `transform` en même temps ; il ne sait pas redessiner
+      quarante-neuf gemmes image par image.
+
+   2. AUCUNE COULEUR EN DUR DANS LES DESSINS. Les six gemmes
+      prennent leurs trois tons (clair, corps, foncé) dans des
+      variables déclarées en clair ET en sombre. Les dégradés SVG
+      vivent une seule fois dans la page et pointent vers ces mêmes
+      variables : changer de fond de lecture suffit à rhabiller les
+      quarante-neuf gemmes.
+
+   La règle de coupure des animations est en bas, et elle couvre
+   chaque animation déclarée ici. Animations coupées, le jeu reste
+   entièrement jouable : les gemmes sautent d'une case à l'autre au
+   lieu d'y glisser, et c'est tout.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Teinte du jeu : elle ne porte jamais de texte, seulement une
+     pastille et un liseré. */
+  --jeu-gemmes: #a63a7e;
+
+  /* Les six gemmes. L'ordre est celui du code : rond rouge,
+     losange bleu, goutte verte, étoile jaune, hexagone violet,
+     cœur rose. Forme ET couleur changent à chaque fois, pour qu'un
+     enfant daltonien lise la grille par la silhouette. */
+  --gm-0-clair: #ff9aa2;  --gm-0: #e0384a;  --gm-0-fonce: #8e1726;
+  --gm-1-clair: #96c0ff;  --gm-1: #2e6fd4;  --gm-1-fonce: #163a7c;
+  --gm-2-clair: #8ce7b0;  --gm-2: #15a05c;  --gm-2-fonce: #0a5431;
+  --gm-3-clair: #ffdd86;  --gm-3: #e8a208;  --gm-3-fonce: #8a5a06;
+  --gm-4-clair: #d2abf5;  --gm-4: #8a4fc8;  --gm-4-fonce: #4c1f78;
+  --gm-5-clair: #ffb0d4;  --gm-5: #e05597;  --gm-5-fonce: #8d2057;
+
+  /* Matière : le lustre (reflets et éclats), le creux (facettes à
+     l'ombre) et l'ombre portée sous la pierre. */
+  --gm-lustre: #ffffff;
+  --gm-creux: #1d1526;
+  --gm-ombre: rgba(60, 40, 30, 0.26);
+  --gm-alveole: rgba(90, 70, 50, 0.08);
+  --gm-alveole-2: rgba(90, 70, 50, 0.16);
+  --gm-voile: rgba(92, 72, 48, 0.12);
+  --gm-ecrin-haut: rgba(255, 255, 255, 0.5);
+  --gm-creusee: rgba(90, 70, 50, 0.18);
+  --gm-halo: rgba(166, 58, 126, 0.16);
+
+  /* Cible tactile du pied de page : jamais sous 62 px. */
+  --gm-cible: 62px;
+  --gm-marge: 7px;
+}
+
+/* Fond sombre : les corps montent en clarté pour garder le même
+   écart avec le fond, et l'ombre portée devient vraiment noire. */
+html[data-fond="sombre"] {
+  --jeu-gemmes: #e78cc1;
+  --gm-0-clair: #ffb4b9;  --gm-0: #ef5b68;  --gm-0-fonce: #7e1c29;
+  --gm-1-clair: #b5d6ff;  --gm-1: #5a93e8;  --gm-1-fonce: #20417d;
+  --gm-2-clair: #9fecc0;  --gm-2: #35bb75;  --gm-2-fonce: #115635;
+  --gm-3-clair: #ffe7a8;  --gm-3: #f2b53a;  --gm-3-fonce: #7a5010;
+  --gm-4-clair: #decaf9;  --gm-4: #a877e0;  --gm-4-fonce: #4f2a7c;
+  --gm-5-clair: #ffc8e0;  --gm-5: #ef7fb3;  --gm-5-fonce: #8a2d5c;
+  --gm-lustre: #fffdf8;
+  --gm-creux: #090511;
+  --gm-ombre: rgba(0, 0, 0, 0.45);
+  --gm-alveole: rgba(0, 0, 0, 0.24);
+  --gm-alveole-2: rgba(0, 0, 0, 0.36);
+  --gm-voile: rgba(0, 0, 0, 0.3);
+  --gm-ecrin-haut: rgba(255, 255, 255, 0.07);
+  --gm-creusee: rgba(0, 0, 0, 0.5);
+  --gm-halo: rgba(231, 140, 193, 0.22);
+}
+
+/* Appareil en mode sombre avant tout choix de fond : même habillage. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --jeu-gemmes: #e78cc1;
+    --gm-0-clair: #ffb4b9;  --gm-0: #ef5b68;  --gm-0-fonce: #7e1c29;
+    --gm-1-clair: #b5d6ff;  --gm-1: #5a93e8;  --gm-1-fonce: #20417d;
+    --gm-2-clair: #9fecc0;  --gm-2: #35bb75;  --gm-2-fonce: #115635;
+    --gm-3-clair: #ffe7a8;  --gm-3: #f2b53a;  --gm-3-fonce: #7a5010;
+    --gm-4-clair: #decaf9;  --gm-4: #a877e0;  --gm-4-fonce: #4f2a7c;
+    --gm-5-clair: #ffc8e0;  --gm-5: #ef7fb3;  --gm-5-fonce: #8a2d5c;
+    --gm-lustre: #fffdf8;
+    --gm-creux: #090511;
+    --gm-ombre: rgba(0, 0, 0, 0.45);
+    --gm-alveole: rgba(0, 0, 0, 0.24);
+    --gm-alveole-2: rgba(0, 0, 0, 0.36);
+    --gm-voile: rgba(0, 0, 0, 0.3);
+    --gm-ecrin-haut: rgba(255, 255, 255, 0.07);
+    --gm-creusee: rgba(0, 0, 0, 0.5);
+    --gm-halo: rgba(231, 140, 193, 0.22);
+  }
+}
+
+/* ------------------------- ossature ------------------------- */
+
+.gm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gm-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.gm-consigne {
+  margin: 0;
+  font-weight: 600;
+  max-width: var(--largeur-ligne);
+}
+
+/* L'annonce des lecteurs d'écran est aussi lisible à l'œil : c'est
+   le fil de ce qui se passe, pas un texte caché. */
+.gm-annonce {
+  margin: 0;
+  min-height: calc(1em * var(--interligne));
+  color: var(--texte-doux);
+  max-width: var(--largeur-ligne);
+}
+
+.gm-pied {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.gm-pied > .btn {
+  flex: 1 1 12ch;
+  width: auto;
+  min-height: var(--gm-cible);
+}
+.gm-quitter, .gm-btn-melange { background: var(--surface-2); }
+
+/* ------------------------- l'objectif ------------------------- */
+/* Il avance et ne redescend jamais. Dix alignements font un trésor,
+   qu'il en ait fallu douze coups ou deux cents : rien ici ne peut
+   échouer, donc rien ici ne compte le temps. */
+
+.gm-objectif {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 8px 12px;
+  border: 2px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  box-shadow: var(--ombre);
+}
+.gm-tresors {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+  min-height: 30px;
+}
+.gm-tresor {
+  position: relative;
+  display: block;
+  width: 28px;
+  height: 28px;
+}
+.gm-tresor > svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.gm-tresor-plus {
+  font-weight: 700;
+  color: var(--texte);
+  margin-left: 4px;
+}
+.gm-tresor-vide {
+  color: var(--texte-doux);
+  font-size: 0.85em;
+}
+
+.gm-ligne-jauge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 14ch;
+}
+.gm-jauge {
+  position: relative;
+  flex: 1 1 auto;
+  height: 16px;
+  min-width: 70px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  overflow: hidden;
+}
+.gm-jauge-pleine {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 8px;
+  background: var(--jeu-gemmes);
+  transition: width 320ms cubic-bezier(.22, 1, .36, 1);
+}
+.gm-jauge-txt {
+  font-weight: 700;
+  font-size: 0.9em;
+  white-space: nowrap;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
+/* ------------------------- le plateau ------------------------- */
+
+.gm-plateau {
+  --gm-col: 7;
+  --gm-lig: 7;
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  aspect-ratio: var(--gm-col) / var(--gm-lig);
+  border: 3px solid var(--bordure);
+  border-radius: calc(var(--rayon) + 8px);
+  /* Un écrin, pas un tableau : le plateau est plus sombre que la page
+     et creusé en son centre, pour que les gemmes avancent devant. */
+  background:
+    radial-gradient(120% 90% at 50% 8%, var(--gm-ecrin-haut), transparent 70%),
+    linear-gradient(var(--gm-voile), var(--gm-voile)),
+    var(--surface-2);
+  box-shadow: var(--ombre), inset 0 3px 10px var(--gm-creusee);
+  /* Le glissé du doigt sert à échanger deux gemmes : il ne doit pas
+     faire défiler la page sous la main de l'enfant. */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+.gm-defs-hote, .gm-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Les alvéoles : chaque gemme est sertie dans un creux. C'est ce qui
+   fait un plateau de jeu plutôt qu'un tableau de cases. */
+.gm-socles,
+.gm-couche,
+.gm-effets,
+.gm-damier {
+  position: absolute;
+  inset: var(--gm-marge);
+}
+.gm-socles, .gm-damier {
+  display: grid;
+  grid-template-columns: repeat(var(--gm-col), 1fr);
+  grid-template-rows: repeat(var(--gm-lig), 1fr);
+}
+.gm-socle {
+  margin: 4%;
+  border-radius: 34%;
+  background: var(--gm-alveole);
+  box-shadow: inset 0 2px 4px var(--gm-creusee);
+}
+/* Sept colonnes : une case sur deux suffit à dessiner un damier. */
+.gm-socle:nth-child(odd) { background: var(--gm-alveole-2); }
+
+.gm-effets { pointer-events: none; }
+
+/* ------------------------- une gemme ------------------------- */
+/* Position : deux nombres, et la transition fait le reste. La durée
+   grandit avec la hauteur de chute, et le ressort de sortie donne le
+   petit rebond à l'arrivée. */
+
+.gm-gemme {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(100% / var(--gm-col));
+  height: calc(100% / var(--gm-lig));
+  transform: translate(calc(var(--gm-c, 0) * 100%), calc(var(--gm-r, 0) * 100%));
+  transition-property: transform;
+  transition-duration: calc(150ms + var(--gm-d, 1) * 42ms);
+  transition-timing-function: cubic-bezier(.34, 1.56, .64, 1);
+  will-change: transform;
+}
+/* Un échange qui ne donne rien revient en arrière sans ressort :
+   l'enfant n'a rien fait de mal, rien ne doit claquer. */
+.gm-gemme.gm-retour {
+  transition-duration: 280ms;
+  transition-timing-function: cubic-bezier(.22, 1, .36, 1);
+}
+
+.gm-gemme > svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  /* L'ombre portée dépasse légèrement du repère : on ne la coupe pas. */
+  overflow: visible;
+  transition: transform 180ms cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* La matière. Facettes claires et sombres en alternance autour de la
+   table centrale : c'est ce qui fait une pierre taillée et non un
+   rond de couleur. */
+.gm-ombre path { fill: var(--gm-ombre); }
+.gm-fac-clair { fill: var(--gm-lustre); opacity: 0.28; }
+.gm-fac-sombre { fill: var(--gm-creux); opacity: 0.30; }
+.gm-table { opacity: 0.96; }
+/* L'arête de la table : le trait clair qui fait dire « ça brille ». */
+.gm-table-bord {
+  fill: none;
+  stroke: var(--gm-lustre);
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  opacity: 0.42;
+}
+.gm-bord {
+  fill: none;
+  stroke: var(--gm-bord);
+  stroke-width: 3.4;
+  stroke-linejoin: round;
+}
+.gm-eclat { fill: var(--gm-lustre); opacity: 0.78; }
+.gm-etincelle { fill: var(--gm-lustre); opacity: 0.55; }
+
+/* Les six habillages. Le liseré prend le ton foncé de la gemme :
+   c'est lui qui la détache du fond, y compris du fond sombre. */
+.gm-t0 { --gm-bord: var(--gm-0-fonce); }
+.gm-t1 { --gm-bord: var(--gm-1-fonce); }
+.gm-t2 { --gm-bord: var(--gm-2-fonce); }
+.gm-t3 { --gm-bord: var(--gm-3-fonce); }
+.gm-t4 { --gm-bord: var(--gm-4-fonce); }
+.gm-t5 { --gm-bord: var(--gm-5-fonce); }
+
+/* Les dégradés, déclarés une seule fois dans la page. */
+#gm-grad-0 .gm-a, #gm-tab-0 .gm-a { stop-color: var(--gm-0-clair); }
+#gm-grad-0 .gm-b, #gm-tab-0 .gm-b { stop-color: var(--gm-0); }
+#gm-grad-0 .gm-c { stop-color: var(--gm-0-fonce); }
+#gm-grad-1 .gm-a, #gm-tab-1 .gm-a { stop-color: var(--gm-1-clair); }
+#gm-grad-1 .gm-b, #gm-tab-1 .gm-b { stop-color: var(--gm-1); }
+#gm-grad-1 .gm-c { stop-color: var(--gm-1-fonce); }
+#gm-grad-2 .gm-a, #gm-tab-2 .gm-a { stop-color: var(--gm-2-clair); }
+#gm-grad-2 .gm-b, #gm-tab-2 .gm-b { stop-color: var(--gm-2); }
+#gm-grad-2 .gm-c { stop-color: var(--gm-2-fonce); }
+#gm-grad-3 .gm-a, #gm-tab-3 .gm-a { stop-color: var(--gm-3-clair); }
+#gm-grad-3 .gm-b, #gm-tab-3 .gm-b { stop-color: var(--gm-3); }
+#gm-grad-3 .gm-c { stop-color: var(--gm-3-fonce); }
+#gm-grad-4 .gm-a, #gm-tab-4 .gm-a { stop-color: var(--gm-4-clair); }
+#gm-grad-4 .gm-b, #gm-tab-4 .gm-b { stop-color: var(--gm-4); }
+#gm-grad-4 .gm-c { stop-color: var(--gm-4-fonce); }
+#gm-grad-5 .gm-a, #gm-tab-5 .gm-a { stop-color: var(--gm-5-clair); }
+#gm-grad-5 .gm-b, #gm-tab-5 .gm-b { stop-color: var(--gm-5); }
+#gm-grad-5 .gm-c { stop-color: var(--gm-5-fonce); }
+
+/* ------------------------- les pouvoirs ------------------------- */
+/* Quatre alignées font un éclair (toute la ligne et toute la
+   colonne), cinq font une étoile (une zone de cinq sur cinq). Le
+   dessin dit lequel : une croix d'éclairs, ou un anneau. La
+   respiration est à 0,6 Hz — très loin des 3 Hz interdits. */
+
+.gm-marque { pointer-events: none; }
+.gm-marque-fond {
+  fill: var(--gm-creux);
+  opacity: 0.35;
+}
+.gm-marque-trait {
+  fill: var(--gm-lustre);
+  opacity: 0.92;
+}
+.gm-marque-anneau, .gm-marque-anneau2 {
+  fill: none;
+  stroke: var(--gm-lustre);
+  stroke-width: 5;
+  opacity: 0.8;
+}
+.gm-marque-anneau2 { stroke-width: 3; stroke-dasharray: 7 9; opacity: 0.7; }
+.gm-spe .gm-marque { animation: gm-respire 1700ms ease-in-out infinite; }
+@keyframes gm-respire {
+  0%, 100% { opacity: 0.7; transform: scale(0.9) rotate(0deg); }
+  50%      { opacity: 1;   transform: scale(1.05) rotate(8deg); }
+}
+
+/* Naissance d'une gemme spéciale : un ressort court, au moment où
+   elle est gagnée. */
+.gm-naissance > svg { animation: gm-naissance 480ms cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes gm-naissance {
+  0%   { transform: scale(0.45) rotate(-20deg); }
+  60%  { transform: scale(1.22) rotate(6deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ------------------------- choix et appui ------------------------- */
+
+.gm-choisie > svg { transform: scale(1.14); }
+.gm-choisie .gm-svg { animation: gm-sautille 900ms ease-in-out infinite; }
+@keyframes gm-sautille {
+  0%, 100% { transform: scale(1.14) translateY(0); }
+  50%      { transform: scale(1.18) translateY(-4%); }
+}
+
+.gm-case {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  border-radius: 28%;
+  cursor: pointer;
+  /* La case est le seul calque qui reçoit les appuis : les gemmes,
+     elles, bougent sans jamais voler un clic. */
+  touch-action: none;
+}
+.gm-case:focus-visible {
+  outline: 4px solid var(--accent);
+  outline-offset: -4px;
+}
+.gm-case-choisie {
+  background: var(--gm-halo);
+  box-shadow: inset 0 0 0 4px var(--jeu-gemmes);
+}
+
+/* ------------------------- explosion ------------------------- */
+
+.gm-pop > svg { animation: gm-pop 300ms cubic-bezier(.22, 1, .36, 1) forwards; }
+@keyframes gm-pop {
+  0%   { transform: scale(1); opacity: 1; }
+  38%  { transform: scale(1.34) rotate(-6deg); opacity: 1; }
+  100% { transform: scale(0.12) rotate(24deg); opacity: 0; }
+}
+
+/* Le flash : très court, jamais clignotant. */
+.gm-flash {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(100% / var(--gm-col));
+  height: calc(100% / var(--gm-lig));
+  transform: translate(calc(var(--gm-c, 0) * 100%), calc(var(--gm-r, 0) * 100%));
+  background: radial-gradient(circle at 50% 45%, var(--gm-lustre) 0%, transparent 68%);
+  opacity: 0;
+  animation: gm-flash 260ms ease-out forwards;
+}
+@keyframes gm-flash {
+  0%   { opacity: 0; }
+  22%  { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+/* Les particules partent du doigt de l'enfant, et prennent la
+   couleur de la gemme qui vient d'éclater. */
+.gm-particule {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  left: calc((var(--gm-c, 0) + 0.5) * 100% / var(--gm-col));
+  top: calc((var(--gm-r, 0) + 0.5) * 100% / var(--gm-lig));
+  border-radius: 50%;
+  opacity: 0;
+  animation: gm-particule 560ms cubic-bezier(.22, 1, .36, 1) var(--gm-ret, 0ms) forwards;
+}
+@keyframes gm-particule {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--gm-dx, 0), var(--gm-dy, 0)) scale(0.25); opacity: 0; }
+}
+.gm-pt0 { background: var(--gm-0); }
+.gm-pt1 { background: var(--gm-1); }
+.gm-pt2 { background: var(--gm-2); }
+.gm-pt3 { background: var(--gm-3); }
+.gm-pt4 { background: var(--gm-4); }
+.gm-pt5 { background: var(--gm-5); }
+
+/* L'onde d'une gemme spéciale : on voit le pouvoir partir, donc on
+   comprend ce qu'il fait sans avoir rien lu. */
+.gm-onde { position: absolute; opacity: 0; }
+.gm-onde-ligne {
+  left: 0;
+  width: 100%;
+  height: calc(100% / var(--gm-lig));
+  top: calc(var(--gm-r, 0) * 100% / var(--gm-lig));
+  background: linear-gradient(90deg, transparent, var(--gm-lustre) 50%, transparent);
+  animation: gm-onde-h 460ms ease-out forwards;
+}
+.gm-onde-colonne {
+  top: 0;
+  height: 100%;
+  width: calc(100% / var(--gm-col));
+  left: calc(var(--gm-c, 0) * 100% / var(--gm-col));
+  background: linear-gradient(180deg, transparent, var(--gm-lustre) 50%, transparent);
+  animation: gm-onde-v 460ms ease-out forwards;
+}
+@keyframes gm-onde-h {
+  0%   { opacity: 0; transform: scaleX(0.15); }
+  25%  { opacity: 0.9; }
+  100% { opacity: 0; transform: scaleX(1); }
+}
+@keyframes gm-onde-v {
+  0%   { opacity: 0; transform: scaleY(0.15); }
+  25%  { opacity: 0.9; }
+  100% { opacity: 0; transform: scaleY(1); }
+}
+.gm-onde-zone {
+  width: calc(500% / var(--gm-col));
+  height: calc(500% / var(--gm-lig));
+  left: calc((var(--gm-c, 0) + 0.5) * 100% / var(--gm-col));
+  top: calc((var(--gm-r, 0) + 0.5) * 100% / var(--gm-lig));
+  margin-left: calc(-250% / var(--gm-col));
+  margin-top: calc(-250% / var(--gm-lig));
+  border: 5px solid var(--gm-lustre);
+  border-radius: 50%;
+  animation: gm-onde-z 540ms cubic-bezier(.22, 1, .36, 1) forwards;
+}
+@keyframes gm-onde-z {
+  0%   { opacity: 0.95; transform: scale(0.2); }
+  100% { opacity: 0; transform: scale(1.02); }
+}
+
+/* Le compteur de cascade. Il monte, il ne descend pas, et il
+   n'ouvre droit à rien : c'est juste beau. */
+.gm-combo {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%) scale(0.4);
+  opacity: 0;
+  pointer-events: none;
+  font-weight: 800;
+  font-size: 2.6rem;
+  letter-spacing: normal;
+  word-spacing: normal;
+  color: var(--gm-lustre);
+  text-shadow: 0 3px 0 var(--gm-creux), 0 0 18px var(--jeu-gemmes);
+}
+.gm-combo.gm-combo-vu { animation: gm-combo 880ms cubic-bezier(.34, 1.56, .64, 1) forwards; }
+@keyframes gm-combo {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+  28%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+  70%  { opacity: 1; transform: translate(-50%, -62%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -80%) scale(0.95); }
+}
+
+/* Le remélange se voit : la grille respire, puis tout se repose.
+   Personne n'est en faute, donc rien ne secoue. */
+.gm-couche {
+  transition: transform 300ms cubic-bezier(.22, 1, .36, 1);
+}
+.gm-couche.gm-melange { transform: scale(0.9) rotate(-2deg); }
+
+/* =====================================================================
+   ANIMATIONS COUPÉES
+   Réglage parent, ou préférence de l'appareil. Tout s'arrête et le
+   jeu reste entièrement jouable : les gemmes sautent à leur case au
+   lieu d'y glisser, les gemmes spéciales restent bien visibles (leur
+   marque ne respire plus, elle est simplement là), et les particules
+   ne sont même pas fabriquées — le JavaScript ne les crée pas.
+   ===================================================================== */
+
+html[data-animations="non"] .gm-gemme,
+html[data-animations="non"] .gm-gemme > svg,
+html[data-animations="non"] .gm-couche,
+html[data-animations="non"] .gm-jauge-pleine {
+  transition: none !important;
+}
+html[data-animations="non"] .gm-pop > svg,
+html[data-animations="non"] .gm-naissance > svg,
+html[data-animations="non"] .gm-choisie .gm-svg,
+html[data-animations="non"] .gm-spe .gm-marque,
+html[data-animations="non"] .gm-combo,
+html[data-animations="non"] .gm-flash,
+html[data-animations="non"] .gm-particule,
+html[data-animations="non"] .gm-onde {
+  animation: none !important;
+}
+html[data-animations="non"] .gm-spe .gm-marque {
+  opacity: 1 !important;
+  transform: none !important;
+}
+html[data-animations="non"] .gm-choisie > svg { transform: scale(1.14) !important; }
+html[data-animations="non"] .gm-combo,
+html[data-animations="non"] .gm-flash,
+html[data-animations="non"] .gm-particule,
+html[data-animations="non"] .gm-onde { opacity: 0 !important; }
+html[data-animations="non"] .gm-couche.gm-melange { transform: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gm-gemme, .gm-gemme > svg, .gm-couche, .gm-jauge-pleine { transition: none !important; }
+  .gm-pop > svg, .gm-naissance > svg, .gm-choisie .gm-svg, .gm-spe .gm-marque,
+  .gm-combo, .gm-flash, .gm-particule, .gm-onde { animation: none !important; }
+  .gm-spe .gm-marque { opacity: 1 !important; transform: none !important; }
+  .gm-choisie > svg { transform: scale(1.14) !important; }
+  .gm-combo, .gm-flash, .gm-particule, .gm-onde { opacity: 0 !important; }
+  .gm-couche.gm-melange { transform: none !important; }
+}
+
+/* =====================================================================
+   PETITS ÉCRANS ET GROS RÉGLAGES
+   Le texte peut être poussé à 30 px et l'espacement au maximum : rien
+   ne doit déborder sur le côté.
+   ===================================================================== */
+
+@media (max-width: 420px) {
+  .gm-plateau { --gm-marge: 5px; }
+  .gm-combo { font-size: 2.1rem; }
+  .gm-tresor { width: 24px; height: 24px; }
+  .gm-pied > .btn { flex: 1 1 100%; }
+}

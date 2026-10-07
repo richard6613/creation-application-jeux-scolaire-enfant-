@@ -1,0 +1,254 @@
+/* ---------------------------------------------------------------
+   heros-renard.css — les couleurs de Roux, et sa vie au repos.
+
+   Mêmes deux principes que filou.css :
+
+   1. Le mouvement est en CSS, jamais en JavaScript. Une règle CSS
+      se coupe net sous html[data-animations="non"] ; une boucle de
+      minuteries, non. Roux immobile reste exactement aussi
+      lisible : son dessin ne doit rien à ses animations.
+
+   2. On n'anime jamais un groupe qui porte déjà un attribut
+      transform — la propriété CSS l'écraserait et le renard se
+      démonterait. Les classes animées de renard.js sont toutes
+      posées sur des groupes nus, exprès.
+
+   PARTICULARITÉ : Roux est peint EN DEUX PASSES (halo clair, puis
+   contour sombre). Chaque classe animée existe donc en double dans
+   le SVG. Les deux copies reçoivent les mêmes variables et les
+   mêmes durées, donc elles bougent ensemble — si elles se
+   désynchronisaient, le halo se décollerait du dessin.
+   --------------------------------------------------------------- */
+
+/* ------------------------- Les nuances -------------------------
+   --renard-halo est le trait clair de la première passe. Sur les
+   cinq fonds clairs il se confond presque avec le papier et ne se
+   voit pas ; sur le fond sombre, c'est lui qui détache Roux. C'est
+   pour ça qu'il reste clair dans les deux thèmes. */
+:root {
+  --heros-renard: #d2762a;
+
+  --renard-contour: #101a28;
+  --renard-halo: #f7e9d2;
+  --renard-poil: #f4862f;
+  --renard-poil-clair: #ff9f4a;
+  --renard-poil-fonce: #ce5c14;
+  --renard-poil-nuit: #a8410a;
+  --renard-creme: #f9edd9;
+  --renard-capuche: #3a6796;
+  --renard-capuche-clair: #5f94c8;
+  --renard-capuche-fonce: #24456a;
+  --renard-capuche-ombre: #0d1726;
+  --renard-echarpe: #2bc4b4;
+  --renard-echarpe-fonce: #1a9a8f;
+  --renard-echarpe-nuit: #157f76;
+  --renard-eclat: #8fe6dc;
+  --renard-tunique: #2a5080;
+  --renard-tunique-clair: #366595;
+  --renard-tunique-fonce: #1c3758;
+  --renard-cuir: #9a6336;
+  --renard-cuir-clair: #c58a4e;
+  --renard-cuir-fonce: #6e4322;
+  --renard-or: #ffc24b;
+  --renard-langue: #e4635e;
+  --renard-fond-icone: #16233a;
+  --renard-fond-icone-2: #24456a;
+}
+
+/* Fond sombre : les bleus et les bruns remontent. Le bleu nuit de
+   la capuche tombait sous 2:1 sur l'anthracite — la capuche, qui
+   est la moitié de sa silhouette, devenait un trou. */
+:root[data-fond="sombre"] {
+  --heros-renard: #f0a059;
+  --renard-poil: #ff9440;
+  --renard-poil-clair: #ffb267;
+  --renard-poil-fonce: #e06e20;
+  --renard-poil-nuit: #be520e;
+  --renard-creme: #fbf2e2;
+  --renard-capuche: #4e80b4;
+  --renard-capuche-clair: #7fb0dd;
+  --renard-capuche-fonce: #35618e;
+  --renard-capuche-ombre: #16253a;
+  --renard-echarpe: #3fd9c8;
+  --renard-echarpe-fonce: #27b0a4;
+  --renard-echarpe-nuit: #1e948a;
+  --renard-eclat: #b6f2ea;
+  --renard-tunique: #3c699f;
+  --renard-tunique-clair: #4e7fb4;
+  --renard-tunique-fonce: #2b4d78;
+  --renard-cuir: #b47b47;
+  --renard-cuir-clair: #d9a264;
+  --renard-cuir-fonce: #8a5730;
+  --renard-or: #ffd06a;
+  --renard-langue: #ee7c77;
+  --renard-fond-icone-2: #3f74a8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --heros-renard: #f0a059;
+    --renard-poil: #ff9440;
+    --renard-poil-clair: #ffb267;
+    --renard-poil-fonce: #e06e20;
+    --renard-poil-nuit: #be520e;
+    --renard-creme: #fbf2e2;
+    --renard-capuche: #4e80b4;
+    --renard-capuche-clair: #7fb0dd;
+    --renard-capuche-fonce: #35618e;
+    --renard-capuche-ombre: #16253a;
+    --renard-echarpe: #3fd9c8;
+    --renard-echarpe-fonce: #27b0a4;
+    --renard-echarpe-nuit: #1e948a;
+    --renard-eclat: #b6f2ea;
+    --renard-tunique: #3c699f;
+    --renard-tunique-clair: #4e7fb4;
+    --renard-tunique-fonce: #2b4d78;
+    --renard-cuir: #b47b47;
+    --renard-cuir-clair: #d9a264;
+    --renard-cuir-fonce: #8a5730;
+    --renard-or: #ffd06a;
+    --renard-langue: #ee7c77;
+    --renard-fond-icone-2: #3f74a8;
+  }
+}
+
+.heros-renard { display: block; flex: 0 0 auto; }
+.heros-icone-renard { display: block; }
+
+/* ------------------------- Roux vivant -------------------------
+   La queue ondule, le pan de l'écharpe flotte, une oreille tourne
+   de temps en temps, il cligne des yeux. Tout est lent : la
+   respiration dure quatre secondes, le clignement arrive toutes
+   les cinq à dix secondes, et chaque Roux tire ses propres durées
+   (voir renard.js) — deux renards parfaitement synchrones font
+   mécanique. */
+
+.heros-renard .rn-queue,
+.heros-renard .rn-echarpe,
+.heros-renard .rn-oreilles,
+.heros-renard .rn-oeil,
+.heros-renard .rn-tunique,
+.heros-renard .rn-tete,
+.heros-renard .rn-eclat,
+.heros-renard .rn-monte {
+  /* Sans fill-box, l'origine se calculerait depuis le coin du cadre
+     entier et le mouvement partirait de travers. */
+  transform-box: fill-box;
+}
+
+/* La queue est attachée à droite, près des hanches. */
+.heros-renard .rn-queue { transform-origin: 96% 62%; }
+/* L'écharpe part du cou, c'est-à-dire du bord droit du pan. */
+.heros-renard .rn-echarpe { transform-origin: 98% 24%; }
+.heros-renard .rn-oreilles { transform-origin: 50% 100%; }
+.heros-renard .rn-oeil { transform-origin: 50% 50%; }
+.heros-renard .rn-tunique { transform-origin: 50% 100%; }
+.heros-renard .rn-tete { transform-origin: 46% 92%; }
+.heros-renard .rn-eclat,
+.heros-renard .rn-monte { transform-origin: 50% 50%; }
+
+@keyframes rn-queue-onde {
+  0%, 100% { transform: rotate(0deg); }
+  30%      { transform: rotate(6deg); }
+  65%      { transform: rotate(-4.5deg); }
+}
+@keyframes rn-echarpe-vole {
+  0%, 100% { transform: rotate(0deg); }
+  28%      { transform: rotate(-5deg) translateY(-1%); }
+  62%      { transform: rotate(4deg) translateY(1%); }
+}
+/* L'oreille ne tourne pas sans arrêt : elle attend, puis tressaille
+   une fois. C'est ce creux qui fait vivant. */
+@keyframes rn-oreille-tourne {
+  0%, 82%, 100% { transform: rotate(0deg); }
+  87%           { transform: rotate(-4deg); }
+  93%           { transform: rotate(2.5deg); }
+}
+@keyframes rn-respire {
+  0%, 100% { transform: scale(1, 1); }
+  50%      { transform: scale(1.015, 0.985); }
+}
+@keyframes rn-tete-vit {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  35%      { transform: rotate(1.2deg) translateY(-0.5%); }
+  70%      { transform: rotate(-1deg) translateY(0.3%); }
+}
+/* 94 % du cycle les yeux sont ouverts : un seul battement court. */
+@keyframes rn-cligne {
+  0%, 92%, 100% { transform: scaleY(1); }
+  94%           { transform: scaleY(0.1); }
+  96%           { transform: scaleY(1); }
+}
+@keyframes rn-scintille {
+  0%, 100% { transform: scale(0.7) rotate(0deg); opacity: 0.45; }
+  50%      { transform: scale(1.14) rotate(24deg); opacity: 1; }
+}
+@keyframes rn-monte {
+  0%   { transform: translateY(8px) scale(0.6); opacity: 0; }
+  30%  { opacity: 0.95; }
+  100% { transform: translateY(-8px) scale(1.05); opacity: 0; }
+}
+
+html:not([data-animations="non"]) .heros-renard .rn-queue {
+  animation: rn-queue-onde var(--rn-queue, 5s) ease-in-out infinite;
+  animation-delay: var(--rn-queue-retard, 0s);
+}
+html:not([data-animations="non"]) .heros-renard .rn-echarpe {
+  animation: rn-echarpe-vole var(--rn-queue, 5s) ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-renard .rn-oreilles {
+  animation: rn-oreille-tourne 7.6s ease-in-out infinite;
+  animation-delay: var(--rn-cligne-retard, 0s);
+}
+html:not([data-animations="non"]) .heros-renard .rn-tunique {
+  animation: rn-respire var(--rn-resp, 4s) ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-renard .rn-tete {
+  animation: rn-tete-vit 6.8s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-renard .rn-oeil {
+  animation: rn-cligne var(--rn-cligne, 7s) ease-in-out infinite;
+  animation-delay: var(--rn-cligne-retard, 0s);
+}
+html:not([data-animations="non"]) .heros-renard .rn-eclat {
+  animation: rn-scintille 2.4s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-renard .rn-eclat-2 { animation-delay: 0.5s; }
+html:not([data-animations="non"]) .heros-renard .rn-eclat-3 { animation-delay: 1s; }
+html:not([data-animations="non"]) .heros-renard .rn-monte {
+  animation: rn-monte 3.6s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-renard .rn-monte-2 { animation-delay: 0.6s; }
+html:not([data-animations="non"]) .heros-renard .rn-monte-3 { animation-delay: 1.2s; }
+
+/* Il dort : plus rien ne cligne, il respire deux fois plus lentement
+   et sa tête ne cherche plus rien. */
+html:not([data-animations="non"]) .heros-renard.rn-dort .rn-tunique { animation-duration: 7.2s; }
+html:not([data-animations="non"]) .heros-renard.rn-dort .rn-queue { animation-duration: 9s; }
+html:not([data-animations="non"]) .heros-renard.rn-dort .rn-tete { animation: none; }
+html:not([data-animations="non"]) .heros-renard.rn-dort .rn-oreilles { animation: none; }
+
+/* Il réfléchit : rien d'autre que les bulles. Une tête qui remue
+   pendant qu'un enfant déchiffre est une gêne, pas un cadeau. */
+html:not([data-animations="non"]) .heros-renard.rn-reflechit .rn-tete { animation: none; }
+
+/* ------------------------- La coupure, pour de vrai -------------------------
+   On annule l'animation, JAMAIS la transformation : « transform: none »
+   écraserait les attributs transform du dessin (le cadrage, la tête
+   posée sur le corps, les pattes) et démonterait Roux. */
+html[data-animations="non"] .heros-renard,
+html[data-animations="non"] .heros-renard *,
+html[data-animations="non"] .heros-icone-renard,
+html[data-animations="non"] .heros-icone-renard * {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .heros-renard,
+  .heros-renard *,
+  .heros-icone-renard,
+  .heros-icone-renard * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

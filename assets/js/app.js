@@ -36,7 +36,8 @@ Jeu.App = (function () {
     if (ecran === 'accueil') recreOuverte = false;
     if (ecran === 'accueil') { accueil(z); majBarre('Mon royaume', false); }
     else if (ecran === 'tous') { tousLesJeux(z); majBarre('Tous les jeux', true); }
-    else if (ecran === 'filou') { garderobe(z); majBarre('Les affaires de Filou', true); }
+    else if (ecran === 'filou') { garderobe(z); majBarre('Les affaires de ' + Jeu.Compagnon.nom(), true); }
+    else if (ecran === 'heros') { choixHeros(z); majBarre('Mon héros', true); }
     else if (ecran === 'quetes') { quetes(z); majBarre('Mes missions', true); }
     else if (ecran === 'recreation') { salleDeJeux(z); majBarre('La salle de jeux', true); }
     else if (ecran === 'recreJeu') { jouerRecreation(z, donnee); majBarre(donnee.nom, true); }
@@ -186,8 +187,20 @@ Jeu.App = (function () {
     dedans.appendChild(ligneSalut);
 
     var haut = el('div', 'hud-haut');
-    var filou = el('div', 'hud-filou');
+
+    /* Le héros du bandeau est le bouton pour en changer. C'est
+       l'endroit le plus évident : l'enfant touche le personnage,
+       il arrive à la liste des personnages. Aucun menu à traverser,
+       aucun mot à lire pour trouver. */
+    var filou = el('button', 'hud-filou');
+    filou.type = 'button';
     filou.appendChild(Jeu.Compagnon.habille('salut', 100));
+    filou.setAttribute('aria-label', 'Changer de héros. En ce moment : ' +
+      Jeu.Compagnon.nom() + '.');
+    filou.addEventListener('click', function () {
+      if (Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('tap');
+      aller('heros');
+    });
     haut.appendChild(filou);
 
     var texte = el('div', 'hud-texte');
@@ -263,6 +276,117 @@ Jeu.App = (function () {
     n.appendChild(el('span', null, String(valeur)));
     n.setAttribute('aria-label', label);
     return n;
+  }
+
+  /* ------------------------- Choisir son héros -------------------------
+
+     Le père de Julien a été net : l'enfant doit choisir son
+     personnage. Un héros qu'on a choisi soi-même, on y tient ; un
+     héros imposé, c'est celui de l'application.
+
+     Trois décisions de conception derrière cet écran :
+
+     - RIEN NE SE PERD. Changer de héros ne touche ni les étoiles, ni
+       les pièces, ni les autocollants, ni les accessoires achetés :
+       les accessoires se posent sur le nouveau grâce aux ancres, et
+       le reste n'a jamais appartenu au personnage. L'enfant peut
+       donc essayer les quatre sans rien risquer, et c'est écrit sur
+       l'écran pour qu'il le sache.
+     - CHANGER EST GRATUIT ET REVERSIBLE. Aucun prix, aucun
+       déverrouillage, aucun « tu pourras en débloquer un autre à
+       trois cents étoiles ». Le choix du héros n'est pas une
+       récompense, c'est un réglage de confort.
+     - LE HÉROS CHOISI SALUE. Toucher une carte fait passer ce héros
+       en humeur « bravo » et joue un son : la réponse est immédiate,
+       il n'y a rien à valider ni à lire pour savoir que c'est pris. */
+  function choixHeros(z) {
+    var liste = (window.Jeu && Jeu.Heros) ? Jeu.Heros.tous() : [];
+    if (!liste.length) { aller('accueil'); return; }
+
+    var courant = Jeu.Heros.courant();
+
+    /* L'en-tête tient en deux lignes, sans carte autour : la place
+       de l'écran revient aux personnages, c'est eux qu'on regarde. */
+    var titre = el('div', 'entete-heros');
+    var l = el('div', 'ligne');
+    l.appendChild(Jeu.Voix.bouton(
+      'Choisis ton héros. Touche celui que tu préfères. Tu peux en changer quand tu veux, tu ne perds rien.',
+      'Écouter'));
+    l.appendChild(el('h2', null, 'Choisis ton héros'));
+    titre.appendChild(l);
+    titre.appendChild(el('p', 'petit', 'Tu peux en changer quand tu veux. Tu ne perds rien.'));
+    z.appendChild(titre);
+
+    var grille = el('div', 'grille-heros');
+
+    liste.forEach(function (h, i) {
+      var carte = el('button', 'carte-heros' + (h.id === (courant && courant.id) ? ' choisi' : ''));
+      carte.type = 'button';
+      carte.setAttribute('data-heros', h.id);
+      if (h.teinte) carte.style.setProperty('--teinte-heros', 'var(' + h.teinte + ')');
+      carte.setAttribute('aria-pressed', h.id === (courant && courant.id) ? 'true' : 'false');
+      carte.setAttribute('aria-label', h.nom + ', ' + (h.quoi || ''));
+
+      var vignette = el('span', 'carte-heros-dessin');
+      vignette.setAttribute('aria-hidden', 'true');
+      try { vignette.appendChild(h.dessiner('salut', 132)); } catch (e) { /* passe */ }
+      carte.appendChild(vignette);
+
+      carte.appendChild(el('span', 'carte-heros-nom', h.nom));
+      if (h.quoi) carte.appendChild(el('span', 'carte-heros-quoi', h.quoi));
+
+      /* La pastille « c'est lui » : un signe, pas une couleur seule —
+         un enfant daltonien doit la voir aussi. */
+      var marque = el('span', 'carte-heros-marque', '✓');
+      marque.setAttribute('aria-hidden', 'true');
+      carte.appendChild(marque);
+
+      carte.addEventListener('click', function () { prendreHeros(h, carte, grille); });
+      grille.appendChild(carte);
+      carte.classList.add('surgit', 'surgit-' + Math.min(6, i + 2));
+    });
+
+    z.appendChild(grille);
+
+    var b = Jeu.Ui.vider(bas());
+    b.hidden = false;
+    b.appendChild(Jeu.Ui.bouton('Retour au chemin', 'btn btn-principal', function () {
+      aller('accueil');
+    }));
+  }
+
+  /* Le choix est pris tout de suite : pas de bouton « valider ».
+     Une étape de confirmation en plus, c'est une phrase de plus à
+     lire et une occasion de plus de se tromper de bouton. */
+  function prendreHeros(h, carte, grille) {
+    if (!Jeu.Heros.choisir(h.id)) return;
+
+    [].forEach.call(grille.querySelectorAll('.carte-heros'), function (c) {
+      c.classList.remove('choisi');
+      c.setAttribute('aria-pressed', 'false');
+    });
+    carte.classList.add('choisi');
+    carte.setAttribute('aria-pressed', 'true');
+
+    if (Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('coffre');
+
+    /* Il fait bravo, puis revient au salut : la carte ne doit pas
+       rester figée sur une humeur de fête. */
+    var vignette = carte.querySelector('.carte-heros-dessin');
+    if (vignette) {
+      Jeu.Compagnon.changer(vignette, 'bravo');
+      Jeu.Compagnon.sauter(vignette, function () {
+        Jeu.Compagnon.changer(vignette, 'salut');
+      });
+    }
+
+    Jeu.Voix.dire(h.nom + ' est ton héros !');
+
+    try {
+      if (window.Jeu && Jeu.Quetes && Jeu.Quetes.signaler) {
+        Jeu.Quetes.signaler('heros.choisi', { id: h.id });
+      }
+    } catch (e) { /* rien */ }
   }
 
   /* La boutique de Filou : ce que l'enfant achète avec ses pièces.
@@ -656,6 +780,19 @@ Jeu.App = (function () {
     document.getElementById('btn-parent').addEventListener('click', function () {
       aller('parent');
     });
+
+    /* Au tout premier lancement, l'enfant choisit son héros avant
+       de voir le chemin. C'est le seul écran qui s'impose, et une
+       seule fois : à partir de là, le choix se refait quand il veut
+       en touchant le héros du bandeau. Le faire d'entrée plutôt que
+       de le cacher dans un réglage, c'est ce qui fait que le
+       personnage est le sien. */
+    if (window.Jeu && Jeu.Heros && Jeu.Heros.tous().length > 1 && !Jeu.Heros.aChoisi()) {
+      aller('heros');
+      // Rien à quitter : la barre du bas ramène au chemin.
+      document.getElementById('btn-retour').hidden = true;
+      return;
+    }
 
     aller('accueil');
   }

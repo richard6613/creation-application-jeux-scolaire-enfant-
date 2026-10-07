@@ -539,7 +539,10 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
     id: 'morpion',
     nom: 'Morpion',
     quoi: 'Aligne trois ronds',
-    emoji: '⭕',
+    /* Pas un rond : la salle de récréation contient déjà le jeton
+       rouge du Puissance 4, et deux pastilles rondes et rouges côte à
+       côte ne se distinguent plus d'un coup d'œil. */
+    emoji: '✖️',
     teinte: '--jeu-morpion',
     afficher: afficher,
 

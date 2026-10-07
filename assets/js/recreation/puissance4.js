@@ -269,7 +269,7 @@ Jeu.Puissance4 = (function () {
      (5 demi-coups) : sur un iPhone, la réponse doit être
      instantanée, et un adversaire qui réfléchit pendant que
      l'enfant attend, c'est un adversaire qui a l'air cassé.
-     `ply` sert à préférer une victoire proche à une victoire
+     « ply » sert à préférer une victoire proche à une victoire
      lointaine, et à repousser une défaite le plus loin possible. */
   function minimax(g, profondeur, alpha, beta, tourDe, moi, ply) {
     var libres = colonnesJouables(g);
@@ -727,7 +727,10 @@ Jeu.Puissance4 = (function () {
         retenir({ niveau: etat.niveau, gagnees: etat.gagnees });
         majTrophees();
         son('etoile');
-        if (window.Jeu && Jeu.Fete && Jeu.Fete.depuis) Jeu.Fete.depuis(plateau, 26);
+        /* Les confettis passent par le même verrou que le reste : si
+           l'attribut de la page dit « pas d'animation », rien ne vole,
+           même si le réglage interne n'a pas encore suivi. */
+        if (anime() && window.Jeu && Jeu.Fete && Jeu.Fete.depuis) Jeu.Fete.depuis(plateau, 26);
       } else if (vainqueur === LUI) {
         pion(LUI);
         /* Perdre ne retire rien, et ne se dit pas comme un reproche :

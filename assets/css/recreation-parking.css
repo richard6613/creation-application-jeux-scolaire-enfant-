@@ -1,0 +1,481 @@
+/* ---------------------------------------------------------------
+   recreation-parking.css — « Le grand embouteillage ».
+
+   Un parking vu de dessus. Tout est dessiné en SVG ; cette feuille
+   ne fait que placer les véhicules sur la grille, leur donner une
+   couleur et les faire glisser dehors.
+
+   Deux partis pris commandent le fichier.
+
+   1. La direction de sortie se lit par la FORME avant la couleur :
+      la grosse flèche blanche du toit et le nez arrondi suffisent.
+      Les six couleurs de carrosserie ne servent qu'à distinguer les
+      véhicules entre eux — un enfant daltonien ne perd aucune
+      information de jeu.
+
+   2. Aucune couleur en dur ailleurs que dans ce bloc de variables,
+      déclinées en clair ET en sombre, pour que les six fonds de
+      lecture restent corrects.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Teinte du jeu : pastille et liseré seulement, jamais sous du
+     texte, donc le contraste de lecture n'est pas touché. */
+  --jeu-parking: #3f6fb5;
+
+  /* L'asphalte. Assez sombre pour que les carrosseries claires
+     ressortent, assez clair pour ne pas faire un trou noir dans une
+     page crème. */
+  --pk-sol: #b4ada1;
+  --pk-sol-2: #a39b8e;
+  --pk-marque: rgba(255, 255, 255, 0.5);
+  --pk-bord: #8d8578;
+
+  /* Les six carrosseries. Choisies franches et éloignées les unes
+     des autres, y compris en teinte perçue. */
+  --pk-v1: #d2402b;   /* rouge */
+  --pk-v2: #2a66c8;   /* bleu */
+  --pk-v3: #e0a40a;   /* jaune */
+  --pk-v4: #2a9152;   /* vert */
+  --pk-v5: #8646bd;   /* violet */
+  --pk-v6: #0f9e9a;   /* turquoise */
+
+  --pk-roue: #2d2a28;
+  --pk-vitre: #b8d8ea;
+  --pk-vitre-trait: rgba(20, 30, 40, 0.35);
+  --pk-phare: #fdf3cf;
+  --pk-feu: #b5331f;
+  --pk-fleche: #ffffff;
+  --pk-fleche-trait: rgba(25, 22, 20, 0.55);
+
+  /* Ombres et voiles : du modelé, pas des couleurs. Déclinés aussi
+     en sombre pour que les véhicules ne deviennent pas plats. */
+  --pk-ombre-portee: rgba(40, 34, 26, 0.3);
+  --pk-voile-sombre: rgba(0, 0, 0, 0.2);
+  --pk-voile-clair: rgba(255, 255, 255, 0.3);
+  --pk-barre-trait: #fff4d6;
+
+  /* Cible tactile de ce jeu : un véhicule fait au minimum une case
+     par deux ou trois, soit toujours plus de surface qu'un bouton
+     carré de 62 px sur une largeur de 420 px. */
+  --pk-cible: 62px;
+}
+
+html[data-fond="sombre"] {
+  --jeu-parking: #8fb6e8;
+  --pk-sol: #3b4149;
+  --pk-sol-2: #33383f;
+  --pk-marque: rgba(255, 255, 255, 0.22);
+  --pk-bord: #596270;
+  --pk-v1: #ee7158;
+  --pk-v2: #6e9eea;
+  --pk-v3: #efc247;
+  --pk-v4: #5ec082;
+  --pk-v5: #b184e0;
+  --pk-v6: #4ec7c2;
+  --pk-roue: #191a1c;
+  --pk-vitre: #8fb6cd;
+  --pk-vitre-trait: rgba(10, 16, 22, 0.45);
+  --pk-phare: #fbf0cc;
+  --pk-feu: #e2614c;
+  --pk-fleche: #fffdf7;
+  --pk-fleche-trait: rgba(10, 10, 12, 0.6);
+  --pk-ombre-portee: rgba(0, 0, 0, 0.45);
+  --pk-voile-sombre: rgba(0, 0, 0, 0.26);
+  --pk-voile-clair: rgba(255, 255, 255, 0.24);
+  --pk-barre-trait: #fff4d6;
+}
+/* Appareil en sombre avant tout choix de fond : même traitement. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --jeu-parking: #8fb6e8;
+    --pk-sol: #3b4149;
+    --pk-sol-2: #33383f;
+    --pk-marque: rgba(255, 255, 255, 0.22);
+    --pk-bord: #596270;
+    --pk-v1: #ee7158;
+    --pk-v2: #6e9eea;
+    --pk-v3: #efc247;
+    --pk-v4: #5ec082;
+    --pk-v5: #b184e0;
+    --pk-v6: #4ec7c2;
+    --pk-roue: #191a1c;
+    --pk-vitre: #8fb6cd;
+    --pk-vitre-trait: rgba(10, 16, 22, 0.45);
+    --pk-phare: #fbf0cc;
+    --pk-feu: #e2614c;
+    --pk-fleche: #fffdf7;
+    --pk-fleche-trait: rgba(10, 10, 12, 0.6);
+    --pk-ombre-portee: rgba(0, 0, 0, 0.45);
+    --pk-voile-sombre: rgba(0, 0, 0, 0.26);
+    --pk-voile-clair: rgba(255, 255, 255, 0.24);
+    --pk-barre-trait: #fff4d6;
+  }
+}
+
+/* ------------------------------ ossature ------------------------------ */
+
+.pk {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.pk-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pk-consigne {
+  margin: 0;
+  font-weight: 600;
+  max-width: var(--largeur-ligne);
+}
+
+/* L'annonce est lisible à l'œil autant qu'au lecteur d'écran : c'est
+   le fil de ce qui vient de se passer, pas un texte caché. */
+.pk-annonce {
+  margin: 0;
+  min-height: calc(1em * var(--interligne));
+  color: var(--texte-doux);
+  max-width: var(--largeur-ligne);
+}
+
+.pk-pied,
+.pk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.pk-pied > .btn,
+.pk-actions > .btn {
+  flex: 1 1 12ch;
+  width: auto;
+  min-height: var(--pk-cible);
+}
+.pk-quitter { background: var(--surface-2); }
+
+/* ------------------------- avancement -------------------------
+   Un repère qui MONTE : les véhicules sortis. Rien ne descend,
+   aucun compte de coups, aucun chronomètre — jamais. */
+.pk-compteur {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pk-jauge {
+  flex: 1 1 auto;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  overflow: hidden;
+}
+.pk-jauge-pleine {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--jeu-parking);
+  transition: width 320ms cubic-bezier(.22, 1, .36, 1);
+}
+.pk-compte-txt {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ------------------------------ le parking ------------------------------ */
+
+.pk-parking {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  border-radius: calc(var(--rayon) + 8px);
+  border: 4px solid var(--pk-bord);
+  background:
+    radial-gradient(circle at 30% 22%, var(--pk-sol) 0%, var(--pk-sol-2) 100%);
+  box-shadow: var(--ombre);
+  /* La sortie d'un véhicule va volontairement au-delà du cadre :
+     on le voit vraiment quitter le parking. */
+  overflow: visible;
+}
+
+/* Les lignes de places, peintes au sol. Deux dégradés répétés
+   valent mieux qu'un calque SVG de plus à la charge du téléphone. */
+.pk-marquage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: calc(var(--rayon) + 4px);
+  background-image:
+    repeating-linear-gradient(to right,
+      var(--pk-marque) 0 2px, transparent 2px calc(100% / 6)),
+    repeating-linear-gradient(to bottom,
+      var(--pk-marque) 0 2px, transparent 2px calc(100% / 6));
+  opacity: 0.85;
+}
+/* Le trottoir : une bande claire juste à l'intérieur du cadre, qui
+   dit « ici, c'est dehors ». */
+.pk-trottoir {
+  position: absolute;
+  inset: 3px;
+  z-index: 0;
+  pointer-events: none;
+  border: 3px dashed var(--pk-marque);
+  border-radius: calc(var(--rayon) + 5px);
+}
+
+/* ------------------------------ un véhicule ------------------------------ */
+
+.pk-vehicule {
+  position: absolute;
+  z-index: 2;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  /* --pk-c / --pk-r : colonne et ligne. --pk-w / --pk-h : taille en
+     cases. Tout en pourcentage du parking, donc rien à recalculer
+     en JavaScript quand la fenêtre change. */
+  left: calc(var(--pk-c) * 100% / 6);
+  top: calc(var(--pk-r) * 100% / 6);
+  width: calc(var(--pk-w) * 100% / 6);
+  height: calc(var(--pk-h) * 100% / 6);
+  -webkit-tap-highlight-color: transparent;
+}
+.pk-vehicule > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.pk-vehicule:focus-visible {
+  outline: 4px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+/* Appui : un écrasement court, le même geste que sur un bouton. */
+.pk-vehicule:active > svg { transform: scale(0.95); }
+.pk-vehicule > svg { transition: transform 120ms cubic-bezier(.34, 1.56, .64, 1); }
+
+.pk-vehicule[data-teinte="1"] { --pk-corps: var(--pk-v1); }
+.pk-vehicule[data-teinte="2"] { --pk-corps: var(--pk-v2); }
+.pk-vehicule[data-teinte="3"] { --pk-corps: var(--pk-v3); }
+.pk-vehicule[data-teinte="4"] { --pk-corps: var(--pk-v4); }
+.pk-vehicule[data-teinte="5"] { --pk-corps: var(--pk-v5); }
+.pk-vehicule[data-teinte="6"] { --pk-corps: var(--pk-v6); }
+
+.pk-ombre   { fill: var(--pk-ombre-portee); }
+.pk-corps   { fill: var(--pk-corps); }
+.pk-toit    { fill: var(--pk-voile-sombre); }
+.pk-reflet  { fill: var(--pk-voile-clair); }
+.pk-roue    { fill: var(--pk-roue); }
+.pk-vitre   { fill: var(--pk-vitre); stroke: var(--pk-vitre-trait); stroke-width: 2.5; }
+.pk-phare   { fill: var(--pk-phare); }
+.pk-feu     { fill: var(--pk-feu); }
+
+/* La flèche du toit : grosse, blanche, cernée d'un trait sombre pour
+   rester lisible sur les six carrosseries. C'est elle qui porte
+   l'information, pas la couleur. */
+.pk-fleche {
+  fill: var(--pk-fleche);
+  stroke: var(--pk-fleche-trait);
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+/* Contour de signalement, invisible au repos. */
+.pk-contour {
+  fill: none;
+  stroke: none;
+  stroke-width: 7;
+  stroke-linejoin: round;
+}
+
+/* ------------------------------ mouvements ------------------------------ */
+
+/* Il sort : il démarre doucement, accélère, et disparaît dehors.
+   --pk-tx / --pk-ty sont posés par le JavaScript en pourcentage de
+   la taille du véhicule : la course reste juste à toute largeur. */
+@keyframes pk-sortir {
+  0%   { transform: translate(0, 0); }
+  14%  { transform: translate(calc(var(--pk-tx) * 0.04), calc(var(--pk-ty) * 0.04)); }
+  100% { transform: translate(var(--pk-tx), var(--pk-ty)); opacity: 0.1; }
+}
+.pk-vehicule.pk-sort {
+  pointer-events: none;
+  animation: pk-sortir 620ms cubic-bezier(.45, 0, .85, .4) forwards;
+}
+.pk-vehicule.pk-sort > svg { transition: none; }
+
+/* Il est bloqué : il tremble sur place. Un va-et-vient lent et de
+   faible amplitude — jamais une secousse, jamais un clignotement. */
+@keyframes pk-trembler-h {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-3.5%); }
+  45%      { transform: translateX(3%); }
+  70%      { transform: translateX(-2%); }
+  88%      { transform: translateX(1%); }
+}
+@keyframes pk-trembler-v {
+  0%, 100% { transform: translateY(0); }
+  20%      { transform: translateY(-3.5%); }
+  45%      { transform: translateY(3%); }
+  70%      { transform: translateY(-2%); }
+  88%      { transform: translateY(1%); }
+}
+.pk-vehicule.pk-bloque[data-axe="h"] { animation: pk-trembler-h 560ms ease-in-out; }
+.pk-vehicule.pk-bloque[data-axe="v"] { animation: pk-trembler-v 560ms ease-in-out; }
+
+/* Qui bloque qui : les gêneurs se cernent un instant. C'est l'aide
+   au raisonnement du jeu — elle se montre, elle ne se lit pas. */
+@keyframes pk-pulse {
+  0%, 100% { stroke-opacity: 0; }
+  30%, 70% { stroke-opacity: 1; }
+}
+.pk-vehicule.pk-barre .pk-contour {
+  stroke: var(--pk-barre-trait);
+  animation: pk-pulse 900ms ease-in-out 2;
+}
+
+/* ------------------------- choix du parking ------------------------- */
+
+.pk-grille-niveaux {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 12px;
+}
+.pk-niveau {
+  font-family: inherit;
+  letter-spacing: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--pk-cible);
+  padding: 10px 8px;
+  border: 3px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+}
+.pk-niveau-num {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.pk-niveau-apercu {
+  display: block;
+  width: 100%;
+  max-width: 68px;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  background: var(--pk-sol);
+}
+.pk-niveau-apercu .pk-ap-v { fill: var(--pk-corps, var(--jeu-parking)); }
+.pk-niveau-apercu .pk-ap-v1 { fill: var(--pk-v1); }
+.pk-niveau-apercu .pk-ap-v2 { fill: var(--pk-v2); }
+.pk-niveau-apercu .pk-ap-v3 { fill: var(--pk-v3); }
+.pk-niveau-apercu .pk-ap-v4 { fill: var(--pk-v4); }
+.pk-niveau-apercu .pk-ap-v5 { fill: var(--pk-v5); }
+.pk-niveau-apercu .pk-ap-v6 { fill: var(--pk-v6); }
+
+.pk-niveau.pk-fait { border-color: var(--succes); background: var(--succes-doux); }
+.pk-niveau.pk-ici {
+  border-color: var(--jeu-parking);
+  box-shadow: inset 0 0 0 3px var(--surface), var(--ombre);
+}
+/* Un parking pas encore ouvert n'est pas une punition : il est
+   simplement calme, et le cadenas le dit sans mot. */
+.pk-niveau.pk-ferme {
+  cursor: default;
+  background: var(--surface-2);
+  border-style: dashed;
+  color: var(--texte-doux);
+}
+.pk-niveau.pk-ferme .pk-niveau-apercu { opacity: 0.35; }
+.pk-niveau:active { transform: translateY(2px); box-shadow: none; }
+.pk-niveau:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
+.pk-cadenas { font-size: 1.1rem; line-height: 1; }
+
+/* ------------------------------ la fin ------------------------------ */
+
+.pk-bravo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 3px solid var(--succes);
+  border-radius: calc(var(--rayon) + 6px);
+  background: var(--succes-doux);
+  box-shadow: var(--ombre);
+}
+.pk-bravo-txt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 16ch;
+}
+.pk-bravo-txt p { margin: 0; font-weight: 700; }
+
+/* =====================================================================
+   ANIMATIONS COUPÉES — réglage parent ou préférence de l'appareil.
+   Le jeu reste entièrement jouable : le véhicule qui sort disparaît
+   simplement, celui qui est bloqué ne tremble pas (le son neutre et
+   l'annonce suffisent), les gêneurs restent cernés le temps voulu.
+   ===================================================================== */
+
+html[data-animations="non"] .pk-vehicule.pk-sort,
+html[data-animations="non"] .pk-vehicule.pk-bloque,
+html[data-animations="non"] .pk-vehicule.pk-barre .pk-contour {
+  animation: none !important;
+}
+html[data-animations="non"] .pk-vehicule.pk-sort {
+  opacity: 0 !important;
+  transform: none !important;
+}
+html[data-animations="non"] .pk-vehicule.pk-barre .pk-contour {
+  stroke: var(--pk-barre-trait);
+  stroke-opacity: 1;
+}
+html[data-animations="non"] .pk-vehicule > svg,
+html[data-animations="non"] .pk-jauge-pleine {
+  transition: none !important;
+}
+html[data-animations="non"] .pk-vehicule:active > svg,
+html[data-animations="non"] .pk-niveau:active {
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pk-vehicule.pk-sort,
+  .pk-vehicule.pk-bloque,
+  .pk-vehicule.pk-barre .pk-contour { animation: none !important; }
+  .pk-vehicule.pk-sort { opacity: 0 !important; transform: none !important; }
+  .pk-vehicule.pk-barre .pk-contour {
+    stroke: var(--pk-barre-trait);
+    stroke-opacity: 1;
+  }
+  .pk-vehicule > svg, .pk-jauge-pleine { transition: none !important; }
+  .pk-vehicule:active > svg, .pk-niveau:active { transform: none !important; }
+}
+
+/* =====================================================================
+   PETITS ÉCRANS ET GROS RÉGLAGES
+   Texte poussé à 30 px, espacement au maximum : rien ne doit
+   déborder horizontalement.
+   ===================================================================== */
+
+@media (max-width: 420px) {
+  .pk-grille-niveaux { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
+  .pk-pied > .btn, .pk-actions > .btn { flex: 1 1 10ch; }
+}

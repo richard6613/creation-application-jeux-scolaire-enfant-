@@ -105,28 +105,28 @@ window.Jeu = window.Jeu || {};
     corps: {
       tete: { cx: 50, cy: 28, r: 23 },
       traitPatte: 8,
-      patteR: 6,
+      patteR: 5,
       epaule: { g: [37, 54], d: [63, 54] },
       pattes: {
         pose:   { g: [41, 86], d: [59, 86] },
-        leve:   { g: [41, 86], d: [85, 40] },
-        haut:   { g: [17, 42], d: [83, 42] },
-        tend:   { g: [41, 86], d: [85, 64] },
+        leve:   { g: [41, 86], d: [87, 34] },
+        haut:   { g: [16, 36], d: [84, 36] },
+        tend:   { g: [41, 86], d: [88, 60] },
         menton: { g: [41, 86], d: [62, 48] },
-        ecarte: { g: [16, 66], d: [84, 66] },
+        ecarte: { g: [14, 62], d: [86, 62] },
         repli:  { g: [44, 88], d: [56, 88] },
-        salue:  { g: [41, 86], d: [87, 33] },
-        hanche: { g: [41, 86], d: [76, 72] }
+        salue:  { g: [41, 86], d: [89, 28] },
+        hanche: { g: [41, 86], d: [78, 74] }
       },
       ancres: {
         /* Le chapeau se pose PAR LE BAS (voir poser() dans
            compagnon.js) : y est le bord inférieur du chapeau. On le
            garde au-dessus de la ligne des cornes, sinon une corne
            ressort au milieu de la couronne. */
-        chapeau:  { x: 0.50, y: 0.095, l: 0.52 },
-        lunettes: { x: 0.50, y: 0.252, l: 0.50 },
+        chapeau:  { x: 0.50, y: 0.08, l: 0.52 },
+        lunettes: { x: 0.50, y: 0.258, l: 0.50 },
         cou:      { x: 0.50, y: 0.525, l: 0.44 },
-        tenu:     { x: 0.84, y: 0.50, l: 0.36 },
+        tenu:     { x: 0.86, y: 0.42, l: 0.36 },
         /* Plus bas que chez le chat : les ailes repliées occupent le
            haut du dos, la cape passe dessous et reste visible. */
         dos:      { x: 0.50, y: 0.74, l: 0.92 },
@@ -134,25 +134,25 @@ window.Jeu = window.Jeu || {};
       }
     },
     buste: {
-      tete: { cx: 50, cy: 42, r: 29 },
+      tete: { cx: 50, cy: 42, r: 27 },
       traitPatte: 10,
-      patteR: 7,
-      epaule: { g: [26, 88], d: [74, 88] },
+      patteR: 6,
+      epaule: { g: [30, 86], d: [70, 86] },
       pattes: {
-        pose:   { g: [31, 95], d: [69, 95] },
-        leve:   { g: [31, 95], d: [88, 58] },
-        haut:   { g: [14, 60], d: [86, 60] },
-        tend:   { g: [31, 95], d: [89, 79] },
-        menton: { g: [31, 95], d: [65, 70] },
-        ecarte: { g: [12, 82], d: [88, 82] },
-        repli:  { g: [36, 97], d: [64, 97] },
-        salue:  { g: [31, 95], d: [91, 46] },
-        hanche: { g: [31, 95], d: [84, 89] }
+        pose:   { g: [34, 97], d: [66, 97] },
+        leve:   { g: [34, 97], d: [88, 56] },
+        haut:   { g: [14, 58], d: [86, 58] },
+        tend:   { g: [34, 97], d: [89, 78] },
+        menton: { g: [34, 97], d: [64, 72] },
+        ecarte: { g: [12, 80], d: [88, 80] },
+        repli:  { g: [38, 99], d: [62, 99] },
+        salue:  { g: [34, 97], d: [90, 44] },
+        hanche: { g: [34, 97], d: [84, 90] }
       },
       ancres: {
-        chapeau:  { x: 0.50, y: 0.145, l: 0.66 },
-        lunettes: { x: 0.50, y: 0.385, l: 0.62 },
-        cou:      { x: 0.50, y: 0.80, l: 0.56 },
+        chapeau:  { x: 0.50, y: 0.15, l: 0.64 },
+        lunettes: { x: 0.50, y: 0.392, l: 0.60 },
+        cou:      { x: 0.50, y: 0.78, l: 0.54 },
         tenu:     { x: 0.88, y: 0.62, l: 0.42 },
         dos:      { x: 0.50, y: 0.88, l: 1.00 },
         aura:     { x: 0.50, y: 0.46, l: 1.00 }
@@ -225,16 +225,23 @@ window.Jeu = window.Jeu || {};
        découpé, le relief vient de la superposition. */
     m.push('<g class="d-cornes">');
     m.push(paire(
-      '<path d="M30 42 C18 40 6 36 -2 29 C-1 42 7 55 21 61 C28 57 31 50 30 42 Z" fill="var(--dragon-corne-2)"/>' +
-      '<path d="M27 43 C17 41 7 37 0 31 C2 42 9 52 21 57 C26 53 28 48 27 43 Z" fill="var(--dragon-corne)"/>' +
-      '<path d="M7 36 L11 42 M16 41 L19 47" stroke="var(--dragon-corne-3)" stroke-width="2.4" ' +
-      'stroke-linecap="round" opacity="0.55" fill="none"/>'
+      /* La couche sombre dépasse SOUS la couche claire : c'est elle
+         qui donne le volume du cône. Et les bandes transversales
+         disent « corne » là où des stries dans le sens de la
+         longueur donnaient des plumes. */
+      /* Les deux bords longs CONVERGENT vers la pointe, sans
+         renflement au milieu : un cône s'élargit du bout vers la
+         tête, une feuille est large en son milieu. C'est la seule
+         chose qui distingue une corne d'un pétale. */
+      '<path d="M33 39 C25 35 10 28 -4 25 C0 33 13 47 25 57 C31 52 34 45 33 39 Z" ' +
+      'fill="var(--dragon-corne-2)"/>' +
+      '<path d="M30 40 C23 36 10 30 -1 27 C2 34 13 45 24 53 C28 49 31 45 30 40 Z" ' +
+      'fill="var(--dragon-corne)"/>' +
+      '<path d="M25.7 37.2 L17.7 48.6 M17.1 33.5 L11.3 41.7" ' +
+      'stroke="var(--dragon-corne-3)" stroke-width="2.2" stroke-linecap="round" ' +
+      'opacity="0.3" fill="none"/>'
     ));
     m.push('</g>');
-
-    /* Ailerons de joue : la petite nageoire qui dit « dragon » même
-       quand les cornes passent sous un chapeau. */
-    m.push(paire('<path d="M27 68 L3 73 L11 85 L30 79 Z" fill="var(--dragon-ecaille-2)"/>'));
 
     /* --- CRÂNE --- */
     m.push('<path d="M16 56 C16 33 31 22 50 22 C69 22 84 33 84 56 ' +
@@ -247,7 +254,7 @@ window.Jeu = window.Jeu || {};
 
     /* Arcades sourcilières en os : elles encadrent l'œil et donnent
        le regard. Sans elles le dragon ressemble à un lézard. */
-    m.push(paire('<path d="M20 49 L31 40 L46 43 L45 49 L32 46 Z" fill="var(--dragon-corne-2)"/>'));
+    m.push(paire('<path d="M21 49 L31 41 L43 44 L42 50 L32 47 Z" fill="var(--dragon-corne-2)"/>'));
 
     /* Museau clair, puis narines. */
     m.push('<path d="M34 66 C34 60 41 56 50 56 C59 56 66 60 66 66 ' +
@@ -294,8 +301,8 @@ window.Jeu = window.Jeu || {};
      l'INTÉRIEUR. Inversé, il donne un dragon en colère — exactement
      ce qu'un enfant qui vient de se tromper ne doit pas voir. */
   function sourcil(cx, sens) {
-    return '<path d="M' + (cx - 8) + ' ' + (39 + sens * 2) + ' Q' + cx + ' ' + (35 - sens) +
-      ' ' + (cx + 8) + ' ' + (39 - sens * 2) + '" stroke="var(--dragon-trait)" stroke-width="2.8" ' +
+    return '<path d="M' + (cx - 8) + ' ' + (39.5 + sens * 1.3) + ' Q' + cx + ' ' + (36.5 - sens * 0.5) +
+      ' ' + (cx + 8) + ' ' + (39.5 - sens * 1.3) + '" stroke="var(--dragon-trait)" stroke-width="2.8" ' +
       'fill="none" stroke-linecap="round" opacity="0.75"/>';
   }
 
@@ -353,17 +360,17 @@ window.Jeu = window.Jeu || {};
      tout le bas du dos libre. */
   function aile(classe) {
     return '<g class="d-aile ' + classe + '">' +
-      '<path d="M38 46 C30 34 20 25 10 23 C13 30 13 37 11 44 ' +
-      'C17 41 22 44 24 51 C28 46 33 44 38 46 Z" fill="var(--dragon-membrane)"/>' +
-      '<path d="M36 45 C29 35 21 28 13 25 C15 31 15 36 13.5 42 ' +
-      'C18 40 22 42 23.5 48 Z" fill="var(--dragon-membrane-2)"/>' +
-      '<path d="M38 46 C30 34 20 25 10 23" stroke="var(--dragon-nervure)" stroke-width="3.4" ' +
+      '<path d="M40 60 C32 48 20 38 9 36 C12 43 12 51 10 58 ' +
+      'C16 55 21 58 23 66 C29 61 35 59 40 60 Z" fill="var(--dragon-membrane)"/>' +
+      '<path d="M38 59 C31 49 20 41 12 38 C14 44 14 50 12.5 56 ' +
+      'C17 54 21 56 22.5 63 Z" fill="var(--dragon-membrane-2)"/>' +
+      '<path d="M40 60 C32 48 20 38 9 36" stroke="var(--dragon-nervure)" stroke-width="3.4" ' +
       'fill="none" stroke-linecap="round"/>' +
-      '<path d="M38 46 C30 38 22 33 11 44" stroke="var(--dragon-nervure)" stroke-width="2.6" ' +
+      '<path d="M40 60 C32 52 23 47 10 58" stroke="var(--dragon-nervure)" stroke-width="2.6" ' +
       'fill="none" stroke-linecap="round" opacity="0.8"/>' +
-      '<path d="M38 46 C33 42 28 44 24 51" stroke="var(--dragon-nervure)" stroke-width="2.6" ' +
+      '<path d="M40 60 C35 56 29 58 23 66" stroke="var(--dragon-nervure)" stroke-width="2.6" ' +
       'fill="none" stroke-linecap="round" opacity="0.8"/>' +
-      '<path d="M10 23 L6 17 L13 21 Z" fill="var(--dragon-corne)"/>' +
+      '<path d="M9 36 L5 30 L12 34 Z" fill="var(--dragon-corne)"/>' +
       '</g>';
   }
 
@@ -373,12 +380,13 @@ window.Jeu = window.Jeu || {};
 
   function ailesBuste() {
     var a = '<g class="d-aile d-aile-g">' +
-      '<path d="M30 78 C24 64 15 56 5 55 C8 62 8 70 6 78 ' +
-      'C12 75 17 78 19 86 C23 80 27 77 30 78 Z" fill="var(--dragon-membrane)"/>' +
-      '<path d="M30 78 C24 64 15 56 5 55" stroke="var(--dragon-nervure)" stroke-width="4" ' +
+      '<path d="M31 80 C25 64 14 54 4 48 C7 58 7 68 5 76 ' +
+      'C11 73 16 77 18 86 C22 81 27 79 31 80 Z" fill="var(--dragon-membrane)"/>' +
+      '<path d="M31 80 C25 64 14 54 4 48" stroke="var(--dragon-nervure)" stroke-width="4" ' +
       'fill="none" stroke-linecap="round"/>' +
-      '<path d="M30 78 C24 70 16 66 6 78" stroke="var(--dragon-nervure)" stroke-width="3" ' +
+      '<path d="M31 80 C25 71 15 66 5 76" stroke="var(--dragon-nervure)" stroke-width="3" ' +
       'fill="none" stroke-linecap="round" opacity="0.8"/>' +
+      '<path d="M4 48 L1 41 L9 46 Z" fill="var(--dragon-corne)"/>' +
       '</g>';
     return a + miroir(a.replace('d-aile-g', 'd-aile-d'));
   }
@@ -403,13 +411,13 @@ window.Jeu = window.Jeu || {};
   }
 
   /* Épaules du buste : une colline derrière la tête, assez basse
-     pour qu'on devine un corps hors cadre sans le dessiner. */
+     pour qu'on devine un corps hors cadre sans le dessiner. Pas de
+     ventre, pas de queue ici : à 54 px, chaque forme en plus mange
+     la seule chose qui compte — la tête et ses cornes. */
   function corpsBuste() {
     return '<g class="d-corps">' +
-      '<path d="M6 100 C8 81 26 70 50 70 C74 70 92 81 94 100 Z" fill="var(--dragon-ecaille)"/>' +
-      '<path d="M36 86 C36 82 64 82 64 86 C64 98 58 104 50 104 C42 104 36 98 36 86 Z" ' +
-      'fill="var(--dragon-ventre)"/>' +
-      braise(50, 80, 7, 'd-braise-coeur') +
+      '<path d="M12 100 C14 82 30 72 50 72 C70 72 86 82 88 100 Z" fill="var(--dragon-ecaille)"/>' +
+      braise(50, 91, 5, 'd-braise-coeur') +
       '</g>';
   }
 
@@ -418,18 +426,14 @@ window.Jeu = window.Jeu || {};
      levée et à ce qu'elle tient. Sa pointe est une braise, pas une
      flamme projetée : une chaleur qui respire. */
   function queue(mode) {
-    if (mode === 'buste') {
-      return '<g class="d-queue d-queue-buste">' +
-        '<path d="M14 100 C3 93 2 80 8 72" stroke="var(--dragon-ecaille-2)" stroke-width="11" ' +
-        'fill="none" stroke-linecap="round"/>' +
-        braise(8, 67, 6, '') +
-        '</g>';
-    }
+    /* En buste, pas de queue : on ne voit pas la queue de quelqu'un
+       dont on ne montre que la tête et les épaules, et à 54 px elle
+       ne faisait qu'un pâté sombre de plus. */
+    if (mode === 'buste') return '';
     return '<g class="d-queue">' +
-      '<path d="M33 88 C17 92 7 82 9 70 C10 63 13 59 17 57" stroke="var(--dragon-ecaille-2)" ' +
+      '<path d="M35 90 C20 95 7 90 6 80 C5.6 76 6 74 7 72" stroke="var(--dragon-ecaille-2)" ' +
       'stroke-width="9" fill="none" stroke-linecap="round"/>' +
-      '<path d="M26 90 L22 96 L31 94 Z M15 84 L9 87 L14 91 Z" fill="var(--dragon-corne-2)"/>' +
-      braise(17, 51, 6, '') +
+      braise(7, 67, 5.4, '') +
       '</g>';
   }
 
@@ -451,7 +455,7 @@ window.Jeu = window.Jeu || {};
   function bras(m, de, vers, classe) {
     var droit = Math.abs(vers[1] - de[1]) < 6 && Math.abs(vers[0] - de[0]) < 14;
     var main = '<ellipse cx="' + vers[0] + '" cy="' + vers[1] + '" rx="' + (m.patteR + 1) +
-      '" ry="' + (m.patteR - 0.5) + '" fill="var(--dragon-museau)"/>';
+      '" ry="' + (m.patteR - 0.5) + '" fill="var(--dragon-ventre)"/>';
     if (droit) return '<g class="' + classe + '">' + main + '</g>';
     return '<g class="' + classe + '">' +
       '<path d="M' + de[0] + ' ' + de[1] + ' L' + vers[0] + ' ' + vers[1] + '" ' +

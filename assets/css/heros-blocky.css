@@ -1,0 +1,398 @@
+/* ---------------------------------------------------------------
+   heros-blocky.css — les couleurs et la vie de VOX.
+
+   Deux principes, les mêmes que pour Filou :
+
+   1. AUCUNE COULEUR EN DUR DANS LE JAVASCRIPT. Chaque volume de VOX
+      a trois faces (dessus / face / côté), donc trois variables. Ça
+      fait beaucoup de variables, et c'est le prix à payer pour que
+      le mode sombre et les six fonds de lecture se règlent ici, en
+      un seul endroit, sans toucher au dessin.
+
+   2. LE MOUVEMENT EST EN CSS, JAMAIS EN JAVASCRIPT. Une règle CSS se
+      coupe net sous html[data-animations="non"] et sous
+      prefers-reduced-motion ; une boucle de minuteries continue de
+      tourner. VOX immobile reste exactement aussi lisible : son
+      dessin ne doit rien à ses animations.
+
+   Et une règle qui vient de l'expérience de filou.css : on coupe
+   l'ANIMATION, jamais la TRANSFORMATION. Sur un SVG, « transform:
+   none » écrase l'attribut transform du dessin et démonterait le
+   personnage.
+   --------------------------------------------------------------- */
+
+/* ------------------------- Les couleurs de VOX -------------------------
+   Suffixes : -h le dessus (face éclairée), rien la face de devant,
+   -o le côté (face à l'ombre). Trois valeurs par matière, parce que
+   c'est l'écart entre ces trois faces qui donne le volume — pas une
+   ombre portée. */
+:root {
+  /* Capuche et manches, la couleur signature */
+  --vox-capuche-h: #4fdcc6;
+  --vox-capuche: #17a09a;
+  --vox-capuche-o: #0c6b70;
+  /* Doublure de capuche et pointe arrière, un cran plus sombre */
+  --vox-capuche2-h: #17a09a;
+  --vox-capuche2: #0f7276;
+  --vox-capuche2-o: #084e55;
+
+  --vox-peau-h: #fad4a8;
+  --vox-peau: #e9af7e;
+  --vox-peau-o: #b87e50;
+
+  --vox-tunique-h: #5a6a90;
+  --vox-tunique: #374564;
+  --vox-tunique-o: #212b42;
+
+  --vox-pantalon-h: #405074;
+  --vox-pantalon: #2a3452;
+  --vox-pantalon-o: #1a2238;
+
+  --vox-cuir-h: #c9874e;
+  --vox-cuir: #8e5a2b;
+  --vox-cuir-o: #5e3a1a;
+
+  --vox-echarpe-h: #ffb766;
+  --vox-echarpe: #f2792b;
+  --vox-echarpe-o: #bc5316;
+
+  --vox-or-h: #ffe79b;
+  --vox-or: #f5be3c;
+  --vox-or-o: #be8a20;
+
+  /* Montures de lunettes, sangle, ferrures de lanterne */
+  --vox-nuit-h: #33303f;
+  --vox-nuit: #232031;
+  --vox-nuit-o: #161420;
+
+  /* Verres des lunettes et flamme de la lanterne */
+  --vox-ambre-h: #fff3c4;
+  --vox-ambre: #ffc63d;
+  --vox-ambre-o: #d98613;
+
+  --vox-sac-h: #9a6436;
+  --vox-sac: #68401e;
+  --vox-sac-o: #412810;
+
+  /* La carte roulée qui dépasse du sac */
+  --vox-papier-h: #ffffff;
+  --vox-papier: #fff4df;
+  --vox-papier-o: #dfc9a2;
+
+  /* Le trait d'encre du cerne. Jamais du noir pur : du bleu très
+     sombre, qui reste doux à côté du texte de la page. */
+  --vox-trait: #151a2b;
+  /* Le liseré crème autour du trait. C'est LUI qui rend VOX lisible
+     sur le fond sombre, exactement comme le trait d'encre le rend
+     lisible sur le fond crème. */
+  --vox-contour: #fff6e4;
+
+  --vox-reflet: #ffffff;
+  --vox-langue: #e8655e;
+  --vox-sourcil: #b07a4a;
+  --vox-lueur: #ffc63d;
+  --vox-bulle: #b9c6d4;
+  --vox-coeur: #e07f86;
+
+  /* Le fond de l'icône d'écran d'accueil : une nuit bleue, pour que
+     la capuche turquoise ressorte sur n'importe quel fond d'écran. */
+  --vox-icone-h: #31477a;
+  --vox-icone-b: #0e1627;
+
+  /* La teinte annoncée par le personnage (contrat de heros.js) :
+     elle sert aux pastilles et aux liserés, jamais à porter du
+     texte, donc elle n'entre pas dans le calcul de contraste. */
+  --heros-blocky: #0f7276;
+}
+
+/* ------------------------- Mode sombre -------------------------
+   Sur fond anthracite, la tunique et le pantalon bleu nuit venaient
+   mourir dans le trait d'encre : VOX devenait une silhouette sans
+   détails. On les remonte, et on remonte aussi le cuir et le sac,
+   qui étaient les deux autres matières trop sombres. Le liseré
+   crème, lui, ne change pas : c'est lui qui détache VOX du fond.
+
+   Même logique que tokens.css : l'appareil en mode sombre ne joue
+   que tant qu'aucun fond n'a été choisi. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --vox-capuche-h: #6ae7d3;
+    --vox-capuche: #21b4ab;
+    --vox-capuche-o: #0f8186;
+    --vox-capuche2-h: #21b4ab;
+    --vox-capuche2: #14878a;
+    --vox-capuche2-o: #0b5f66;
+    --vox-peau-h: #fdddb8;
+    --vox-peau: #efbb8e;
+    --vox-peau-o: #c88c5c;
+    --vox-tunique-h: #7687ad;
+    --vox-tunique: #4c5c7f;
+    --vox-tunique-o: #313d59;
+    --vox-pantalon-h: #566890;
+    --vox-pantalon: #3b4868;
+    --vox-pantalon-o: #28314b;
+    --vox-cuir-h: #dd9c62;
+    --vox-cuir: #a66c37;
+    --vox-cuir-o: #744923;
+    --vox-echarpe-h: #ffc78a;
+    --vox-echarpe: #f68a42;
+    --vox-echarpe-o: #cb6122;
+    --vox-or-h: #ffeeb3;
+    --vox-or: #f8c957;
+    --vox-or-o: #cf992e;
+    --vox-nuit-h: #4a4659;
+    --vox-nuit: #332f44;
+    --vox-nuit-o: #211e2e;
+    --vox-sac-h: #b07842;
+    --vox-sac: #7d5128;
+    --vox-sac-o: #523317;
+    --heros-blocky: #4fdcc6;
+  }
+}
+
+/* Fond sombre explicitement choisi : mêmes valeurs. On ne peut pas
+   factoriser avec le bloc ci-dessus — un sélecteur invalide pour un
+   navigateur ferait tomber les deux. */
+:root[data-fond="sombre"] {
+  --vox-capuche-h: #6ae7d3;
+  --vox-capuche: #21b4ab;
+  --vox-capuche-o: #0f8186;
+  --vox-capuche2-h: #21b4ab;
+  --vox-capuche2: #14878a;
+  --vox-capuche2-o: #0b5f66;
+  --vox-peau-h: #fdddb8;
+  --vox-peau: #efbb8e;
+  --vox-peau-o: #c88c5c;
+  --vox-tunique-h: #7687ad;
+  --vox-tunique: #4c5c7f;
+  --vox-tunique-o: #313d59;
+  --vox-pantalon-h: #566890;
+  --vox-pantalon: #3b4868;
+  --vox-pantalon-o: #28314b;
+  --vox-cuir-h: #dd9c62;
+  --vox-cuir: #a66c37;
+  --vox-cuir-o: #744923;
+  --vox-echarpe-h: #ffc78a;
+  --vox-echarpe: #f68a42;
+  --vox-echarpe-o: #cb6122;
+  --vox-or-h: #ffeeb3;
+  --vox-or: #f8c957;
+  --vox-or-o: #cf992e;
+  --vox-nuit-h: #4a4659;
+  --vox-nuit: #332f44;
+  --vox-nuit-o: #211e2e;
+  --vox-sac-h: #b07842;
+  --vox-sac: #7d5128;
+  --vox-sac-o: #523317;
+  --heros-blocky: #4fdcc6;
+}
+
+/* ------------------------- Empilement -------------------------
+   compagnon.js pose les accessoires en calques AUTOUR du dessin.
+   Un <svg> non positionné se peint avant tout élément positionné :
+   sans cette règle, l'aura et la cape (z-index 1) passeraient
+   DEVANT le personnage. */
+.filou-boite > .heros-blocky {
+  position: relative;
+  z-index: 2;
+}
+
+/* Les blocs doivent rester des blocs : aucun lissage, aucune
+   fantaisie de rendu entre les faces d'un même volume. */
+.heros-blocky,
+.heros-blocky-icone {
+  shape-rendering: crispEdges;
+  display: block;
+  overflow: visible;
+}
+/* …sauf les deux passes de contour : arrondies, elles font le cerne
+   régulier qui tient VOX sur les six fonds. */
+.heros-blocky use {
+  shape-rendering: geometricPrecision;
+}
+
+/* ------------------------- VOX vivant -------------------------
+   Rien de spectaculaire : il respire, il cligne, son écharpe ondule
+   et sa lanterne se balance. C'est ce qui fait la différence entre
+   un personnage et un autocollant. Tout est lent — la respiration
+   dure quatre secondes, le clignement arrive toutes les six à neuf
+   secondes, et chaque VOX tire ses propres durées (voir blocky.js)
+   pour que deux personnages ne soient jamais synchrones. */
+
+.heros-blocky .v-vie,
+.heros-blocky .v-oeil,
+.heros-blocky .v-echarpe,
+.heros-blocky .v-lanterne,
+.heros-blocky .v-lueur,
+.heros-blocky .v-eclat,
+.heros-blocky .v-confetti,
+.heros-blocky .v-bulle {
+  /* Sans fill-box, l'origine d'une rotation SVG se calcule depuis le
+     coin du cadre entier, et le mouvement partirait de travers. */
+  transform-box: fill-box;
+}
+
+/* Il respire par le bas : les pieds (ou le bas du buste) ne bougent
+   pas, le torse se gonfle. */
+.heros-blocky .v-vie { transform-origin: 50% 100%; }
+.heros-blocky .v-oeil { transform-origin: 50% 50%; }
+/* Le nœud de l'écharpe, pas son milieu : c'est de là que pend le pan. */
+.heros-blocky .v-echarpe { transform-origin: 62% 26%; }
+/* L'anneau de la lanterne, tout en haut : un pendule pivote à son
+   point d'accroche, sinon il glisse au lieu de se balancer. */
+.heros-blocky .v-lanterne { transform-origin: 46% 0%; }
+.heros-blocky .v-lueur,
+.heros-blocky .v-eclat,
+.heros-blocky .v-confetti,
+.heros-blocky .v-bulle { transform-origin: 50% 50%; }
+
+/* Toutes les images-clés reviennent à l'état de repos à 0 % ET à
+   100 %. C'est obligatoire : tokens.css ne supprime pas l'animation
+   quand on coupe le mouvement, il ramène sa durée à 0,001 ms — le
+   navigateur affiche alors la dernière image. Une animation qui
+   finirait transparente ferait disparaître le détail au lieu de
+   l'immobiliser. */
+@keyframes vox-respire {
+  0%, 100% { transform: scale(1, 1); }
+  50%      { transform: scale(1.016, 0.988); }
+}
+@keyframes vox-cligne {
+  0%, 92%, 100% { transform: scaleY(1); }
+  94%           { transform: scaleY(0.06); }
+  96%           { transform: scaleY(1); }
+}
+@keyframes vox-souffle {
+  0%, 100% { transform: rotate(0deg); }
+  35%      { transform: rotate(2.6deg); }
+  70%      { transform: rotate(-1.8deg); }
+}
+@keyframes vox-balance {
+  0%, 100% { transform: rotate(0deg); }
+  30%      { transform: rotate(3.4deg); }
+  70%      { transform: rotate(-3deg); }
+}
+@keyframes vox-lueur {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.12); opacity: 0.72; }
+}
+@keyframes vox-scintille {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(0.62); opacity: 0.45; }
+}
+@keyframes vox-tombe {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(5%) rotate(45deg); }
+}
+@keyframes vox-monte {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.9; }
+  50%      { transform: translateY(-9%) scale(1.15); opacity: 0.45; }
+}
+
+html:not([data-animations="non"]) .heros-blocky .v-vie {
+  animation: vox-respire var(--v-resp, 4.2s) ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-blocky .v-oeil {
+  animation: vox-cligne var(--v-cligne, 7s) ease-in-out infinite;
+  animation-delay: var(--v-cligne-retard, 0s);
+}
+html:not([data-animations="non"]) .heros-blocky .v-echarpe {
+  animation: vox-souffle var(--v-souffle, 5.2s) ease-in-out infinite;
+  animation-delay: var(--v-souffle-retard, 0s);
+}
+html:not([data-animations="non"]) .heros-blocky .v-lanterne {
+  animation: vox-balance var(--v-souffle, 5.2s) ease-in-out infinite;
+  animation-delay: var(--v-souffle-retard, 0s);
+}
+html:not([data-animations="non"]) .heros-blocky .v-lueur {
+  animation: vox-lueur 4.8s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-blocky .v-eclat {
+  animation: vox-scintille 2.4s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-blocky .v-eclat-2 { animation-delay: 0.5s; }
+html:not([data-animations="non"]) .heros-blocky .v-eclat-3 { animation-delay: 1s; }
+
+html:not([data-animations="non"]) .heros-blocky .v-confetti {
+  animation: vox-tombe 3.2s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-blocky .v-confetti-2 { animation-delay: 0.4s; }
+html:not([data-animations="non"]) .heros-blocky .v-confetti-3 { animation-delay: 0.9s; }
+html:not([data-animations="non"]) .heros-blocky .v-confetti-4 { animation-delay: 1.5s; }
+
+html:not([data-animations="non"]) .heros-blocky .v-bulle {
+  animation: vox-monte 3.6s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-blocky .v-bulle-2 { animation-delay: 0.7s; }
+html:not([data-animations="non"]) .heros-blocky .v-bulle-3 { animation-delay: 1.4s; }
+
+/* ------------------------- Humeurs qui bougent toutes seules ------------------------- */
+
+/* Il dort : tout ralentit, et l'écharpe ne vit plus que du souffle. */
+html:not([data-animations="non"]) .vox-dort .v-vie { animation-duration: 6.6s; }
+html:not([data-animations="non"]) .vox-dort .v-echarpe { animation-duration: 8s; }
+
+/* Il réfléchit : rien ne bouge que les petits carrés qui montent.
+   On ne met jamais un personnage qui gigote devant un enfant en
+   train de chercher. */
+html:not([data-animations="non"]) .vox-reflechit .v-echarpe,
+html:not([data-animations="non"]) .vox-reflechit .v-lanterne { animation: none; }
+
+/* Il saute : un rebond, avec une vraie pause entre deux. Sans la
+   pause, ça devient un clignotement. */
+@keyframes vox-saut {
+  0%, 60%, 100% { transform: translateY(0) scale(1, 1); }
+  8%            { transform: translateY(1%) scale(1.06, 0.93); }
+  30%           { transform: translateY(-9%) scale(0.96, 1.06); }
+  48%           { transform: translateY(0) scale(1.05, 0.95); }
+}
+.heros-blocky.vox-saute,
+.heros-blocky.vox-surprise {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+html:not([data-animations="non"]) .heros-blocky.vox-saute {
+  animation: vox-saut 1.9s cubic-bezier(.34, 1.56, .64, 1) infinite;
+}
+
+@keyframes vox-sursaut {
+  0%   { transform: scale(0.92, 1.08); }
+  60%  { transform: scale(1.04, 0.97); }
+  100% { transform: scale(1, 1); }
+}
+html:not([data-animations="non"]) .heros-blocky.vox-surprise {
+  animation: vox-sursaut 420ms cubic-bezier(.34, 1.56, .64, 1) 1;
+}
+
+/* Habillé, c'est la BOÎTE qui bouge, pas le dessin : un chapeau est
+   un calque posé à côté du <svg>, il resterait en l'air pendant que
+   VOX redescend. Même raisonnement que pour Filou. */
+html:not([data-animations="non"]) .filou-boite > .heros-blocky.vox-saute,
+html:not([data-animations="non"]) .filou-boite > .heros-blocky.vox-surprise {
+  animation: none;
+}
+
+/* ------------------------- La coupure, pour de vrai -------------------------
+   tokens.css ramène déjà toutes les durées à 0,001 ms. On double ici
+   avec « animation: none », parce qu'une durée quasi nulle laisse
+   malgré tout le navigateur calculer une image : deux captures à une
+   seconde et demie d'intervalle doivent être STRICTEMENT identiques,
+   pas presque.
+
+   On annule l'animation, JAMAIS la transformation : « transform:
+   none » écraserait les attributs transform du dessin. */
+html[data-animations="non"] .heros-blocky,
+html[data-animations="non"] .heros-blocky *,
+html[data-animations="non"] .heros-blocky-icone,
+html[data-animations="non"] .heros-blocky-icone * {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .heros-blocky,
+  .heros-blocky *,
+  .heros-blocky-icone,
+  .heros-blocky-icone * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

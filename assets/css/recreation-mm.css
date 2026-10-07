@@ -335,6 +335,14 @@ html[data-fond="sombre"] {
   width: 100%;
   max-width: 400px;
   aspect-ratio: 1 / 1;
+  /* Le cadre dit « ceci est un plateau de jeu » : une grille de cases
+     claires posées sur une plaque de couleur, comme du papier
+     découpé. La teinte ne porte aucun texte, elle encadre. Le cadre
+     étant une bordure, les deux calques en dessous (le damier et le
+     trait) se calent tout seuls sur l'intérieur. */
+  border: 10px solid var(--jeu-morpion);
+  border-radius: calc(var(--rayon) + 10px);
+  box-shadow: var(--ombre);
 }
 
 .mm-damier {
@@ -410,6 +418,9 @@ html[data-fond="sombre"] {
   pointer-events: none;
 }
 .mm-trait {
+  /* La teinte du jeu, comme le cadre : le trait ne va que d'un centre
+     de case à l'autre, il ne touche jamais le cadre et ne peut donc
+     pas s'y perdre. */
   stroke: var(--jeu-morpion);
   stroke-width: 5;
   stroke-linecap: round;

@@ -526,7 +526,16 @@ window.Jeu = window.Jeu || {};
     svg.setAttribute('class', 'heros-icone heros-icone-robot');
 
     var v = VISAGES.salut;
+    /* Le fond et la diagonale doivent s'arrêter net au coin arrondi :
+       sans découpe, la diagonale dépasse en bas à gauche et l'icône
+       n'est plus carrée. L'identifiant est numéroté pour qu'appeler
+       icone() deux fois ne sème pas de doublon dans la page. */
+    compteurIcone++;
+    var cid = 'rb-coin-' + compteurIcone;
     var a = [];
+    a.push('<defs><clipPath id="' + cid + '">' + rect(0, 0, 512, 512, 112, OUT, 0) +
+      '</clipPath></defs>');
+    a.push('<g clip-path="url(#' + cid + ')">');
     a.push(rect(0, 0, 512, 512, 112, FOND_IC, 0));
     // Une diagonale plus claire : sans elle le fond fait trou noir.
     a.push('<path d="M0 512 L512 0 L512 176 L176 512 Z" fill="' + FOND_IC2 + '" opacity=".55"/>');
@@ -537,11 +546,12 @@ window.Jeu = window.Jeu || {};
     a.push('<g transform="translate(0 46)">' + cou() + '</g>');
     a.push('<g transform="translate(0 90)">' + torse(v, true) + '</g>');
     a.push(tete(v, true));
-    a.push('</g>');
+    a.push('</g></g>');
 
     svg.innerHTML = a.join('');
     return svg;
   }
+  var compteurIcone = 0;
 
   /* ------------------------- L'enregistrement ------------------------- */
 

@@ -164,7 +164,7 @@ Jeu.Compagnon = (function () {
     }
   };
 
-  function morpho(taille) {
+  function morphoChat(taille) {
     return taille < SEUIL_BUSTE ? MORPHO.buste : MORPHO.corps;
   }
 
@@ -405,11 +405,11 @@ Jeu.Compagnon = (function () {
 
   /* ------------------------- Le dessin complet ------------------------- */
 
-  function dessiner(humeur, taille) {
+  function dessinChat(humeur, taille) {
     var nom = VISAGES[humeur] ? humeur : 'salut';
     var v = VISAGES[nom];
     var t = taille || 76;
-    var m = morpho(t);
+    var m = morphoChat(t);
     var mode = (m === MORPHO.buste) ? 'buste' : 'corps';
     var h = m.tete;
 
@@ -473,12 +473,22 @@ Jeu.Compagnon = (function () {
 
   function habille(humeur, taille) {
     var t = taille || 76;
-    var nom = VISAGES[humeur] ? humeur : 'salut';
+
+    /* Le dessin est fabriqué d'abord, et c'est lui qui dit l'humeur
+       finalement retenue : chaque personnage a sa propre liste
+       d'humeurs, et c'est lui qui se rabat sur « salut » quand on
+       lui en demande une qu'il ne connaît pas. La boîte recopie
+       ensuite ce que le dessin a décidé — sans quoi un dragon à qui
+       on demande « reflechit » porterait une boîte « reflechit »
+       autour d'un dessin « salut ». */
+    var dessin = dessiner(humeur, t);
+    var nom = dessin.getAttribute('data-humeur') || 'salut';
+
     var boite = document.createElement('span');
-    /* L'humeur est aussi portée par la boîte : quand Filou est
-       habillé, c'est elle qui saute, se penche ou respire. Si on
+    /* L'humeur est aussi portée par la boîte : quand le personnage
+       est habillé, c'est elle qui saute, se penche ou respire. Si on
        animait le seul dessin, le chapeau resterait en l'air pendant
-       que le chat redescend. */
+       que le héros redescend. */
     boite.className = 'filou-boite filou-humeur-' + nom;
     boite.style.width = t + 'px';
     boite.style.height = t + 'px';
@@ -488,7 +498,7 @@ Jeu.Compagnon = (function () {
     var m = morpho(t);
 
     ORDRE_DERRIERE.forEach(function (cat) { poser(boite, tenues[cat], m, t); });
-    boite.appendChild(dessiner(nom, t));
+    boite.appendChild(dessin);
     ORDRE_DEVANT.forEach(function (cat) { poser(boite, tenues[cat], m, t); });
 
     return boite;
@@ -616,6 +626,87 @@ Jeu.Compagnon = (function () {
   function sauter(noeud, apres) { animer(noeud, 'saute', apres); }
   function saluer(noeud, apres) { animer(noeud, 'salue', apres); }
 
+  /* ------------------------- Filou entre au registre -------------------------
+
+     Le chat n'est plus LE compagnon : il est devenu l'un des
+     personnages au choix, et il s'inscrit comme les autres. Il garde
+     une place à part sur un seul point — il est le filet de
+     sécurité. Si le registre n'est pas chargé, ou si le personnage
+     choisi a disparu d'une version à l'autre, c'est lui qui est
+     dessiné. L'application ne se retrouve jamais sans compagnon. */
+  var LE_CHAT = {
+    id: 'chat',
+    nom: 'Filou',
+    quoi: 'Le chat curieux',
+    teinte: '--heros-chat',
+    HUMEURS: Object.keys(VISAGES),
+    dessiner: dessinChat,
+    morpho: morphoChat,
+    SEUIL_BUSTE: SEUIL_BUSTE
+  };
+
+  if (window.Jeu && Jeu.Heros) Jeu.Heros.enregistrer(LE_CHAT);
+
+  /* ------------------------- La façade -------------------------
+
+     Tout le reste de l'application — le chemin, les séances, la
+     boutique, la garde-robe, l'espace parent — appelle
+     Jeu.Compagnon et ne sait pas qu'il existe plusieurs
+     personnages. C'est ici, et seulement ici, qu'on demande lequel
+     est en service.
+
+     Deux conséquences qui valent la peine d'être dites :
+     - un personnage ajouté plus tard n'oblige à toucher aucun autre
+       fichier ;
+     - un personnage qui plante à l'affichage ne fait pas disparaître
+       le compagnon de l'écran : on retombe sur le chat. Pour un
+       enfant, un écran où le héros a disparu est plus déroutant
+       qu'un héros qui n'est pas celui qu'il attendait. */
+  function perso() {
+    if (window.Jeu && Jeu.Heros) {
+      try {
+        var h = Jeu.Heros.courant();
+        if (h && typeof h.dessiner === 'function') return h;
+      } catch (e) { /* registre absent ou cassé : le chat prend le relais */ }
+    }
+    return LE_CHAT;
+  }
+
+  function dessiner(humeur, taille) {
+    var p = perso();
+    if (p !== LE_CHAT) {
+      try { return p.dessiner(humeur, taille); }
+      catch (e) { /* ce personnage ne sait pas se dessiner : le chat le remplace */ }
+    }
+    return dessinChat(humeur, taille);
+  }
+
+  function morpho(taille) {
+    var p = perso();
+    if (p !== LE_CHAT && typeof p.morpho === 'function') {
+      try {
+        var m = p.morpho(taille);
+        if (m && m.ancres) return m;
+      } catch (e) { /* pas d'ancres : les accessoires se posent comme sur le chat */ }
+    }
+    return morphoChat(taille);
+  }
+
+  /* Les humeurs du personnage en service. Deux personnages n'ont pas
+     forcément les mêmes : le dragon sait cracher une flamme, le chat
+     non. Une humeur qu'il ne connaît pas se rabat sur « salut ». */
+  function humeurs() {
+    var p = perso();
+    return (p.HUMEURS || LE_CHAT.HUMEURS).slice();
+  }
+
+  function connait(humeur) {
+    return humeurs().indexOf(humeur) !== -1;
+  }
+
+  /* Le nom du personnage, pour les textes qui le nomment. */
+  function nom() { return perso().nom || 'Filou'; }
+
   return {
     dessiner: dessiner,
     habille: habille,
@@ -625,6 +716,10 @@ Jeu.Compagnon = (function () {
     saluer: saluer,
     anime: anime,
     morpho: morpho,
+    perso: perso,
+    nom: nom,
+    humeurs: humeurs,
+    connait: connait,
     HUMEURS: Object.keys(VISAGES),
     ANIMATIONS: ANIMATIONS,
     SEUIL_BUSTE: SEUIL_BUSTE

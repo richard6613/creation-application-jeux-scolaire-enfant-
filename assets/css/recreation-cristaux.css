@@ -1,0 +1,665 @@
+/* ---------------------------------------------------------------
+   recreation-cristaux.css — « Les cristaux du Royaume ».
+
+   Le dessin des cristaux est en SVG, mais toutes leurs COULEURS
+   vivent ici : les dégradés du fichier JavaScript n'ont pas de
+   couleur à eux, leurs arrêts prennent la leur dans ces variables.
+   C'est ce qui fait que les six fonds de lecture et le mode sombre
+   suivent sans qu'une ligne de JavaScript soit à reprendre.
+
+   Trois couleurs par rang, et pas une : un éclat (le haut du
+   cristal, là où la lumière entre), une base (la masse de la
+   pierre) et un fond (le bord, là où la lumière s'éteint). C'est
+   ce dégradé à trois temps qui donne la profondeur, et aucune
+   pastille plate ne peut l'imiter.
+
+   La forme, elle, ne dépend jamais de la couleur : rond, triangle,
+   losange, pentagone, hexagone, octogone, puis étoiles à 4, 5, 6,
+   8 et 12 branches, de plus en plus grandes. Un enfant daltonien
+   lit les rangs sans la couleur.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Teinte du jeu : elle ne porte jamais de texte, seulement le
+     bandeau du haut et un liseré. */
+  --jeu-cristaux: #3f4fc4;
+
+  /* Cibles tactiles de la récréation : jamais sous 62 px. */
+  --cx-cible: 62px;
+
+  /* Habillage commun des cristaux. Le noir très dilué de l'ombre et
+     de l'arête marche sur les six fonds : il ne fait que foncer ce
+     qu'il y a dessous, il n'ajoute pas de couleur. */
+  --cx-ombre-gem: rgba(58, 42, 22, 0.26);
+  --cx-arete: rgba(28, 20, 10, 0.34);
+
+  /* 1 — perle de quartz */
+  --cx-r1-clair: #f4f8fc; --cx-r1-base: #ccd8e6; --cx-r1-fond: #8fa3b8;
+  /* 2 — triangle de citrine */
+  --cx-r2-clair: #ffdc7a; --cx-r2-base: #eca91c; --cx-r2-fond: #a86c07;
+  /* 3 — losange de jade */
+  --cx-r3-clair: #86e4b4; --cx-r3-base: #1fa06c; --cx-r3-fond: #0d6342;
+  /* 4 — pentagone turquoise */
+  --cx-r4-clair: #84e4f0; --cx-r4-base: #0f9cba; --cx-r4-fond: #0a6478;
+  /* 5 — hexagone de saphir */
+  --cx-r5-clair: #9ab8f8; --cx-r5-base: #2f5fc8; --cx-r5-fond: #1b3a86;
+  /* 6 — octogone d'améthyste */
+  --cx-r6-clair: #cf9ef2; --cx-r6-base: #7b3fc2; --cx-r6-fond: #4d1f84;
+  /* 7 — étoile rose à quatre branches */
+  --cx-r7-clair: #f8a0cc; --cx-r7-base: #c62f88; --cx-r7-fond: #86125a;
+  /* 8 — étoile rouge à cinq branches */
+  --cx-r8-clair: #f8a0a0; --cx-r8-base: #cf2f3c; --cx-r8-fond: #8a1420;
+  /* 9 — flocon orange à six branches */
+  --cx-r9-clair: #fcc189; --cx-r9-base: #e2661a; --cx-r9-fond: #94380a;
+  /* 10 — soleil d'or à huit branches */
+  --cx-r10-clair: #fbe79a; --cx-r10-base: #d2a018; --cx-r10-fond: #8c650a;
+  /* 11 — grand cristal à douze branches */
+  --cx-r11-clair: #ffffff; --cx-r11-base: #aee6fa; --cx-r11-fond: #7e9ae0;
+}
+
+/* Fond sombre : les pierres doivent rester lumineuses sur de
+   l'anthracite, donc les bases remontent et les fonds s'éclaircissent.
+   Sans cela, les rangs foncés (saphir, améthyste, rubis) se collent au
+   fond de l'écran. */
+html[data-fond="sombre"] {
+  --jeu-cristaux: #a3aef2;
+  --cx-ombre-gem: rgba(0, 0, 0, 0.42);
+  --cx-arete: rgba(0, 0, 0, 0.46);
+
+  --cx-r1-clair: #f2f7fb; --cx-r1-base: #b8c6d6; --cx-r1-fond: #78889c;
+  --cx-r2-clair: #ffe49c; --cx-r2-base: #f0b23c; --cx-r2-fond: #b9801a;
+  --cx-r3-clair: #a6eecb; --cx-r3-base: #35b885; --cx-r3-fond: #197a55;
+  --cx-r4-clair: #a6edf7; --cx-r4-base: #34b6cf; --cx-r4-fond: #15788f;
+  --cx-r5-clair: #b6ccfb; --cx-r5-base: #5c86e8; --cx-r5-fond: #2f4f9e;
+  --cx-r6-clair: #ddbcf8; --cx-r6-base: #a173e0; --cx-r6-fond: #6a3aa0;
+  --cx-r7-clair: #fcbcdc; --cx-r7-base: #e268a8; --cx-r7-fond: #99306c;
+  --cx-r8-clair: #fcbcbc; --cx-r8-base: #e8676f; --cx-r8-fond: #9e2a34;
+  --cx-r9-clair: #fdd4a8; --cx-r9-base: #f08a44; --cx-r9-fond: #a8521a;
+  --cx-r10-clair: #fdefb8; --cx-r10-base: #e8c252; --cx-r10-fond: #a2791c;
+  --cx-r11-clair: #ffffff; --cx-r11-base: #c6f1fc; --cx-r11-fond: #92b6e8;
+}
+
+/* Appareil en mode sombre avant tout choix de fond : même traitement,
+   pour ne pas éblouir au premier lancement. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --jeu-cristaux: #a3aef2;
+    --cx-ombre-gem: rgba(0, 0, 0, 0.42);
+    --cx-arete: rgba(0, 0, 0, 0.46);
+
+    --cx-r1-clair: #f2f7fb; --cx-r1-base: #b8c6d6; --cx-r1-fond: #78889c;
+    --cx-r2-clair: #ffe49c; --cx-r2-base: #f0b23c; --cx-r2-fond: #b9801a;
+    --cx-r3-clair: #a6eecb; --cx-r3-base: #35b885; --cx-r3-fond: #197a55;
+    --cx-r4-clair: #a6edf7; --cx-r4-base: #34b6cf; --cx-r4-fond: #15788f;
+    --cx-r5-clair: #b6ccfb; --cx-r5-base: #5c86e8; --cx-r5-fond: #2f4f9e;
+    --cx-r6-clair: #ddbcf8; --cx-r6-base: #a173e0; --cx-r6-fond: #6a3aa0;
+    --cx-r7-clair: #fcbcdc; --cx-r7-base: #e268a8; --cx-r7-fond: #99306c;
+    --cx-r8-clair: #fcbcbc; --cx-r8-base: #e8676f; --cx-r8-fond: #9e2a34;
+    --cx-r9-clair: #fdd4a8; --cx-r9-base: #f08a44; --cx-r9-fond: #a8521a;
+    --cx-r10-clair: #fdefb8; --cx-r10-base: #e8c252; --cx-r10-fond: #a2791c;
+    --cx-r11-clair: #ffffff; --cx-r11-base: #c6f1fc; --cx-r11-fond: #92b6e8;
+  }
+}
+
+/* ---------------------------------------------------------------
+   LES DÉGRADÉS DES CRISTAUX
+   Les arrêts des dégradés SVG prennent leur couleur ici. `stop-color`
+   accepte une variable CSS comme n'importe quelle autre propriété —
+   ce qui n'est pas vrai d'un attribut de présentation, d'où ces
+   règles plutôt qu'un `stop-color=` dans le balisage.
+   --------------------------------------------------------------- */
+
+.cx-g-1 .cx-s1  { stop-color: var(--cx-r1-clair); }
+.cx-g-1 .cx-s2  { stop-color: var(--cx-r1-base); }
+.cx-g-1 .cx-s3  { stop-color: var(--cx-r1-fond); }
+.cx-g-2 .cx-s1  { stop-color: var(--cx-r2-clair); }
+.cx-g-2 .cx-s2  { stop-color: var(--cx-r2-base); }
+.cx-g-2 .cx-s3  { stop-color: var(--cx-r2-fond); }
+.cx-g-3 .cx-s1  { stop-color: var(--cx-r3-clair); }
+.cx-g-3 .cx-s2  { stop-color: var(--cx-r3-base); }
+.cx-g-3 .cx-s3  { stop-color: var(--cx-r3-fond); }
+.cx-g-4 .cx-s1  { stop-color: var(--cx-r4-clair); }
+.cx-g-4 .cx-s2  { stop-color: var(--cx-r4-base); }
+.cx-g-4 .cx-s3  { stop-color: var(--cx-r4-fond); }
+.cx-g-5 .cx-s1  { stop-color: var(--cx-r5-clair); }
+.cx-g-5 .cx-s2  { stop-color: var(--cx-r5-base); }
+.cx-g-5 .cx-s3  { stop-color: var(--cx-r5-fond); }
+.cx-g-6 .cx-s1  { stop-color: var(--cx-r6-clair); }
+.cx-g-6 .cx-s2  { stop-color: var(--cx-r6-base); }
+.cx-g-6 .cx-s3  { stop-color: var(--cx-r6-fond); }
+.cx-g-7 .cx-s1  { stop-color: var(--cx-r7-clair); }
+.cx-g-7 .cx-s2  { stop-color: var(--cx-r7-base); }
+.cx-g-7 .cx-s3  { stop-color: var(--cx-r7-fond); }
+.cx-g-8 .cx-s1  { stop-color: var(--cx-r8-clair); }
+.cx-g-8 .cx-s2  { stop-color: var(--cx-r8-base); }
+.cx-g-8 .cx-s3  { stop-color: var(--cx-r8-fond); }
+.cx-g-9 .cx-s1  { stop-color: var(--cx-r9-clair); }
+.cx-g-9 .cx-s2  { stop-color: var(--cx-r9-base); }
+.cx-g-9 .cx-s3  { stop-color: var(--cx-r9-fond); }
+.cx-g-10 .cx-s1 { stop-color: var(--cx-r10-clair); }
+.cx-g-10 .cx-s2 { stop-color: var(--cx-r10-base); }
+.cx-g-10 .cx-s3 { stop-color: var(--cx-r10-fond); }
+.cx-g-11 .cx-s1 { stop-color: var(--cx-r11-clair); }
+.cx-g-11 .cx-s2 { stop-color: var(--cx-r11-base); }
+.cx-g-11 .cx-s3 { stop-color: var(--cx-r11-fond); }
+
+/* Le bloc de définitions ne se voit pas : il ne contient que des
+   dégradés et des découpes. */
+.cx-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ------------------------- un cristal ------------------------- */
+
+.cx-gem {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.cx-gem .cx-ombre { fill: var(--cx-ombre-gem); }
+.cx-gem .cx-arete {
+  fill: none;
+  stroke: var(--cx-arete);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+/* La lueur des rangs élevés. Seuls les trois derniers l'ont, et il
+   n'y en a jamais beaucoup à l'écran en même temps : le coût reste
+   négligeable, même sur un téléphone. */
+.cx-t9 .cx-gem  { filter: drop-shadow(0 0 5px var(--cx-r9-base)); }
+.cx-t10 .cx-gem { filter: drop-shadow(0 0 7px var(--cx-r10-base)); }
+.cx-t11 .cx-gem { filter: drop-shadow(0 0 10px var(--cx-r11-base)); }
+
+/* ------------------------- ossature de l'écran ------------------------- */
+
+.cx {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cx-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cx-consigne {
+  margin: 0;
+  font-weight: 600;
+  max-width: var(--largeur-ligne);
+}
+
+.cx-annonce {
+  margin: 0;
+  min-height: calc(1em * var(--interligne));
+  color: var(--texte-doux);
+  max-width: var(--largeur-ligne);
+}
+
+/* ------------------------- la commande ------------------------- */
+
+/* Le but immédiat : « fabrique ce cristal-là ». Il est montré en
+   grand, et rien d'écrit n'est nécessaire pour le comprendre. */
+.cx-commande {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border: 3px solid var(--bordure);
+  border-radius: calc(var(--rayon) + 6px);
+  background: var(--surface);
+  box-shadow: var(--ombre);
+}
+
+.cx-cible {
+  position: relative;
+  flex: 0 0 auto;
+  width: 74px;
+  height: 74px;
+}
+/* Le socle derrière le cristal demandé : un disque de papier
+   découpé, qui le détache du cadre. */
+.cx-cible::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 92%;
+  height: 92%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--surface-2);
+}
+.cx-cible > .cx-gem { position: relative; }
+
+.cx-coche {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 30px;
+  height: 30px;
+  padding: 4px;
+  border-radius: 50%;
+  background: var(--succes);
+  color: var(--accent-contraste);
+  opacity: 0;
+  transform: scale(0.4);
+}
+.cx-coche svg { display: block; width: 100%; height: 100%; }
+
+.cx-compteur {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.cx-compteur-txt {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--texte-doux);
+}
+
+/* ------------------------- le plateau ------------------------- */
+
+.cx-plateau {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  /* Le glissement du doigt appartient au jeu : sans cela, le
+     navigateur ferait défiler la page au premier geste vertical. */
+  touch-action: none;
+  -ms-touch-action: none;
+  border-radius: calc(var(--rayon) + 6px);
+}
+.cx-plateau:focus-visible {
+  outline: 4px solid var(--accent);
+  outline-offset: 6px;
+}
+
+.cx-fond {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--cx-n, 5), 1fr);
+  grid-template-rows: repeat(var(--cx-n, 5), 1fr);
+  gap: var(--cx-gap, 10px);
+}
+.cx-case {
+  display: block;
+  border-radius: calc(var(--rayon) - 2px);
+  background: var(--surface-2);
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.cx-tuiles {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.cx-tuile {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--cx-taille, 60px);
+  height: var(--cx-taille, 60px);
+  /* Seul `transform` bouge : tout le mouvement part au compositeur,
+     rien ne provoque de recalcul de mise en page. */
+  transition: transform 150ms cubic-bezier(.22, 1, .36, 1);
+  will-change: transform;
+}
+/* Les deux cristaux qui vont fusionner passent SOUS celui qui naît. */
+.cx-tuile.cx-part { z-index: 1; }
+.cx-tuile.cx-fusion { z-index: 3; }
+.cx-tuile.cx-neuf { z-index: 2; }
+
+/* La boîte intérieure porte le ressort : la position est sur la
+   tuile, l'échelle est ici, et les deux ne se marchent pas dessus. */
+.cx-pop {
+  width: 100%;
+  height: 100%;
+}
+
+/* ------------------------- le spectacle de la fusion ------------------------- */
+
+/* Le nouveau cristal jaillit : il dépasse sa taille, revient, et se
+   pose. C'est ce rebond qui rend la fusion satisfaisante. */
+@keyframes cx-pop {
+  0%   { transform: scale(0.18); opacity: 0; }
+  46%  { transform: scale(1.22); opacity: 1; }
+  72%  { transform: scale(0.92); }
+  88%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+.cx-tuile.cx-fusion .cx-pop {
+  animation: cx-pop 460ms cubic-bezier(.3, 1, .4, 1) both;
+}
+
+/* Le cristal qui arrive après le coup : plus discret, il ne doit pas
+   voler la vedette à la fusion. */
+@keyframes cx-arrivee {
+  from { transform: scale(0.34); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.cx-tuile.cx-neuf .cx-pop {
+  animation: cx-arrivee 280ms cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+/* L'éclair de lumière au point exact de la fusion. */
+.cx-flash {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--cx-taille, 60px);
+  height: var(--cx-taille, 60px);
+  border-radius: 50%;
+  z-index: 4;
+  pointer-events: none;
+}
+.cx-flash::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.55) 38%,
+    rgba(255, 255, 255, 0) 70%);
+  animation: cx-flash 440ms cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes cx-flash {
+  0%   { transform: scale(0.3); opacity: 0.95; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+/* Les éclats : des morceaux du cristal qui partent du doigt de
+   l'enfant, à la couleur du rang qui vient de naître. */
+.cx-eclats {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--cx-taille, 60px);
+  height: var(--cx-taille, 60px);
+  z-index: 5;
+  pointer-events: none;
+}
+.cx-eclat {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 11%;
+  height: 11%;
+  margin: -5.5% 0 0 -5.5%;
+  border-radius: 2px;
+  animation: cx-eclat 560ms cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes cx-eclat {
+  0% {
+    transform: rotate(var(--cx-a, 0deg)) translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--cx-a, 0deg)) translateY(calc(-1 * var(--cx-d, 30px)))
+               rotate(220deg) scale(0.25);
+    opacity: 0;
+  }
+}
+.cx-t1 .cx-eclat  { background: var(--cx-r1-base); }
+.cx-t2 .cx-eclat  { background: var(--cx-r2-base); }
+.cx-t3 .cx-eclat  { background: var(--cx-r3-base); }
+.cx-t4 .cx-eclat  { background: var(--cx-r4-base); }
+.cx-t5 .cx-eclat  { background: var(--cx-r5-base); }
+.cx-t6 .cx-eclat  { background: var(--cx-r6-base); }
+.cx-t7 .cx-eclat  { background: var(--cx-r7-base); }
+.cx-t8 .cx-eclat  { background: var(--cx-r8-base); }
+.cx-t9 .cx-eclat  { background: var(--cx-r9-base); }
+.cx-t10 .cx-eclat { background: var(--cx-r10-base); }
+.cx-t11 .cx-eclat { background: var(--cx-r11-base); }
+
+/* ------------------------- la commande honorée ------------------------- */
+
+@keyframes cx-cadre-fete {
+  0%   { border-color: var(--succes); background: var(--succes-doux); }
+  74%  { border-color: var(--succes); background: var(--succes-doux); }
+  100% { border-color: var(--bordure); background: var(--surface); }
+}
+.cx-commande.cx-honoree {
+  animation: cx-cadre-fete 1300ms linear both;
+}
+@keyframes cx-boum {
+  0%   { transform: scale(1); }
+  34%  { transform: scale(1.26); }
+  62%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.cx-commande.cx-honoree .cx-cible {
+  animation: cx-boum 620ms cubic-bezier(.34, 1.56, .64, 1) both;
+}
+@keyframes cx-coche-vient {
+  0%   { opacity: 0; transform: scale(0.3); }
+  26%  { opacity: 1; transform: scale(1.18); }
+  44%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.cx-commande.cx-honoree .cx-coche {
+  animation: cx-coche-vient 520ms cubic-bezier(.34, 1.56, .64, 1) both;
+}
+
+/* ------------------------- le geste à apprendre ------------------------- */
+
+/* Aucun mot : un doigt et une flèche. C'est tout ce qu'il faut pour
+   comprendre qu'on glisse la grille entière. */
+.cx-geste {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 6;
+  transition: opacity 320ms cubic-bezier(.22, 1, .36, 1);
+}
+.cx-geste.cx-parti {
+  opacity: 0;
+  visibility: hidden;
+}
+.cx-geste svg {
+  width: 62%;
+  height: auto;
+  max-height: 60%;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+.cx-geste-doigt {
+  fill: var(--surface);
+  stroke: var(--texte);
+  stroke-width: 4;
+}
+.cx-geste-trait {
+  fill: none;
+  stroke: var(--texte);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 2 11;
+}
+.cx-geste-fleche {
+  fill: none;
+  stroke: var(--texte);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+@keyframes cx-main {
+  0%   { transform: translateX(-10px); }
+  100% { transform: translateX(16px); }
+}
+.cx-geste-main {
+  animation: cx-main 1500ms ease-in-out infinite alternate;
+}
+
+/* ------------------------- la vitrine ------------------------- */
+
+/* Tout ce qui a été découvert, et qui ne peut plus se perdre. Une
+   nouvelle grille n'y touche pas, fermer l'application n'y touche
+   pas : c'est la trace de ce qui est acquis. */
+.cx-vitrine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: var(--rayon);
+  background: var(--surface);
+  border: 2px solid var(--bordure);
+}
+.cx-slot {
+  display: block;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  transition: opacity var(--duree-anim) cubic-bezier(.22, 1, .36, 1);
+}
+/* Pas encore découvert : la silhouette reste là, en creux. On voit
+   donc ce qui reste à trouver, sans que ce soit un manque. */
+.cx-slot.cx-inconnu { opacity: 0.17; }
+.cx-slot.cx-inconnu .cx-gem { filter: none; }
+
+/* ------------------------- fin de grille et pied ------------------------- */
+
+.cx-fin:empty { display: none; }
+
+.cx-bravo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 3px solid var(--bordure);
+  border-radius: calc(var(--rayon) + 6px);
+  background: var(--surface-2);
+  box-shadow: var(--ombre);
+}
+.cx-bravo-txt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 16ch;
+}
+.cx-bravo-txt p { margin: 0; font-weight: 700; }
+
+.cx-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+.cx-actions > .btn { flex: 1 1 12ch; min-height: var(--cx-cible); width: auto; }
+
+.cx-pied {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+.cx-pied > .btn { flex: 1 1 14ch; min-height: var(--cx-cible); }
+.cx-quitter, .cx-neuve { background: var(--surface-2); }
+
+/* =====================================================================
+   ANIMATIONS COUPÉES
+   Réglage de l'espace parent, ou préférence de l'appareil. Tout
+   s'arrête, et le jeu reste entièrement jouable : les cristaux se
+   posent d'un coup à leur nouvelle place, le cristal fusionné est là
+   tout de suite, la coche de la commande honorée reste visible (c'est
+   elle qui porte la récompense quand plus rien ne bouge), et le geste
+   à apprendre est un dessin fixe de doigt et de flèche.
+   ===================================================================== */
+
+html[data-animations="non"] .cx-tuile,
+html[data-animations="non"] .cx-slot,
+html[data-animations="non"] .cx-geste {
+  transition: none !important;
+}
+html[data-animations="non"] .cx-tuile .cx-pop,
+html[data-animations="non"] .cx-flash::before,
+html[data-animations="non"] .cx-eclat,
+html[data-animations="non"] .cx-geste-main,
+html[data-animations="non"] .cx-commande.cx-honoree,
+html[data-animations="non"] .cx-commande.cx-honoree .cx-cible {
+  animation: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+/* La récompense doit rester lisible sans mouvement : la coche et le
+   cadre vert sont alors posés, et c'est le JavaScript qui les retire
+   au bout d'un instant. */
+html[data-animations="non"] .cx-commande.cx-honoree {
+  border-color: var(--succes) !important;
+  background: var(--succes-doux) !important;
+}
+html[data-animations="non"] .cx-commande.cx-honoree .cx-coche {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+html[data-animations="non"] .cx-flash,
+html[data-animations="non"] .cx-eclats {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cx-tuile, .cx-slot, .cx-geste { transition: none !important; }
+  .cx-tuile .cx-pop,
+  .cx-flash::before,
+  .cx-eclat,
+  .cx-geste-main,
+  .cx-commande.cx-honoree,
+  .cx-commande.cx-honoree .cx-cible {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .cx-commande.cx-honoree {
+    border-color: var(--succes) !important;
+    background: var(--succes-doux) !important;
+  }
+  .cx-commande.cx-honoree .cx-coche {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .cx-flash, .cx-eclats { display: none !important; }
+}
+
+/* =====================================================================
+   PETITS ÉCRANS ET GROS RÉGLAGES
+   Le texte peut monter à 30 px et l'espacement au maximum : rien ne
+   doit déborder en largeur.
+   ===================================================================== */
+
+@media (max-width: 420px) {
+  .cx-cible { width: 62px; height: 62px; }
+  .cx-slot { width: 23px; height: 23px; }
+  .cx-vitrine { gap: 5px; padding: 7px 8px; }
+  .cx-pied { flex-wrap: wrap; }
+}
+
+@media (max-width: 330px) {
+  .cx-slot { width: 20px; height: 20px; }
+  .cx-coche { width: 26px; height: 26px; }
+}
