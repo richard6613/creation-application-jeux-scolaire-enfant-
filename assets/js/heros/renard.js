@@ -95,6 +95,15 @@ window.Jeu = window.Jeu || {};
       (op ? ' opacity="' + op + '"' : '') + '/>';
   }
 
+  /* Une forme qui porte son propre contour fin. L'attribut de
+     l'élément l'emporte sur celui du groupe : les trois passes ne
+     l'épaississent donc pas. Indispensable pour les petits détails
+     (la langue, l'éclat dans l'œil) qu'un trait de 9 avalerait. */
+  function pf(d, fill) {
+    return '<path d="' + d + '" fill="' + fill + '" stroke="' + OUT +
+      '" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
+  }
+
   /* ------------------------- Les humeurs -------------------------
      Le même renard partout : seuls changent les yeux, la bouche, la
      longueur de l'écharpe et le bras arrière. Le bras AVANT, lui, ne
@@ -196,17 +205,17 @@ window.Jeu = window.Jeu || {};
   function bouche(sorte) {
     if (sorte === 'ouvert') {
       return p('M74 20 L46 22 L38 15 L46 38 L66 33 Z', OUT) +
-        p('M47 28 L63 26 L64 33 L50 36 Z', LANGUE);
+        pf('M46 27 L64 25 L66 34 L50 38 Z', LANGUE);
     }
     if (sorte === 'crie') {
       return p('M78 17 L44 19 L34 12 L44 44 L70 36 Z', OUT) +
-        p('M44 28 L64 25 L68 35 L48 40 Z', LANGUE);
+        pf('M43 27 L65 23 L70 36 L47 42 Z', LANGUE);
     }
     if (sorte === 'doux') {
       /* Un petit sourire remontant, jamais une ligne droite : une
          bouche horizontale, sur un museau, se lit comme un reproche. */
-      return '<path d="M76 26 Q60 32 46 22" fill="none" stroke="' + OUT +
-        '" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>';
+      return '<path d="M80 21 Q64 31 50 25 Q44 23 41 14" fill="none" stroke="' + OUT +
+        '" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>';
     }
     return '<path d="M78 21 L60 26 L48 23 L42 16" fill="none" stroke="' + OUT +
       '" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>';
@@ -274,11 +283,21 @@ window.Jeu = window.Jeu || {};
   /* Le bras ARRIÈRE porte l'humeur ; le bras avant ne bouge pas. */
   var BRAS = {
     bas:    { art: 'M158 266 L140 302 L148 342 L174 336 L164 302 L178 272 Z', x: 140, y: 322, rot: 10, patte: 'poing' },
-    haut:   { art: 'M158 266 L136 236 L122 200 L148 190 L162 228 L178 272 Z', x: 124, y: 196, rot: -16, patte: 'poing' },
-    pouce:  { art: 'M158 266 L142 232 L134 204 L160 196 L168 228 L178 272 Z', x: 140, y: 200, rot: -8, patte: 'pouce' },
-    menton: { art: 'M158 266 L146 292 L166 300 L186 282 L172 276 L178 272 Z', x: 176, y: 274, rot: -40, patte: 'poing' },
-    hanche: { art: 'M158 266 L132 292 L144 324 L172 318 L166 294 L178 272 Z', x: 150, y: 306, rot: 30, patte: 'poing' }
+    hanche: { art: 'M158 266 L126 294 L136 330 L170 322 L164 294 L178 272 Z', x: 128, y: 312, rot: 24, patte: 'poing' },
+    /* Les poses hautes passent DEVANT la tête, et en bleu clair.
+       Dessinées derrière comme les bras baissés, elles disparaissaient
+       purement et simplement : la capuche de Roux couvre tout le haut
+       du cadre, et un bras bleu nuit sur un capuchon bleu nuit ne se
+       voit pas. Un bras levé qu'on ne voit pas ne sert à rien. */
+    haut:   { art: 'M172 254 L96 198 L72 230 L150 286 Z', x: 72, y: 204, rot: -34, patte: 'poing', devant: true, ton: 1 },
+    pouce:  { art: 'M172 260 L104 212 L84 244 L150 290 Z', x: 84, y: 218, rot: -30, patte: 'pouce', devant: true, ton: 1 },
+    menton: { art: 'M170 264 L122 228 L102 258 L150 292 Z', x: 102, y: 234, rot: -22, patte: 'poing', devant: true, ton: 1 }
   };
+
+  function brasArriere(b) {
+    return '<g class="rn-bras-arriere">' + p(b.art, b.ton ? TUN_C : TUN_F) +
+      patte(b.patte, b.x, b.y, b.rot, 0.9) + '</g>';
+  }
 
   function corps(v) {
     var m = [];
@@ -325,9 +344,9 @@ window.Jeu = window.Jeu || {};
     m.push(p('M178 246 L192 240 L256 306 L246 318 Z', CUIR_C));
     m.push(p('M203 268 L226 292 L215 304 L192 280 Z', OR));
     m.push(p('M208 276 L220 288 L213 294 L201 282 Z', CUIR));
-    // le bras arrière : c'est lui qui change d'humeur
-    m.push('<g class="rn-bras-arriere">' + p(b.art, TUN_F) +
-      patte(b.patte, b.x, b.y, b.rot, 0.9) + '</g>');
+    // Le bras arrière : c'est lui qui change d'humeur. Les poses
+    // hautes sont posées plus tard, par-dessus la tête.
+    if (!b.devant) m.push(brasArriere(b));
     /* Le bras AVANT, toujours à la même place : c'est la main qui
        porte l'ancre « tenu ». */
     m.push(p('M250 254 L282 278 L294 318 L266 328 L258 292 L236 268 Z', TUN_C));
@@ -422,9 +441,11 @@ window.Jeu = window.Jeu || {};
         '<g class="rn-tete">' + tete(v) + '</g>' +
         (v.patte ? patte(v.patte, 96, 48, v.patte === 'pouce' ? -10 : -18, 1.05) : '');
     }
+    var b = BRAS[v.bras] || BRAS.bas;
     return corps(v) +
       '<g transform="translate(210 158) scale(0.85)">' +
       '<g class="rn-tete">' + echarpe(v.echarpe) + tete(v) + '</g></g>' +
+      (b.devant ? brasArriere(b) : '') +
       extras(v.extra);
   }
 

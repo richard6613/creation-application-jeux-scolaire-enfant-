@@ -610,26 +610,31 @@ window.Jeu = window.Jeu || {};
     svg.setAttribute('role', 'img');
     svg.setAttribute('aria-label', 'Tison le dragon');
 
-    var h = 290;                 // rayon de la tête dans l'icône
-    var echelle = h / 34;
-    var cx = 256, cy = 268;
+    /* La tête occupe un peu plus de la moitié de la hauteur : assez
+       grosse pour se lire à 60 px sur un écran d'accueil, assez
+       petite pour que les deux cornes tiennent dans le cadre. */
+    var ech = 130 / 34;
 
     svg.innerHTML =
-      '<defs><clipPath id="d-ico-clip"><rect x="0" y="0" width="512" height="512" rx="96"/></clipPath></defs>' +
+      '<defs><clipPath id="d-ico-clip">' +
+      '<rect x="0" y="0" width="512" height="512" rx="96"/></clipPath></defs>' +
       '<g clip-path="url(#d-ico-clip)">' +
       '<rect width="512" height="512" fill="var(--dragon-ico-nuit)"/>' +
       '<path d="M0 0 H512 V196 C356 246 150 244 0 186 Z" fill="var(--dragon-ico-ciel)"/>' +
-      '<circle cx="246" cy="214" r="196" fill="var(--dragon-ico-disque)"/>' +
-      '<path d="M0 512 H512 V404 C336 452 146 456 0 424 Z" fill="var(--dragon-ico-sol)"/>' +
-      /* Les épaules d'abord : la tête doit déborder par le bas. */
-      '<g transform="translate(256,470) scale(3.4)">' +
-      '<path d="M6 100 C8 81 26 70 50 70 C74 70 92 81 94 100 Z" fill="var(--dragon-ecaille)"/>' +
+      '<circle cx="206" cy="168" r="196" fill="var(--dragon-ico-disque)"/>' +
+      '<path d="M0 512 H512 V408 C336 456 146 460 0 428 Z" fill="var(--dragon-ico-sol)"/>' +
+      /* L'aile sort du cadre à droite : c'était déjà la composition
+         de la planche d'origine, et c'est elle qui donne sa diagonale
+         à l'icône. */
+      '<g transform="translate(-100,-86) scale(6.6)">' + miroir(aile('')) + '</g>' +
+      '<g transform="translate(-64,-45) scale(6.4)">' +
+      '<path d="M12 100 C14 82 30 72 50 72 C70 72 86 82 88 100 Z" fill="var(--dragon-ecaille)"/>' +
       '</g>' +
-      '<g transform="translate(' + cx + ',' + cy + ') scale(' + echelle.toFixed(4) + ') translate(-50,-56)">' +
+      '<g transform="translate(232,228) scale(' + ech.toFixed(4) + ') translate(-50,-56)">' +
       tete(VISAGES.salut) +
       '</g>' +
-      /* Braises qui montent à gauche : la signature de Tison. */
-      braise(62, 320, 22, '') + braise(38, 252, 13, '') + braise(78, 196, 10, '') +
+      /* Les braises qui montent à gauche : la signature de Tison. */
+      braise(58, 334, 25, '') + braise(33, 258, 14, '') + braise(72, 194, 10, '') +
       '</g>';
     return svg;
   }

@@ -171,9 +171,9 @@ html[data-fond="sombre"] {
 /* La lueur des rangs élevés. Seuls les trois derniers l'ont, et il
    n'y en a jamais beaucoup à l'écran en même temps : le coût reste
    négligeable, même sur un téléphone. */
-.cx-t9 .cx-gem  { filter: drop-shadow(0 0 5px var(--cx-r9-base)); }
-.cx-t10 .cx-gem { filter: drop-shadow(0 0 7px var(--cx-r10-base)); }
-.cx-t11 .cx-gem { filter: drop-shadow(0 0 10px var(--cx-r11-base)); }
+.cx-t9 .cx-gem  { filter: drop-shadow(0 0 3px var(--cx-r9-clair)); }
+.cx-t10 .cx-gem { filter: drop-shadow(0 0 4px var(--cx-r10-clair)); }
+.cx-t11 .cx-gem { filter: drop-shadow(0 0 6px var(--cx-r11-clair)); }
 
 /* ------------------------- ossature de l'écran ------------------------- */
 

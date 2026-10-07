@@ -149,6 +149,11 @@ Jeu.Parent = (function () {
       } catch (e) { /* une nouveauté ne doit pas fermer l'espace parent */ }
     }
 
+    if (Jeu.Panneau.recreation) {
+      zone.appendChild(el('h2', null, 'La récompense'));
+      zone.appendChild(Jeu.Panneau.recreation());
+    }
+
     zone.appendChild(el('h2', null, 'Ce qui est proposé'));
     zone.appendChild(Jeu.Panneau.dictee());
     zone.appendChild(Jeu.Panneau.priorites());
@@ -448,6 +453,10 @@ Jeu.Parent = (function () {
         Jeu.Collection.reinitialiser();
         Jeu.Grade.reinitialiser();
         if (Jeu.Quetes && Jeu.Quetes.reinitialiser) Jeu.Quetes.reinitialiser();
+        if (Jeu.Jetons && Jeu.Jetons.reinitialiser) Jeu.Jetons.reinitialiser();
+        /* Le héros choisi n'est pas un résultat : c'est l'enfant qui
+           a choisi son personnage, et l'effacement des résultats n'a
+           aucune raison de le lui reprendre. Il reste donc en place. */
         Jeu.App.aller('parent');
       }
     }));

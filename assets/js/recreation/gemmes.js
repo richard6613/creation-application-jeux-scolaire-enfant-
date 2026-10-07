@@ -564,6 +564,13 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
              '<stop offset="1" class="gm-b"/>' +
            '</radialGradient>';
     }
+    /* Le vernis : une seule lumière de verre, partagée par les six
+       formes, qui suit exactement leur silhouette. C'est ce qui fait
+       passer une pierre de « colorée » à « brillante ». */
+    s += '<linearGradient id="gm-vernis" x1="0" y1="0" x2="0.12" y2="1">' +
+           '<stop offset="0" class="gm-v1"/>' +
+           '<stop offset="0.46" class="gm-v2"/>' +
+         '</linearGradient>';
     s += '</defs></svg>';
     return s;
   }
@@ -591,6 +598,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
            '" d="' + ta.facettes[i].d + '"/>';
     }
     s += '<path class="gm-table" d="' + ta.table + '" fill="url(#gm-tab-' + t + ')"/>';
+    s += '<path class="gm-vernis" d="' + ta.contour + '" fill="url(#gm-vernis)"/>';
     s += '<path class="gm-table-bord" d="' + ta.table + '"/>';
     s += '<path class="gm-bord" d="' + ta.contour + '"/>';
     s += '<ellipse class="gm-eclat" cx="' + f.eclat.cx + '" cy="' + f.eclat.cy +

@@ -43,7 +43,7 @@
      l'ombre) et l'ombre portée sous la pierre. */
   --gm-lustre: #ffffff;
   --gm-creux: #1d1526;
-  --gm-ombre: rgba(60, 40, 30, 0.26);
+  --gm-ombre: rgba(60, 40, 30, 0.32);
   --gm-alveole: rgba(90, 70, 50, 0.08);
   --gm-alveole-2: rgba(90, 70, 50, 0.16);
   --gm-voile: rgba(92, 72, 48, 0.12);
@@ -326,7 +326,9 @@ html[data-fond="sombre"] {
   stroke-width: 3.4;
   stroke-linejoin: round;
 }
-.gm-eclat { fill: var(--gm-lustre); opacity: 0.78; }
+#gm-vernis .gm-v1 { stop-color: var(--gm-lustre); stop-opacity: 0.46; }
+#gm-vernis .gm-v2 { stop-color: var(--gm-lustre); stop-opacity: 0; }
+.gm-eclat { fill: var(--gm-lustre); opacity: 0.85; }
 .gm-etincelle { fill: var(--gm-lustre); opacity: 0.55; }
 
 /* Les six habillages. Le liseré prend le ton foncé de la gemme :

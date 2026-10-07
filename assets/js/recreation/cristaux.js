@@ -71,18 +71,25 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
      couleur ET la forme, jamais seulement la couleur.
      --------------------------------------------------------------- */
   var RANGS = [
-    { forme: 'perle',  cotes: 0,  rayon: 27,                     nom: 'perle de quartz' },
-    { forme: 'poly',   cotes: 3,  rayon: 34, rot: -90,           nom: 'triangle de citrine' },
-    { forme: 'poly',   cotes: 4,  rayon: 34, rot: -90,           nom: 'losange de jade' },
-    { forme: 'poly',   cotes: 5,  rayon: 36, rot: -90,           nom: 'pentagone turquoise' },
-    { forme: 'poly',   cotes: 6,  rayon: 37, rot: -90,           nom: 'hexagone de saphir' },
-    { forme: 'poly',   cotes: 8,  rayon: 38, rot: -22.5,         nom: 'octogone d’améthyste' },
-    { forme: 'etoile', cotes: 4,  rayon: 43, creux: 0.40, rot: -90, nom: 'étoile rose à quatre branches' },
-    { forme: 'etoile', cotes: 5,  rayon: 44, creux: 0.46, rot: -90, nom: 'étoile rouge à cinq branches' },
-    { forme: 'etoile', cotes: 6,  rayon: 44, creux: 0.55, rot: -90, nom: 'flocon orange à six branches' },
-    { forme: 'etoile', cotes: 8,  rayon: 45, creux: 0.66, rot: -90, nom: 'soleil d’or à huit branches' },
-    { forme: 'etoile', cotes: 12, rayon: 46, creux: 0.80, rot: -90, nom: 'grand cristal à douze branches' }
+    { forme: 'perle',  cotes: 0,  rayon: 31,                     art: 'une', nom: 'perle de quartz' },
+    { forme: 'poly',   cotes: 3,  rayon: 38, rot: -90,           art: 'un',  nom: 'triangle de citrine' },
+    { forme: 'poly',   cotes: 4,  rayon: 39, rot: -90,           art: 'un',  nom: 'losange de jade' },
+    { forme: 'poly',   cotes: 5,  rayon: 40, rot: -90,           art: 'un',  nom: 'pentagone turquoise' },
+    { forme: 'poly',   cotes: 6,  rayon: 41, rot: -90,           art: 'un',  nom: 'hexagone de saphir' },
+    { forme: 'poly',   cotes: 8,  rayon: 42, rot: -22.5,         art: 'un',  nom: 'octogone d’améthyste' },
+    { forme: 'etoile', cotes: 4,  rayon: 46, creux: 0.42, rot: -90, art: 'une', nom: 'étoile rose à quatre branches' },
+    { forme: 'etoile', cotes: 5,  rayon: 46, creux: 0.48, rot: -90, art: 'une', nom: 'étoile rouge à cinq branches' },
+    { forme: 'etoile', cotes: 6,  rayon: 46, creux: 0.57, rot: -90, art: 'un',  nom: 'flocon orange à six branches' },
+    { forme: 'etoile', cotes: 8,  rayon: 47, creux: 0.68, rot: -90, art: 'un',  nom: 'soleil d’or à huit branches' },
+    { forme: 'etoile', cotes: 12, rayon: 47, creux: 0.82, rot: -90, art: 'un',  nom: 'grand cristal à douze branches' }
   ];
+
+  /* « une flocon » se lit mal, et un lecteur d'écran le dit tel quel :
+     l'article voyage donc avec le nom. */
+  function avecArticle(rang) {
+    var d = RANGS[rang - 1];
+    return d.art + ' ' + d.nom;
+  }
   var RANG_MAX = RANGS.length;
 
   /* Première commande : le rang 3. Trois fusions suffisent, donc la
@@ -432,58 +439,65 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
     return '<path d="' + chemin(sommets(d, e, oy)) + '" ' + attrs + '/>';
   }
 
+  /* La taille de la pierre.
+
+     Un polygone est taillé « en table » : une couronne de facettes en
+     quadrilatères tout autour, et au centre une surface plane, la
+     table. Les arêtes vont de la table vers le bord, jamais jusqu'au
+     centre — c'est ce qui distingue une pierre taillée d'une rosace.
+
+     Une étoile, elle, est taillée en rayons depuis la pointe centrale :
+     ses arêtes convergent, et il n'y a pas de table. Les deux tailles
+     sont calculées, jamais dessinées à la main : ajouter un rang ne
+     demande donc que trois nombres.
+  */
   function facettes(d) {
     if (d.forme === 'perle') return '';     // une perle est lisse : pas de facette
-    var v = sommets(d, 1, 0), out = '', i;
-    for (i = 0; i < v.length; i++) {
-      var a = v[i], b = v[(i + 1) % v.length];
-      var ang = Math.atan2((a[1] + b[1]) / 2 - 50, (a[0] + b[0]) / 2 - 50);
-      var l = Math.cos(ang - LUMIERE);
-      var couleur, op;
-      if (l >= 0) { couleur = '#ffffff'; op = 0.46 * Math.pow(l, 1.2); }
-      else { couleur = '#000000'; op = 0.34 * Math.pow(-l, 1.2); }
-      if (op < 0.02) continue;
-      out += '<path d="M' + pt(50, 50) + 'L' + pt(a[0], a[1]) + 'L' + pt(b[0], b[1]) +
-             'Z" fill="' + couleur + '" fill-opacity="' + a3(op) + '"/>';
-    }
-    return out;
-  }
 
-  /* La table : la facette plate du dessus. C'est elle qui fait lire
-     « pierre taillée » plutôt que « pastille colorée ». */
-  function table(d) {
-    if (d.forme === 'perle') return '';
-    var cotes = Math.max(3, Math.min(d.cotes, 12));
-    var r = d.rayon * (d.forme === 'etoile' ? 0.34 : 0.42);
-    var v = sommetsPoly(cotes, r, d.rot, 0);
-    return '<path d="' + chemin(v) + '" fill="#ffffff" fill-opacity=".17" ' +
-           'stroke="#ffffff" stroke-opacity=".3" stroke-width="1.4" stroke-linejoin="round"/>';
-  }
+    var v = sommets(d, 1, 0), out = '', aretes = '', i, a, b, ang, l, couleur, op;
 
-  /* L'éclat spéculaire et le scintillement sont découpés à la forme
-     du cristal (clip) : sur un triangle ou une étoile, un reflet qui
-     dépasserait casserait net l'illusion de volume. */
-  function eclats(d, rang) {
-    var r = d.rayon;
-    var cx = 50 + Math.cos(LUMIERE) * r * 0.40;
-    var cy = 50 + Math.sin(LUMIERE) * r * 0.40;
-    var out = '<g clip-path="url(#cx-clip-' + rang + ')">';
-    out += '<ellipse cx="' + a2(cx) + '" cy="' + a2(cy) + '" rx="' + a2(r * 0.42) +
-           '" ry="' + a2(r * 0.20) + '" transform="rotate(-34 ' + a2(cx) + ' ' + a2(cy) +
-           ')" fill="#ffffff" fill-opacity=".46"/>';
-    /* Le reflet du bas : la lumière qui remonte du plan posé en
-       dessous. Discret, mais c'est lui qui donne la profondeur. */
-    out += '<ellipse cx="' + a2(100 - cx) + '" cy="' + a2(100 - cy) + '" rx="' + a2(r * 0.22) +
-           '" ry="' + a2(r * 0.11) + '" transform="rotate(-30 ' + a2(100 - cx) + ' ' +
-           a2(100 - cy) + ')" fill="#ffffff" fill-opacity=".22"/>';
-    if (rang >= 7) {
-      var g = r * 0.30, m = g * 0.22;
-      out += '<path d="M' + pt(cx, cy - g) + 'L' + pt(cx + m, cy - m) + 'L' + pt(cx + g, cy) +
-             'L' + pt(cx + m, cy + m) + 'L' + pt(cx, cy + g) + 'L' + pt(cx - m, cy + m) +
-             'L' + pt(cx - g, cy) + 'L' + pt(cx - m, cy - m) +
-             'Z" fill="#ffffff" fill-opacity=".92"/>';
+    function teinte(angle) {
+      var c = Math.cos(angle - LUMIERE);
+      if (c >= 0) return { c: '#ffffff', o: 0.52 * Math.pow(c, 1.05) };
+      return { c: '#000000', o: 0.42 * Math.pow(-c, 1.05) };
     }
-    out += '</g>';
+
+    if (d.forme === 'etoile') {
+      for (i = 0; i < v.length; i++) {
+        a = v[i]; b = v[(i + 1) % v.length];
+        ang = Math.atan2((a[1] + b[1]) / 2 - 50, (a[0] + b[0]) / 2 - 50);
+        var t = teinte(ang);
+        if (t.o >= 0.02) {
+          out += '<path d="M' + pt(50, 50) + 'L' + pt(a[0], a[1]) + 'L' + pt(b[0], b[1]) +
+                 'Z" fill="' + t.c + '" fill-opacity="' + a3(t.o) + '"/>';
+        }
+        aretes += 'M' + pt(50, 50) + 'L' + pt(a[0], a[1]);
+      }
+    } else {
+      var k = 0.42;                       // rayon de la table, en part du rayon
+      var w = [];
+      for (i = 0; i < v.length; i++) w.push([50 + (v[i][0] - 50) * k, 50 + (v[i][1] - 50) * k]);
+      for (i = 0; i < v.length; i++) {
+        var j = (i + 1) % v.length;
+        a = v[i]; b = v[j];
+        ang = Math.atan2((a[1] + b[1]) / 2 - 50, (a[0] + b[0]) / 2 - 50);
+        var u = teinte(ang);
+        if (u.o >= 0.02) {
+          out += '<path d="M' + pt(a[0], a[1]) + 'L' + pt(b[0], b[1]) + 'L' + pt(w[j][0], w[j][1]) +
+                 'L' + pt(w[i][0], w[i][1]) + 'Z" fill="' + u.c + '" fill-opacity="' + a3(u.o) + '"/>';
+        }
+        aretes += 'M' + pt(w[i][0], w[i][1]) + 'L' + pt(a[0], a[1]);
+      }
+      /* La table, posée par-dessus la couronne : c'est elle qui fait
+         lire « pierre taillée » plutôt que « pastille colorée ». */
+      out += '<path d="' + chemin(w) + '" fill="url(#cx-table)" stroke="#ffffff" ' +
+             'stroke-opacity=".34" stroke-width="1.2" stroke-linejoin="round"/>';
+    }
+
+    out = '<path d="' + aretes + '" fill="none" stroke="#ffffff" ' +
+          'stroke-opacity=".28" stroke-width=".9" stroke-linecap="round"/>' + out;
+    /* Les arêtes passent SOUS les facettes claires et la table : une
+       arête qui traverserait la table la ferait disparaître. */
     return out;
   }
 
@@ -535,6 +549,16 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
          '<stop offset=".42" stop-color="#000000" stop-opacity="0"/>' +
          '<stop offset=".82" stop-color="#000000" stop-opacity=".1"/>' +
          '<stop offset="1" stop-color="#000000" stop-opacity=".34"/></radialGradient>';
+    m += '<radialGradient id="cx-brillant" cx=".5" cy=".5" r=".5">' +
+         '<stop offset="0" stop-color="#ffffff" stop-opacity=".85"/>' +
+         '<stop offset=".5" stop-color="#ffffff" stop-opacity=".34"/>' +
+         '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>';
+    m += '<radialGradient id="cx-reflet" cx=".5" cy=".5" r=".5">' +
+         '<stop offset="0" stop-color="#ffffff" stop-opacity=".40"/>' +
+         '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>';
+    m += '<linearGradient id="cx-table" x1="0" y1="0" x2=".7" y2="1">' +
+         '<stop offset="0" stop-color="#ffffff" stop-opacity=".34"/>' +
+         '<stop offset="1" stop-color="#ffffff" stop-opacity=".06"/></linearGradient>';
     for (var r = 1; r <= RANG_MAX; r++) {
       m += '<linearGradient id="cx-grad-' + r + '" class="cx-g cx-g-' + r + '" ' +
            'x1=".15" y1="0" x2=".85" y2="1">' +
@@ -753,7 +777,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       plateau.setAttribute('aria-label',
         'Grille de cristaux, ' + N + ' sur ' + N + '. ' +
         liste.length + (liste.length > 1 ? ' cristaux' : ' cristal') +
-        (m ? ', le plus grand est une ' + RANGS[m - 1].nom : '') +
+        (m ? ', le plus grand est ' + avecArticle(m) : '') +
         '. Glisse avec un doigt, ou utilise les flèches.');
     }
 
@@ -763,7 +787,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       vitrineCible.appendChild(g);
       vitrineCible.className = 'cx-cible cx-t' + commande;
       vitrineCible.appendChild(coche);
-      vitrineCible.setAttribute('aria-label', 'À fabriquer : une ' + RANGS[commande - 1].nom);
+      vitrineCible.setAttribute('aria-label', 'À fabriquer : ' + avecArticle(commande));
       compteurTxt.textContent = sauve.commandes > 0
         ? (sauve.commandes + (sauve.commandes > 1 ? ' commandes' : ' commande'))
         : '';
@@ -910,7 +934,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       if (honoree) {
         fetonsCommande(res.rangMaxFusion);
       } else if (nouveauRecord) {
-        annonce.textContent = 'Un nouveau cristal : une ' + RANGS[m - 1].nom + ' !';
+        annonce.textContent = 'Un nouveau cristal : ' + avecArticle(m) + ' !';
         sonPlusTard('etoile', 430);
       } else if (res.fusions.length > 1) {
         annonce.textContent = res.fusions.length + ' fusions d\'un coup !';

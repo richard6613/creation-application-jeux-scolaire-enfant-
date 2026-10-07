@@ -46,7 +46,14 @@ Jeu.Panneau = (function () {
     i.min = String(min); i.max = String(max); i.step = String(pas);
     i.value = String(Jeu.Reglages.get(cle));
     i.setAttribute('aria-label', titre);
-    function maj() { valeur.textContent = i.value + (suffixe || ''); }
+    function maj() {
+      /* Le suffixe peut être une fonction : c'est ce qui permet
+         d'écrire « 1 jeton » et « 2 jetons » plutôt que l'affreux
+         « jeton(s) » — l'espace parent se lit, lui aussi. */
+      valeur.textContent = typeof suffixe === 'function'
+        ? suffixe(parseFloat(i.value))
+        : i.value + (suffixe || '');
+    }
     maj();
     i.addEventListener('input', function () {
       Jeu.Reglages.set(cle, parseFloat(i.value));
@@ -456,5 +463,49 @@ Jeu.Panneau = (function () {
     return carte;
   }
 
-  return { confort: confort, aides: aides, series: series, priorites: priorites, dictee: dictee, apercu: apercu, interrupteur: interrupteur, curseur: curseur, puces: puces };
+  /* ------------------------- La récréation -------------------------
+
+     La salle de jeux est une récompense, pas une matière. Le parent
+     décide si elle existe, et combien de jetons rapporte une séance
+     terminée.
+
+     Deux choses à savoir en lisant ce panneau :
+
+     - Un jeton se gagne en TERMINANT une séance, jamais en marquant
+       des points. Un enfant qui a eu toutes les réponses fausses
+       mais qui est allé au bout gagne son jeton exactement comme un
+       autre. C'est le travail qui est payé, pas la réussite — sans
+       quoi la récréation deviendrait une note de plus.
+     - Fermer la salle ne confisque rien. Les jetons déjà gagnés
+       restent au compteur et la porte se rouvre là où elle s'était
+       fermée : un réglage du parent ne doit jamais ressembler à une
+       punition. */
+  function recreation() {
+    var carte = el('div', 'carte pile');
+    carte.appendChild(el('h2', null, 'La salle de jeux'));
+
+    carte.appendChild(interrupteur('Ouvrir la salle de jeux', 'recreation',
+      'Les paires, le morpion, le Puissance 4. Un jeton donne droit à une partie.'));
+
+    carte.appendChild(curseur('Jetons gagnés par séance terminée', 'jetonsParSeance',
+      0, 3, 1, function (n) { return n === 0 ? 'aucun' : Jeu.Ui.accord(n, 'jeton'); },
+      'Le jeton récompense le fait d\'aller au bout, pas le nombre de bonnes réponses. À zéro, la salle reste ouverte mais ne s\'ouvre plus en travaillant.'));
+
+    /* L'état du compteur, pour que le parent voie l'effet du réglage
+       sans avoir à ouvrir l'application côté enfant. */
+    if (window.Jeu && Jeu.Jetons) {
+      var etat = el('p', 'petit zone-sourdine');
+      try {
+        var tout = Jeu.Jetons.gagnesEnTout();
+        etat.textContent = 'En ce moment : ' + Jeu.Ui.accord(Jeu.Jetons.solde(), 'jeton') +
+          ' en réserve, ' + Jeu.Ui.accord(tout, 'jeton') +
+          (tout > 1 ? ' gagnés' : ' gagné') + ' en tout.';
+        carte.appendChild(etat);
+      } catch (e) { /* le compteur est un confort, pas une condition */ }
+    }
+
+    return carte;
+  }
+
+  return { confort: confort, aides: aides, series: series, priorites: priorites, dictee: dictee, apercu: apercu, interrupteur: interrupteur, curseur: curseur, puces: puces, recreation: recreation };
 })();
