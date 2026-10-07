@@ -92,6 +92,24 @@ Jeu.Exercices = Jeu.Exercices || [];
                  options: Jeu.Adaptatif.melanger((entree.homophone || []).slice()) };
       }
 
+      /* La phrase à trou, avec d'autres MOTS DE LA LISTE comme
+         voisins. Tous sont correctement écrits : il ne s'agit pas de
+         repérer une faute mais de comprendre la phrase. C'est
+         exactement ce que la maîtresse appelle « dictée à choix
+         multiples ou à trous » pour le groupe bleu. */
+      if (entree.phrase && palier >= 3 && Math.random() < 0.4) {
+        var voisins = entrees().filter(function (m) {
+          return m.mot !== entree.mot && !m.seulementPhrase && m.phrase;
+        });
+        Jeu.Adaptatif.melanger(voisins);
+        var choix = [entree.mot];
+        voisins.slice(0, 2).forEach(function (m) { choix.push(m.mot); });
+        if (choix.length > 1) {
+          return { forme: 'phrase', entree: entree,
+                   options: Jeu.Adaptatif.melanger(choix) };
+        }
+      }
+
       /* La progression : d'abord repérer la lettre difficile dans le
          mot sous les yeux, puis reconstruire le mot par syllabes,
          puis lettre par lettre sans modèle. */
