@@ -1687,7 +1687,13 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
         } catch (e) { /* rien */ }
       }
       try {
-        if (window.Jeu && Jeu.Voix && Jeu.Voix.enchainer) Jeu.Voix.enchainer(phrase, { bouton: bf });
+        if (window.Jeu && Jeu.Voix && Jeu.Voix.enchainer) {
+          /* La phrase est dite dans tous les cas. En revanche, quand le
+             mouvement est coupé, on ne confie pas le bouton à la voix :
+             il s'allumerait pendant qu'elle parle et s'éteindrait
+             après, donc l'écran changerait tout seul. */
+          Jeu.Voix.enchainer(phrase, anime ? { bouton: bf } : {});
+        }
       } catch (e) { /* rien */ }
     }
 

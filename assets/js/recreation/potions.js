@@ -111,35 +111,45 @@ Jeu.Potions = (function () {
      et sans tableau figé dans le fichier.
 
      La montée est douce et mesurée : la solution la plus courte,
-     trouvée par le solveur, fait 5 coups au premier tableau et monte
-     d'un ou deux coups à chaque fois jusqu'à 21 au dernier —
-     5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 19, 21. Une fiole
+     trouvée par le solveur, fait 6 coups au premier tableau et monte
+     d'un ou deux coups à chaque fois jusqu'au dernier —
+     6, 7, 9, 9, 10, 11, 14, 14, 16, 17, 18, 18, 20, 20. Une fiole
      vide de moins est un saut plus grand qu'une potion de plus,
-     d'où l'alternance.
+     d'où l'alternance. `d` est le désordre exigé à la fabrication :
+     c'est un minorant du nombre de coups, donc une commande directe
+     sur la difficulté, vérifiable sans solveur.
 
      Les graines n'ont pas été prises au hasard parmi celles qui
-     donnent la bonne longueur : parmi elles, on a retenu les plus
-     CLÉMENTES. En explorant tout l'espace accessible de chaque
-     tableau, on a compté la part des positions atteignables depuis
-     lesquelles on peut encore ranger sans annuler ; elle est d'au
-     moins 89 % partout, et de 100 % sur la moitié des tableaux. Un
-     coup de travers mène donc presque toujours quelque part.
+     donnent la bonne longueur. Pour chaque candidate, tout l'espace
+     accessible du tableau a été exploré, et trois mesures ont servi
+     à choisir :
+
+       — la CLÉMENCE : la part des positions atteignables depuis
+         lesquelles on peut encore ranger sans annuler. Elle vaut au
+         moins 87 % partout, et 100 % sur la moitié des tableaux ;
+       — les PREMIERS COUPS qui mènent encore au but : tous, sauf
+         aux tableaux les plus serrés ;
+       — la PROFONDEUR DU PREMIER BLOCAGE, qui ne descend jamais
+         sous trois coups. Deux tableaux se bloquaient dès le
+         premier versement avant cette mesure : toucher deux fioles
+         et s'entendre dire que plus rien ne bouge, c'est brutal, et
+         c'est exactement ce qu'on ne veut pas ici.
      --------------------------------------------------------------- */
   var NIVEAUX = [
     { c: 3, v: 2, g: 5,   d: 5  },
-    { c: 3, v: 1, g: 42,  d: 6  },
+    { c: 3, v: 1, g: 8,   d: 6  },
     { c: 4, v: 2, g: 4,   d: 7  },
     { c: 4, v: 1, g: 1,   d: 8  },
     { c: 5, v: 2, g: 1,   d: 9  },
     { c: 5, v: 1, g: 47,  d: 10 },
     { c: 6, v: 2, g: 1,   d: 12 },
-    { c: 6, v: 1, g: 101, d: 13 },
-    { c: 7, v: 2, g: 3,   d: 14 },
-    { c: 7, v: 1, g: 208, d: 15 },
-    { c: 8, v: 2, g: 6,   d: 16 },
-    { c: 8, v: 1, g: 25,  d: 16 },
-    { c: 9, v: 2, g: 1,   d: 19 },
-    { c: 9, v: 1, g: 136, d: 20 }
+    { c: 6, v: 1, g: 79,  d: 13 },
+    { c: 7, v: 2, g: 8,   d: 14 },
+    { c: 7, v: 1, g: 91,  d: 15 },
+    { c: 8, v: 2, g: 2,   d: 16 },
+    { c: 8, v: 1, g: 248, d: 17 },
+    { c: 9, v: 2, g: 1,   d: 18 },
+    { c: 9, v: 1, g: 87,  d: 19 }
   ];
 
   /* ---------------------------------------------------------------
@@ -281,12 +291,28 @@ Jeu.Potions = (function () {
     return q;
   }
 
-  /* La règle de victoire, telle quelle : chaque fiole est vide, ou
-     ne contient qu'une seule potion. */
+  /* La règle de victoire : chaque fiole est vide, ou ENTIÈREMENT
+     d'une seule potion — c'est-à-dire pleine et d'une seule couleur.
+
+     Pourquoi « pleine » et pas seulement « d'une seule couleur » :
+     avec quatre couches par potion, se contenter du monochrome
+     déclare gagné un tableau où, par exemple, deux violettes sont
+     dans une fiole et une troisième dans une autre. L'écran montre
+     alors des fioles à moitié remplies, deux d'entre elles sans
+     bouchon, et on annonce que tout est rangé. Un enfant de huit ans
+     répond « non, elles ne sont pas rangées » — et il a raison. Vu
+     sur une capture de l'écran de réussite, corrigé ici.
+
+     Cela n'enlève rien : depuis un état tout-monochrome, verser la
+     petite fiole dans la grande est toujours permis (même potion au
+     sommet, et la place ne manque jamais), donc on peut toujours
+     finir. */
   function gagne(etat) {
     var i;
     for (i = 0; i < etat.length; i++) {
-      if (etat[i].length && !monochrome(etat[i])) return false;
+      if (!etat[i].length) continue;
+      if (etat[i].length !== H) return false;
+      if (!monochrome(etat[i])) return false;
     }
     return true;
   }
@@ -334,14 +360,33 @@ Jeu.Potions = (function () {
     return n;
   }
 
-  /* Minorant du nombre de coups restants, et il est juste : un coup
-     ne peut faire baisser « segments − fioles non vides » que de 1
-     au plus, et cette quantité vaut 0 exactement quand c'est gagné.
-     C'est ce qui permet au solveur de prouver qu'une solution est la
-     plus courte. */
+  /* Minorant du nombre de coups restants, et il est JUSTE — c'est ce
+     qui permet au solveur de prouver qu'une solution est la plus
+     courte. Deux quantités, dont on prend la plus grande :
+
+       — « segments − fioles non vides » : un versement ne peut la
+         faire baisser que de 1 au plus, et elle vaut 0 quand chaque
+         fiole non vide est d'une seule potion ;
+       — « fioles non vides − potions présentes » : un versement ne
+         change le nombre de fioles non vides que de 1 au plus, et à
+         l'arrivée chaque potion occupe exactement une fiole.
+
+     Les deux valent 0 ensemble exactement quand c'est gagné. */
   function minoration(etat) {
-    var m = segments(etat) - nonVides(etat);
+    var a = segments(etat) - nonVides(etat);
+    var b = nonVides(etat) - couleursPresentes(etat);
+    var m = a > b ? a : b;
     return m > 0 ? m : 0;
+  }
+
+  function couleursPresentes(etat) {
+    var vu = {}, n = 0, i, k;
+    for (i = 0; i < etat.length; i++) {
+      for (k = 0; k < etat[i].length; k++) {
+        if (!vu[etat[i][k]]) { vu[etat[i][k]] = 1; n++; }
+      }
+    }
+    return n;
   }
 
   /* Forme canonique : les fioles sont interchangeables, donc on les
@@ -1564,6 +1609,7 @@ Jeu.Potions = (function () {
       convenable: convenable,
       fabriquer: fabriquer,
       coupsUtiles: coupsUtiles,
+      couleursPresentes: couleursPresentes,
       resoudre: resoudre,
       etiquette: etiquette,
       nomCouche: nomCouche,

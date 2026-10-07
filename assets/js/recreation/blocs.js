@@ -574,7 +574,13 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
     annonce.setAttribute('role', 'status');
     annonce.setAttribute('aria-live', 'polite');
 
+    /* Le panneau calme vient se glisser ICI, entre le damier et le
+       chariot. Plus bas, il passerait derrière la barre du bas de
+       l'application sur un téléphone, et l'enfant ne verrait même pas
+       la porte de sortie qu'on lui propose. Tant qu'il est vide, le
+       CSS lui retire toute hauteur. */
     var zoneFin = el('div', 'bp-fin');
+    bloc.appendChild(zoneFin);
 
     /* Le chariot de pierres : trois blocs proposés, et la porte de
        sortie douce juste à côté. */
@@ -609,7 +615,6 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
     chariot.appendChild(bChanger);
     bloc.appendChild(chariot);
     bloc.appendChild(annonce);
-    bloc.appendChild(zoneFin);
 
     var pied = el('div', 'bp-pied');
     var bNeuve = el('button', 'btn bp-neuf', 'Damier neuf');
@@ -986,7 +991,8 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
           dire('Trois autres blocs.');
           sauver();
           verifierImpasse();
-          try { fentes[0].focus(); } catch (e) { /* rien */ }
+          try { fentes[0].focus({ preventScroll: true }); }
+          catch (e) { try { fentes[0].focus(); } catch (e2) { /* rien */ } }
         });
         actions.appendChild(principal);
         var autre = el('button', 'btn', 'Damier neuf');
@@ -1022,7 +1028,8 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
         }
       } catch (e) { /* rien */ }
       plusTard(function () {
-        try { principal.focus(); } catch (e) { /* rien */ }
+        try { principal.focus({ preventScroll: true }); }
+        catch (e) { try { principal.focus(); } catch (e2) { /* rien */ } }
       }, attente(260));
     }
 

@@ -373,12 +373,14 @@ html[data-fond="sombre"] {
 .po-suite > .btn {
   flex: 1 1 8ch;
   width: auto;
-  /* Sans `min-width: 0`, un mot long comme « Recommencer » impose sa
-     largeur et fait déborder la page : à 320 px avec le texte à
-     30 px et l'espacement des lettres au maximum, ce seul mot mesure
-     plus que l'écran. Il descend alors sous son icône plutôt que de
-     pousser la page — mesuré, pas supposé. */
-  min-width: 0;
+  /* `flex-wrap` sur le bouton lui-même : à 320 px avec le texte à
+     30 px et l'espacement des lettres au maximum, « Recommencer »
+     est plus large que la moitié de l'écran. L'étiquette descend
+     alors sous son icône, ce qui ramène la largeur minimale du
+     bouton à celle du seul mot — et la page ne déborde plus. On ne
+     met surtout PAS `min-width: 0` : le bouton se laisserait alors
+     écraser sous son contenu, et le mot passerait par-dessus le
+     bouton voisin (vu sur une capture, corrigé ici). */
   flex-wrap: wrap;
   min-height: var(--po-cible);
   padding-left: 10px;
@@ -392,12 +394,15 @@ html[data-fond="sombre"] {
   line-height: 1;
   letter-spacing: normal;
 }
+/* « Annuler » occupe sa propre ligne, en entier : c'est le bouton
+   qui enlève la peur de se tromper, il doit être le plus facile à
+   trouver et le plus facile à viser. */
 .po-annuler {
   background: var(--accent-doux);
   border-color: var(--accent);
   color: var(--texte);
   font-weight: 700;
-  flex: 1 1 100%;
+  flex: 0 0 100%;
 }
 .po-annuler[disabled] { opacity: 0.45; }
 /* Position bloquée : on ne gronde pas, on montre où aller. */
