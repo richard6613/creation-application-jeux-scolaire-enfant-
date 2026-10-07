@@ -448,6 +448,11 @@ Jeu.Voix = (function () {
   function stop() {
     generation += 1;            // ce qui attendait dans la file ne partira pas
     file = Promise.resolve();
+    // Un enregistrement en train de jouer s'arrête lui aussi : sans
+    // cela, la voix continuerait après un changement d'écran.
+    try {
+      if (window.Jeu && Jeu.VoixReelle && Jeu.VoixReelle.stop) Jeu.VoixReelle.stop();
+    } catch (e) { /* rien */ }
     if (!synth) return;
     try { synth.cancel(); } catch (e) { /* rien */ }
     if (boutonActif) { boutonActif.classList.remove('parle'); boutonActif = null; }
@@ -759,19 +764,47 @@ Jeu.Voix = (function () {
       if (boutonActif === options.bouton) boutonActif = null;
     }
 
-    var suite = Promise.resolve();
-    bouts.forEach(function (b) {
-      suite = suite.then(function () {
-        if (gen !== generation) return null;      // coupé entre-temps
-        return prononcer(b.texte, options, gen, langue);
-      }).then(function () {
-        if (gen !== generation || !b.pause) return null;
-        return attendre(b.pause);
-      });
-    });
+    /* Un vrai enregistrement passe avant la synthèse de l'appareil.
+       On interroge sur le texte d'origine, pas sur le texte préparé ni
+       sur les morceaux : un enregistrement est fait d'un seul tenant,
+       avec ses propres respirations, et il n'a pas à être découpé.
 
-    return suite.then(function () { relacher(); },
-                      function () { relacher(); });
+       Tant qu'aucun enregistrement n'est livré, cette interrogation
+       répond « non » tout de suite et rien ne change. */
+    function voieEnregistree() {
+      if (!(window.Jeu && Jeu.VoixReelle && Jeu.VoixReelle.jouer)) {
+        return Promise.resolve(false);
+      }
+      try { return Jeu.VoixReelle.jouer(texte, { langue: langue }); }
+      catch (e) { return Promise.resolve(false); }
+    }
+
+    /* La chaîne de synthèse est construite DANS la suite, pas avant :
+       une chaîne de promesses démarre dès qu'on l'écrit. Construite
+       plus haut, elle se mettait à parler en même temps que
+       l'enregistrement, et on entendait les deux. */
+    function parSynthese() {
+      var chaine = Promise.resolve();
+      bouts.forEach(function (b) {
+        chaine = chaine.then(function () {
+          if (gen !== generation) return null;      // coupé entre-temps
+          return prononcer(b.texte, options, gen, langue);
+        }).then(function () {
+          if (gen !== generation || !b.pause) return null;
+          return attendre(b.pause);
+        });
+      });
+      return chaine;
+    }
+
+    return voieEnregistree().then(function (joue) {
+      if (joue || gen !== generation) { relacher(); return null; }
+      return parSynthese().then(function () { relacher(); },
+                                function () { relacher(); });
+    }, function () {
+      return parSynthese().then(function () { relacher(); },
+                                function () { relacher(); });
+    });
   }
 
   /* Un seul morceau, un seul énoncé. Tout le garde-fou
@@ -783,13 +816,22 @@ Jeu.Voix = (function () {
       catch (e) { resoudre(); return; }
 
       u.lang = 'fr-FR';
-      if (!voixFr) choisirVoix();
-      if (voixFr) u.voice = voixFr;
+      /* Poser la voix peut échouer — une voix supprimée de l'appareil
+         depuis qu'on l'a retenue, par exemple. Sans ce filet, l'énoncé
+         entier était perdu et l'application devenait muette : c'est la
+         pire panne possible ici, puisque tout passe par la voix. Mieux
+         vaut la voix du système que le silence. */
+      try {
+        if (!voixFr) choisirVoix();
+        if (voixFr) u.voice = voixFr;
+      } catch (e) { voixFr = null; }
       // Une autre langue que le français, pour l'anglais.
       if (options.langue) {
         u.lang = options.langue;
-        var autre = voixPourLangue(options.langue);
-        if (autre) u.voice = autre;
+        try {
+          var autre = voixPourLangue(options.langue);
+          if (autre) u.voice = autre;
+        } catch (e) { /* on garde la voix par défaut de cette langue */ }
       }
       // Essai d'une voix précise, depuis le panneau parent : on écoute
       // la voix sans encore l'adopter dans les réglages.
