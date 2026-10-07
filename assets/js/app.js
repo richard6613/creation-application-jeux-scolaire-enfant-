@@ -11,6 +11,13 @@ window.Jeu = window.Jeu || {};
 Jeu.App = (function () {
   var ecranCourant = 'accueil';
 
+  /* La récréation en cours. Un jeton ouvre la salle, et une fois
+     dedans on joue à ce qu'on veut, aussi longtemps qu'on veut :
+     faire payer chaque partie séparément serait mesquin et pousserait
+     l'enfant à ne jamais oser commencer. Revenir au chemin referme la
+     salle ; il faudra un nouveau jeton pour y retourner. */
+  var recreOuverte = false;
+
   function el(b, c, t) { return Jeu.Ui.el(b, c, t); }
   function zone() { return document.getElementById('zone-jeu'); }
   function bas() { return document.getElementById('barre-bas'); }
@@ -25,10 +32,14 @@ Jeu.App = (function () {
     b.hidden = true;
 
     teinterEcran(null);
+    // Revenir au chemin referme la récréation.
+    if (ecran === 'accueil') recreOuverte = false;
     if (ecran === 'accueil') { accueil(z); majBarre('Mon royaume', false); }
     else if (ecran === 'tous') { tousLesJeux(z); majBarre('Tous les jeux', true); }
     else if (ecran === 'filou') { garderobe(z); majBarre('Les affaires de Filou', true); }
     else if (ecran === 'quetes') { quetes(z); majBarre('Mes missions', true); }
+    else if (ecran === 'recreation') { salleDeJeux(z); majBarre('La salle de jeux', true); }
+    else if (ecran === 'recreJeu') { jouerRecreation(z, donnee); majBarre(donnee.nom, true); }
     else if (ecran === 'reglages') { reglagesEnfant(z); majBarre('Mon confort', true); }
     else if (ecran === 'parent') { Jeu.Parent.afficher(z); majBarre('Espace parent', true); }
     else if (ecran === 'jeu') {
@@ -83,7 +94,11 @@ Jeu.App = (function () {
     var b = Jeu.Ui.vider(bas());
     b.hidden = false;
     b.appendChild(Jeu.Ui.bouton('Autre jeu', 'btn', function () { aller('tous'); }));
-    b.appendChild(Jeu.Ui.bouton('Filou 🎩', 'btn', function () { aller('filou'); }));
+    if (window.Jeu && Jeu.Jetons && Jeu.Jetons.salleOuverte()) {
+      b.appendChild(Jeu.Ui.bouton('Récréation 🎟️', 'btn', function () { aller('recreation'); }));
+    } else {
+      b.appendChild(Jeu.Ui.bouton('Mes affaires 🎩', 'btn', function () { aller('filou'); }));
+    }
   }
 
   /* Les trois missions du jour, ramassées sur trois lignes. Rien n'y
@@ -219,6 +234,13 @@ Jeu.App = (function () {
       Jeu.Ui.accord(Jeu.Adaptatif.etoiles(), 'étoile')));
     ligne.appendChild(jeton('🪙', Jeu.Garderobe.pieces(),
       Jeu.Ui.accord(Jeu.Garderobe.pieces(), 'pièce'), function () { aller('filou'); }));
+
+    if (window.Jeu && Jeu.Jetons && Jeu.Jetons.salleOuverte()) {
+      var jt = Jeu.Jetons.solde();
+      ligne.appendChild(jeton('🎟️', jt,
+        jt > 0 ? Jeu.Ui.accord(jt, 'jeton') + ' de jeu' : 'Aucun jeton de jeu',
+        function () { aller('recreation'); }));
+    }
 
     if (window.Jeu && Jeu.Quetes && Jeu.Quetes.compte) {
       try {
@@ -437,6 +459,108 @@ Jeu.App = (function () {
       if ((compte[ex.id] || 0) < (compte[moins.id] || 0)) moins = ex;
     });
     return moins;
+  }
+
+  /* ------------------------- La salle de jeux -------------------------
+     On travaille, puis on joue. Un jeton ouvre la porte ; derrière,
+     c'est de la récréation pure : rien ne s'y gagne, rien ne s'y perd,
+     et perdre une partie ne coûte rien du tout. */
+
+  function salleDeJeux(z) {
+    var jeux = (window.Jeu && Jeu.Recreations) ? Jeu.Recreations : [];
+
+    if (!Jeu.Jetons.salleOuverte()) {
+      z.appendChild(el('p', null, 'La salle de jeux est fermée pour le moment.'));
+      retourAuChemin();
+      return;
+    }
+    if (!jeux.length) {
+      z.appendChild(el('p', null, 'Les jeux arrivent bientôt.'));
+      retourAuChemin();
+      return;
+    }
+
+    // Il faut un jeton pour entrer. Une fois entré, on y reste.
+    if (!recreOuverte) {
+      if (!Jeu.Jetons.depenser(1)) { porteFermee(z); return; }
+      recreOuverte = true;
+      try {
+        if (Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('coffre');
+      } catch (e) { /* rien */ }
+    }
+
+    var intro = el('div', 'ligne');
+    intro.appendChild(Jeu.Voix.bouton('C\'est la récréation. Choisis un jeu.', 'Écouter'));
+    intro.appendChild(el('p', null, 'C\'est la récréation !'));
+    z.appendChild(intro);
+
+    var grille = el('div', 'grille-jeux');
+    jeux.forEach(function (r) {
+      var c = el('button', 'carte-jeu carte-recre');
+      c.type = 'button';
+      if (r.teinte) c.style.setProperty('--teinte', 'var(' + r.teinte + ')');
+      var e = el('span', 'emoji-jeu', r.emoji || '🎮');
+      e.setAttribute('aria-hidden', 'true');
+      c.appendChild(e);
+      c.appendChild(el('span', 'nom-jeu', r.nom));
+      if (r.quoi) c.appendChild(el('span', 'quoi-jeu', r.quoi));
+      c.setAttribute('aria-label', r.nom + '. ' + (r.quoi || ''));
+      c.addEventListener('click', function () { aller('recreJeu', r); });
+      grille.appendChild(c);
+    });
+    z.appendChild(grille);
+
+    z.appendChild(el('p', 'petit zone-sourdine',
+      'Ici, rien ne compte : on joue pour le plaisir. Perdre une partie ' +
+      'ne retire rien du tout.'));
+
+    retourAuChemin();
+  }
+
+  /* Pas de jeton : on ne reproche rien, on montre le chemin. Il est
+     toujours à une seule séance de distance. */
+  function porteFermee(z) {
+    var carte = el('div', 'carte pile porte-fermee');
+    var sg = el('div', 'porte-signe', '🎟️');
+    sg.setAttribute('aria-hidden', 'true');
+    carte.appendChild(sg);
+
+    var phrase = Jeu.Jetons.commentEnGagner();
+    var ligne = el('div', 'ligne');
+    ligne.appendChild(Jeu.Voix.bouton('Il te faut un jeton. ' + phrase, 'Écouter'));
+    ligne.appendChild(el('p', null, phrase));
+    carte.appendChild(ligne);
+    z.appendChild(carte);
+
+    var b = Jeu.Ui.vider(bas());
+    b.hidden = false;
+    b.appendChild(Jeu.Ui.bouton('Retour au chemin', 'btn', function () { aller('accueil'); }));
+    b.appendChild(Jeu.Ui.bouton('Jouer une séance', 'btn btn-principal', function () {
+      var jeu = jeuLePlusUtile();
+      if (jeu) aller('jeu', jeu); else aller('accueil');
+    }));
+  }
+
+  function jouerRecreation(z, r) {
+    if (!r || typeof r.afficher !== 'function') { aller('recreation'); return; }
+    if (r.teinte) teinterEcran(r.teinte);
+    try {
+      r.afficher(z, function () { aller('recreation'); });
+    } catch (e) {
+      z.appendChild(el('p', null, 'Ce jeu ne s\'est pas lancé. Essaie un autre.'));
+    }
+    var b = Jeu.Ui.vider(bas());
+    b.hidden = false;
+    b.appendChild(Jeu.Ui.bouton('Autre jeu', 'btn', function () { aller('recreation'); }));
+    b.appendChild(Jeu.Ui.bouton('Retour au chemin', 'btn', function () { aller('accueil'); }));
+  }
+
+  function retourAuChemin() {
+    var b = Jeu.Ui.vider(bas());
+    b.hidden = false;
+    b.appendChild(Jeu.Ui.bouton('Retour au chemin', 'btn btn-principal', function () {
+      aller('accueil');
+    }));
   }
 
   /* L'écran des missions du jour et des hauts faits. Tout ce qui s'y

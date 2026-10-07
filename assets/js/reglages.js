@@ -36,6 +36,10 @@ Jeu.Reglages = (function () {
     animations: true,
     chrono: false,          // jamais activé par défaut
 
+    // La récréation : on travaille, puis on joue.
+    recreation: true,       // la salle de jeux est-elle ouverte
+    jetonsParSeance: 1,     // ce que rapporte une séance TERMINÉE
+
     // Rythme
     longueurSession: 8,     // nombre d'exercices par session
 

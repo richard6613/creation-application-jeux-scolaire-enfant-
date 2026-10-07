@@ -1473,3 +1473,28 @@ html[data-animations="non"] .scene-royaume.scene-fete { animation: none; }
 .mission.finie .mission-prix { color: var(--succes); }
 html[data-animations="non"] .mission-jauge > span { transition: none; }
 @media (prefers-reduced-motion: reduce) { .mission-jauge > span { transition: none !important; } }
+
+/* ---- La récréation ----
+   On travaille, puis on joue. Un jeton ouvre la porte ; derrière,
+   rien ne se gagne et rien ne se perd. */
+.gain-jeton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: var(--attention-doux);
+  border: 3px solid var(--attention);
+  font-weight: 700;
+}
+.gain-jeton-signe { font-size: 1.8rem; line-height: 1; }
+html[data-animations="oui"] .gain-jeton { animation: surgit 460ms var(--ressort) both; }
+
+.carte-jeu.carte-recre { min-height: 118px; }
+
+/* Pas de jeton : on ne reproche rien, on montre le chemin. */
+.porte-fermee { align-items: center; text-align: center; }
+.porte-signe { font-size: 3.4rem; line-height: 1; opacity: 0.55; }
+.porte-fermee .ligne { justify-content: center; }

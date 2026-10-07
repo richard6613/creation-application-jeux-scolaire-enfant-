@@ -334,6 +334,14 @@ Jeu.Session = (function () {
     son('fin');
     signaler('seance.finie', { jeu: s.exercice.id, items: total, justes: justes });
 
+    /* Le droit d'aller jouer se gagne en TERMINANT la séance, pas en
+       la réussissant. Un enfant qui bute ne doit pas être puni deux
+       fois le même soir — ce qu'on encourage, c'est d'aller au bout. */
+    var jetons = 0;
+    try {
+      if (window.Jeu && Jeu.Jetons) jetons = Jeu.Jetons.gagner(Jeu.Jetons.parSeance());
+    } catch (e) { /* une nouveauté absente ne doit pas gâcher la fin de séance */ }
+
     // Sans faute : on monte d'un cran supplémentaire. Ce qui est déjà
     // acquis ne doit pas revenir tel quel la fois suivante.
     if (justes === total) Jeu.Adaptatif.accelerer(s.programme);
@@ -369,7 +377,20 @@ Jeu.Session = (function () {
 
     carte.appendChild(Jeu.Ui.el('p', 'petit zone-sourdine',
       'Tu as gagné ' + Jeu.Ui.accord(justes, 'pièce') +
-      '. Tu en as ' + Jeu.Garderobe.pieces() + ' pour les affaires de Filou.'));
+      '. Tu en as ' + Jeu.Garderobe.pieces() + ' pour tes affaires.'));
+
+    // Le jeton de récréation : annoncé franchement, c'est une
+    // récompense, pas une ligne de comptabilité.
+    if (jetons > 0 && window.Jeu && Jeu.Jetons && Jeu.Jetons.salleOuverte()) {
+      var bloc = Jeu.Ui.el('div', 'gain-jeton');
+      var sg = Jeu.Ui.el('span', 'gain-jeton-signe', '🎟️');
+      sg.setAttribute('aria-hidden', 'true');
+      bloc.appendChild(sg);
+      bloc.appendChild(Jeu.Ui.el('span', null,
+        jetons > 1 ? jetons + ' jetons de jeu !' : 'Un jeton de jeu !'));
+      bloc.setAttribute('role', 'status');
+      carte.appendChild(bloc);
+    }
 
     // Ce qui est maintenant à portée : une raison concrète de recommencer.
     var suivant = Jeu.Garderobe.prochain();

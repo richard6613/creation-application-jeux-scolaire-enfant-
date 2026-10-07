@@ -266,7 +266,7 @@ html[data-fond="sombre"] { --jeu-p4: #ef9b80; }
 }
 
 html[data-animations="oui"] .p4-jeton.chute {
-  animation: p4-chute 440ms cubic-bezier(.34, 1.56, .64, 1) both;
+  animation: p4-chute 400ms cubic-bezier(.34, 1.56, .64, 1) both;
 }
 /* Deux battements lents (environ 1 Hz) : on voit l'alignement
    s'allumer, et jamais de clignotement rapide. */
