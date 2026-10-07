@@ -437,10 +437,10 @@ window.Jeu = window.Jeu || {};
       ech: 0.36, tx: 50, ty: 31, plein: true,
       ancres: {
         chapeau:  { x: 0.500, y: 0.170, l: 0.40 },
-        lunettes: { x: 0.500, y: 0.314, l: 0.26 },
-        cou:      { x: 0.500, y: 0.478, l: 0.32 },
-        tenu:     { x: 0.780, y: 0.485, l: 0.30 },
-        dos:      { x: 0.500, y: 0.590, l: 0.74 },
+        lunettes: { x: 0.500, y: 0.306, l: 0.26 },
+        cou:      { x: 0.500, y: 0.472, l: 0.32 },
+        tenu:     { x: 0.800, y: 0.470, l: 0.30 },
+        dos:      { x: 0.500, y: 0.610, l: 0.74 },
         aura:     { x: 0.500, y: 0.500, l: 1.00 }
       }
     },
@@ -448,8 +448,8 @@ window.Jeu = window.Jeu || {};
       ech: 0.60, tx: 50, ty: 46, plein: false,
       ancres: {
         chapeau:  { x: 0.500, y: 0.195, l: 0.62 },
-        lunettes: { x: 0.500, y: 0.466, l: 0.43 },
-        cou:      { x: 0.500, y: 0.740, l: 0.52 },
+        lunettes: { x: 0.500, y: 0.453, l: 0.43 },
+        cou:      { x: 0.500, y: 0.729, l: 0.52 },
         tenu:     { x: 0.845, y: 0.620, l: 0.42 },
         dos:      { x: 0.500, y: 0.800, l: 1.00 },
         aura:     { x: 0.500, y: 0.500, l: 1.00 }

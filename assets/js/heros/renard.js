@@ -402,21 +402,25 @@ window.Jeu = window.Jeu || {};
     corps: {
       mode: 'corps', ech: 0.225, tx: 14.9, ty: -3.9,
       ancres: {
-        chapeau:  { x: 0.587, y: 0.121, l: 0.36 },
+        /* chapeau : PAS au sommet de la capuche mais un peu en
+           dessous. Posé sur la pointe, un chapeau flottait au-dessus
+           de la tête, parce que la capuche n'est large qu'au tiers
+           de sa hauteur. */
+        chapeau:  { x: 0.590, y: 0.180, l: 0.36 },
         lunettes: { x: 0.633, y: 0.244, l: 0.21 },
-        cou:      { x: 0.610, y: 0.470, l: 0.30 },
+        cou:      { x: 0.578, y: 0.455, l: 0.29 },
         tenu:     { x: 0.756, y: 0.687, l: 0.30 },
-        dos:      { x: 0.580, y: 0.600, l: 0.60 },
+        dos:      { x: 0.575, y: 0.598, l: 0.58 },
         aura:     { x: 0.500, y: 0.500, l: 1.00 }
       }
     },
     buste: {
       mode: 'buste', ech: 0.33, tx: 54.95, ty: 55.94,
       ancres: {
-        chapeau:  { x: 0.490, y: 0.220, l: 0.58 },
-        lunettes: { x: 0.570, y: 0.430, l: 0.31 },
-        cou:      { x: 0.550, y: 0.800, l: 0.42 },
-        tenu:     { x: 0.870, y: 0.720, l: 0.40 },
+        chapeau:  { x: 0.500, y: 0.310, l: 0.58 },
+        lunettes: { x: 0.570, y: 0.434, l: 0.31 },
+        cou:      { x: 0.543, y: 0.823, l: 0.41 },
+        tenu:     { x: 0.880, y: 0.720, l: 0.40 },
         dos:      { x: 0.500, y: 0.800, l: 1.00 },
         aura:     { x: 0.500, y: 0.500, l: 1.00 }
       }
@@ -439,7 +443,7 @@ window.Jeu = window.Jeu || {};
          que du bruit autour d'un visage devenu minuscule. */
       return echarpe(v.echarpe) +
         '<g class="rn-tete">' + tete(v) + '</g>' +
-        (v.patte ? patte(v.patte, 96, 48, v.patte === 'pouce' ? -10 : -18, 1.05) : '');
+        (v.patte ? patte(v.patte, 82, 40, v.patte === 'pouce' ? -10 : -18, 1.05) : '');
     }
     var b = BRAS[v.bras] || BRAS.bas;
     return corps(v) +

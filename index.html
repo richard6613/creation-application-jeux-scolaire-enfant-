@@ -16,8 +16,10 @@
 <link rel="stylesheet" href="assets/css/composants.css">
 <link rel="stylesheet" href="assets/css/monde.css">
 <link rel="stylesheet" href="assets/css/filou.css">
+<link rel="stylesheet" href="assets/css/heros-blocky.css">
 <link rel="stylesheet" href="assets/css/heros-dragon.css">
 <link rel="stylesheet" href="assets/css/heros-robot.css">
+<link rel="stylesheet" href="assets/css/heros-renard.css">
 <link rel="stylesheet" href="assets/css/quetes.css">
 <link rel="stylesheet" href="assets/css/recreation-mm.css">
 <link rel="stylesheet" href="assets/css/recreation-p4.css">
@@ -57,13 +59,19 @@
 <script src="assets/js/sons.js"></script>
 <script src="assets/js/adaptatif.js"></script>
 <script src="assets/js/ui.js"></script>
-<!-- Le registre d'abord : compagnon.js y inscrit le chat, et chaque
-     personnage s'y inscrit ensuite tout seul. L'ordre des fichiers
-     est l'ordre proposé à l'enfant dans l'écran de choix. -->
+<!-- Le registre d'abord, puis chaque personnage, qui s'y inscrit tout
+     seul. L'ordre des fichiers est l'ordre proposé à l'enfant dans
+     l'écran de choix, et le premier est celui qui s'affiche tant
+     qu'il n'a rien choisi : Vox ouvre la marche, c'est celui que le
+     père a retenu. Filou ferme la marche — compagnon.js l'inscrit
+     comme les autres, et il reste le filet de sécurité si un
+     personnage venait à manquer. -->
 <script src="assets/js/heros.js"></script>
-<script src="assets/js/compagnon.js"></script>
+<script src="assets/js/heros/blocky.js"></script>
 <script src="assets/js/heros/dragon.js"></script>
 <script src="assets/js/heros/robot.js"></script>
+<script src="assets/js/heros/renard.js"></script>
+<script src="assets/js/compagnon.js"></script>
 <script src="assets/js/fete.js"></script>
 <script src="assets/js/collection.js"></script>
 <script src="assets/js/garderobe.js"></script>

@@ -155,7 +155,6 @@
 .dragon .d-corps { transform-origin: 50% 100%; }
 .dragon .d-tete { transform-origin: 50% 96%; }
 .dragon .d-queue { transform-origin: 90% 92%; }
-.dragon .d-queue-buste { transform-origin: 72% 100%; }
 .dragon .d-oeil { transform-origin: 50% 50%; }
 /* Chaque aile pivote depuis son épaule, pas depuis son milieu :
    une aile qui bat autour de son centre donne une hélice. */

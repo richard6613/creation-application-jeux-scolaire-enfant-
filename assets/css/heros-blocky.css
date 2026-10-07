@@ -261,15 +261,21 @@
   94%           { transform: scaleY(0.06); }
   96%           { transform: scaleY(1); }
 }
+/* Deux degrés, pas plus : le cerne crème et le trait d'encre sont
+   peints une fois pour toute la silhouette, à l'arrêt. Une pièce qui
+   tourne glisse donc un peu sur son propre contour, et au-delà de
+   deux degrés ce décalage commence à se voir en bordure. C'est le
+   prix d'un cerne d'un seul tenant — et c'est le bon prix : un
+   contour par morceau découperait VOX en pièces détachées. */
 @keyframes vox-souffle {
   0%, 100% { transform: rotate(0deg); }
-  35%      { transform: rotate(2.6deg); }
-  70%      { transform: rotate(-1.8deg); }
+  35%      { transform: rotate(2deg); }
+  70%      { transform: rotate(-1.4deg); }
 }
 @keyframes vox-balance {
   0%, 100% { transform: rotate(0deg); }
-  30%      { transform: rotate(3.4deg); }
-  70%      { transform: rotate(-3deg); }
+  30%      { transform: rotate(2.2deg); }
+  70%      { transform: rotate(-2deg); }
 }
 @keyframes vox-lueur {
   0%, 100% { transform: scale(1); opacity: 1; }
