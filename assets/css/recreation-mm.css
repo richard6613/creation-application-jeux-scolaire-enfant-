@@ -1,0 +1,452 @@
+/* ---------------------------------------------------------------
+   recreation-mm.css — « Les paires » et « Morpion ».
+
+   Deux récréations, une seule feuille : elles partagent la même
+   carte, le même pied de page et les mêmes règles de coupure
+   d'animation, autant ne l'écrire qu'une fois. Le préfixe `mm-`
+   marque ce qui appartient à ces deux jeux.
+
+   Aucune couleur en dur : tout vient des variables de tokens.css,
+   donc les six fonds de lecture et le mode sombre suivent sans que
+   rien ne soit à reprendre ici.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Teintes des deux récréations : elles ne portent jamais de
+     texte, seulement une pastille, un liseré ou un trait épais —
+     le contraste du texte reste donc intact. */
+  --jeu-memory: #6d4fb8;
+  --jeu-morpion: #1d7a6c;
+
+  /* Cibles tactiles de ces jeux : jamais sous 62 px, même si le
+     réglage général descend plus bas. */
+  --mm-cible: 62px;
+}
+
+html[data-fond="sombre"] {
+  --jeu-memory: #b49ae8;
+  --jeu-morpion: #68c7b4;
+}
+/* Appareil en sombre avant tout choix de fond : même traitement. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --jeu-memory: #b49ae8;
+    --jeu-morpion: #68c7b4;
+  }
+}
+
+/* ------------------------- ossature commune ------------------------- */
+
+.mm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.mm-entete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mm-consigne {
+  margin: 0;
+  font-weight: 600;
+  max-width: var(--largeur-ligne);
+}
+
+/* L'annonce aux lecteurs d'écran est aussi lisible à l'œil : c'est
+   le fil de ce qui se passe, pas un texte caché. */
+.mm-annonce {
+  margin: 0;
+  min-height: calc(1em * var(--interligne));
+  color: var(--texte-doux);
+  max-width: var(--largeur-ligne);
+}
+
+.mm-pied {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+.mm-pied > .btn { flex: 1 1 14ch; min-height: var(--mm-cible); }
+.mm-quitter { background: var(--surface-2); }
+
+.mm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+.mm-actions > .btn { flex: 1 1 12ch; min-height: var(--mm-cible); width: auto; }
+
+/* La carte de fin : elle arrive APRÈS, jamais pendant qu'il faut
+   réfléchir. */
+.mm-bravo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 3px solid var(--succes);
+  border-radius: calc(var(--rayon) + 6px);
+  background: var(--succes-doux);
+  box-shadow: var(--ombre);
+}
+.mm-bravo.mm-calme {
+  border-color: var(--bordure);
+  background: var(--surface-2);
+}
+.mm-bravo-txt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 16ch;
+}
+.mm-bravo-txt p { margin: 0; font-weight: 700; }
+
+/* =====================================================================
+   LES PAIRES
+   ===================================================================== */
+
+/* ------------------------- choix de la taille ------------------------- */
+
+.mm-tailles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mm-taille {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
+  letter-spacing: inherit;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: calc(var(--mm-cible) + 14px);
+  padding: 12px 16px;
+  border: 3px solid var(--bordure);
+  border-radius: calc(var(--rayon) + 4px);
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+  text-align: left;
+  transition: transform var(--duree-anim), border-color var(--duree-anim);
+}
+.mm-taille:active { transform: translateY(2px); box-shadow: none; }
+.mm-taille.mm-choisi { border-color: var(--jeu-memory); }
+.mm-taille-txt { display: flex; flex-direction: column; }
+.mm-taille-detail { color: var(--texte-doux); font-size: 0.85rem; }
+
+/* La maquette de grille : on choisit la taille en la voyant, sans
+   avoir à lire un chiffre. */
+.mm-apercu {
+  display: grid;
+  grid-template-columns: repeat(var(--mm-ap-col, 3), 1fr);
+  gap: 3px;
+  width: 64px;
+  flex: 0 0 auto;
+}
+.mm-ap-carte {
+  display: block;
+  aspect-ratio: 3 / 4;
+  border-radius: 3px;
+  background: var(--jeu-memory);
+  opacity: 0.75;
+}
+
+/* ------------------------- le compteur de paires -------------------------
+   Un repère d'avancement : il ne fait que monter, il ne juge rien,
+   et il n'y a ni temps ni nombre de coups à côté.
+   ------------------------------------------------------------------------ */
+
+.mm-compteur {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mm-jauge {
+  flex: 1 1 auto;
+  height: 16px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  overflow: hidden;
+}
+.mm-jauge-pleine {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--succes);
+  transition: width var(--duree-anim) cubic-bezier(.22, 1, .36, 1);
+}
+.mm-compte-txt {
+  flex: 0 0 auto;
+  font-weight: 700;
+  color: var(--texte-doux);
+  font-size: 0.9rem;
+}
+
+/* ------------------------- la grille de cartes ------------------------- */
+
+.mm-grille {
+  display: grid;
+  grid-template-columns: repeat(var(--mm-col, 3), 1fr);
+  gap: 10px;
+}
+
+.mm-carte {
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: none;
+  aspect-ratio: 3 / 4;
+  min-height: var(--mm-cible);
+  cursor: pointer;
+  /* La profondeur du retournement. Modeste : le but est que la
+     carte tourne, pas qu'elle jaillisse de l'écran. */
+  perspective: 700px;
+  -webkit-perspective: 700px;
+  border-radius: calc(var(--rayon) + 2px);
+}
+.mm-carte[disabled] { cursor: default; }
+
+.mm-pivot {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transform: rotateY(0deg);
+  transition: transform 340ms cubic-bezier(.34, 1.56, .64, 1);
+}
+.mm-carte.mm-ouverte .mm-pivot,
+.mm-carte.mm-trouvee .mm-pivot {
+  transform: rotateY(180deg);
+}
+
+.mm-dos, .mm-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: calc(var(--rayon) + 2px);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: var(--ombre);
+}
+
+/* Le dos : papier découpé, un disque posé sur une plaque colorée. */
+.mm-dos {
+  background: var(--jeu-memory);
+  border: 3px solid var(--jeu-memory);
+}
+.mm-motif {
+  display: block;
+  width: 46%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: var(--surface);
+  opacity: 0.55;
+}
+
+.mm-face {
+  transform: rotateY(180deg);
+  background: var(--surface);
+  border: 3px solid var(--bordure);
+  font-size: clamp(2rem, 11vw, 3.1rem);
+  line-height: 1;
+}
+
+.mm-carte.mm-trouvee .mm-face {
+  border-color: var(--succes);
+  background: var(--succes-doux);
+}
+/* Les paires trouvées restent bien visibles, mais s'effacent juste
+   assez pour que l'œil aille vers ce qui reste à chercher. */
+.mm-carte.mm-trouvee { opacity: 0.82; cursor: default; }
+.mm-carte.mm-rate .mm-face { border-color: var(--attention); }
+
+.mm-carte:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
+
+/* =====================================================================
+   MORPION
+   ===================================================================== */
+
+.mm-niveaux {
+  display: flex;
+  gap: 12px;
+}
+.mm-niveau {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
+  letter-spacing: inherit;
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: var(--mm-cible);
+  padding: 10px 12px;
+  border: 3px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+  font-weight: 600;
+}
+.mm-niveau-signe { font-size: 1.3rem; line-height: 1; }
+.mm-niveau:active { transform: translateY(2px); box-shadow: none; }
+/* Le niveau choisi se voit par le liseré épais ET par le fond : pas
+   seulement par une nuance de couleur. */
+.mm-niveau[aria-pressed="true"] {
+  border-color: var(--jeu-morpion);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 3px var(--surface);
+}
+
+.mm-plateau {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 1 / 1;
+}
+
+.mm-damier {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.mm-case {
+  padding: 6px;
+  min-width: var(--mm-cible);
+  min-height: var(--mm-cible);
+  border: 3px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--duree-anim), transform var(--duree-anim);
+}
+.mm-case:active { transform: translateY(2px); box-shadow: none; }
+.mm-case[disabled] { cursor: default; }
+/* Une case prise reste pleinement lisible : on ne l'estompe pas,
+   c'est le dessin qui compte. */
+.mm-case[disabled][data-mm=""] { background: var(--surface-2); }
+.mm-case:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
+
+/* Les deux symboles. Le rond et la croix se distinguent d'abord par
+   leur forme et par l'épaisseur du trait ; la couleur n'est qu'un
+   renfort, et elle est prise dans les variables pour rester
+   contrastée sur les six fonds. */
+.mm-sym {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.mm-trace {
+  fill: none;
+  stroke-width: 13;
+  stroke-linecap: round;
+}
+.mm-sym-o .mm-trace { stroke: var(--accent); }
+.mm-sym-x .mm-trace { stroke: var(--texte); }
+
+/* Apparition du symbole : un ressort court, au moment de la pose. */
+.mm-sym { animation: mm-pose 260ms cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes mm-pose {
+  from { transform: scale(0.55); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* ------------------------- le trait d'alignement ------------------------- */
+
+.mm-toile {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Décoratif et par-dessus : il ne doit jamais intercepter un
+     appui destiné à une case. */
+  pointer-events: none;
+}
+.mm-trait {
+  stroke: var(--jeu-morpion);
+  stroke-width: 7;
+  stroke-linecap: round;
+  fill: none;
+  /* Le trait se dessine d'un bout à l'autre. 200 couvre largement
+     la plus longue diagonale du repère (0–100). */
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: mm-tracer 420ms cubic-bezier(.22, 1, .36, 1) forwards;
+}
+@keyframes mm-tracer {
+  to { stroke-dashoffset: 0; }
+}
+
+/* =====================================================================
+   ANIMATIONS COUPÉES
+   Réglage parent, ou préférence de l'appareil. Tout s'arrête, et les
+   deux jeux restent entièrement jouables : la carte se retourne d'un
+   coup, le symbole apparaît posé, le trait d'alignement est déjà
+   tracé.
+   ===================================================================== */
+
+html[data-animations="non"] .mm-pivot,
+html[data-animations="non"] .mm-jauge-pleine,
+html[data-animations="non"] .mm-case,
+html[data-animations="non"] .mm-taille {
+  transition: none !important;
+}
+html[data-animations="non"] .mm-sym {
+  animation: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+html[data-animations="non"] .mm-trait {
+  animation: none !important;
+  stroke-dasharray: none !important;
+  stroke-dashoffset: 0 !important;
+}
+html[data-animations="non"] .mm-carte:active .mm-pivot,
+html[data-animations="non"] .mm-case:active,
+html[data-animations="non"] .mm-taille:active,
+html[data-animations="non"] .mm-niveau:active {
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mm-pivot, .mm-jauge-pleine, .mm-case, .mm-taille { transition: none !important; }
+  .mm-sym { animation: none !important; transform: none !important; opacity: 1 !important; }
+  .mm-trait {
+    animation: none !important;
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* =====================================================================
+   PETITS ÉCRANS ET GROS RÉGLAGES
+   Le texte peut être poussé à 30 px et l'espacement au maximum : les
+   deux jeux doivent tenir sans débordement horizontal.
+   ===================================================================== */
+
+@media (max-width: 420px) {
+  .mm-grille { gap: 8px; }
+  .mm-damier { gap: 6px; }
+  .mm-niveaux { flex-wrap: wrap; }
+  .mm-niveau { flex: 1 1 11ch; }
+  .mm-apercu { width: 56px; }
+}
