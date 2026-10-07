@@ -1,0 +1,1589 @@
+{
+ "genere": "2026-10-07",
+ "entrees": [
+  {
+   "cle": "chapeau",
+   "texte": "chapeau",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "bateau",
+   "texte": "bateau",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "maison",
+   "texte": "maison",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "lapin",
+   "texte": "lapin",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "voiture",
+   "texte": "voiture",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "cheval",
+   "texte": "cheval",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "canard",
+   "texte": "canard",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "mouton",
+   "texte": "mouton",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "fromage",
+   "texte": "fromage",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "banane",
+   "texte": "banane",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "citron",
+   "texte": "citron",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "gateau",
+   "texte": "gâteau",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "bonbon",
+   "texte": "bonbon",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "cahier",
+   "texte": "cahier",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "crayon",
+   "texte": "crayon",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "jardin",
+   "texte": "jardin",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "foret",
+   "texte": "forêt",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "nuage",
+   "texte": "nuage",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "soleil",
+   "texte": "soleil",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "chaton",
+   "texte": "chaton",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "souris",
+   "texte": "souris",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "poisson",
+   "texte": "poisson",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "girafe",
+   "texte": "girafe",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "tortue",
+   "texte": "tortue",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "fourmi",
+   "texte": "fourmi",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "ballon",
+   "texte": "ballon",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "tomate",
+   "texte": "tomate",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "carotte",
+   "texte": "carotte",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "melon",
+   "texte": "melon",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "marteau",
+   "texte": "marteau",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "cartable",
+   "texte": "cartable",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "tableau",
+   "texte": "tableau",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "manteau",
+   "texte": "manteau",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "guitare",
+   "texte": "guitare",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "dauphin",
+   "texte": "dauphin",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "ruban",
+   "texte": "ruban",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "robot",
+   "texte": "robot",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "chateau",
+   "texte": "château",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "velo",
+   "texte": "vélo",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "panier",
+   "texte": "panier",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "fusee",
+   "texte": "fusée",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "bougie",
+   "texte": "bougie",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "journal",
+   "texte": "journal",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "moulin",
+   "texte": "moulin",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "sardine",
+   "texte": "sardine",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "chocolat",
+   "texte": "chocolat",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "elephant",
+   "texte": "éléphant",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "papillon",
+   "texte": "papillon",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "escargot",
+   "texte": "escargot",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "domino",
+   "texte": "domino",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "lavabo",
+   "texte": "lavabo",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "pyjama",
+   "texte": "pyjama",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "confiture",
+   "texte": "confiture",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "telephone",
+   "texte": "téléphone",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "dinosaure",
+   "texte": "dinosaure",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "herisson",
+   "texte": "hérisson",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "ecureuil",
+   "texte": "écureuil",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "tournesol",
+   "texte": "tournesol",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "parapluie",
+   "texte": "parapluie",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "koala",
+   "texte": "koala",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "crocodile",
+   "texte": "crocodile",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "ordinateur",
+   "texte": "ordinateur",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "helicoptere",
+   "texte": "hélicoptère",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "anniversaire",
+   "texte": "anniversaire",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "calculatrice",
+   "texte": "calculatrice",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "aspirateur",
+   "texte": "aspirateur",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "thermometre",
+   "texte": "thermomètre",
+   "langue": "fr-FR",
+   "groupe": "lexique"
+  },
+  {
+   "cle": "moto",
+   "texte": "moto",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "lune",
+   "texte": "lune",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "bebe",
+   "texte": "bébé",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "pirate",
+   "texte": "pirate",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "radis",
+   "texte": "radis",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "robe",
+   "texte": "robe",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "sac",
+   "texte": "sac",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "lit",
+   "texte": "lit",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "pomme",
+   "texte": "pomme",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "kepi",
+   "texte": "képi",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "salade",
+   "texte": "salade",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "chat",
+   "texte": "chat",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "chien",
+   "texte": "chien",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "poule",
+   "texte": "poule",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "gant",
+   "texte": "gant",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "pain",
+   "texte": "pain",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "main",
+   "texte": "main",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "oiseau",
+   "texte": "oiseau",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "feu",
+   "texte": "feu",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "fleur",
+   "texte": "fleur",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "montagne",
+   "texte": "montagne",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "abeille",
+   "texte": "abeille",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "etoile",
+   "texte": "étoile",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "coquillage",
+   "texte": "coquillage",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "fauteuil",
+   "texte": "fauteuil",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "bouteille",
+   "texte": "bouteille",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "grenouille",
+   "texte": "grenouille",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "citrouille",
+   "texte": "citrouille",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "trottinette",
+   "texte": "trottinette",
+   "langue": "fr-FR",
+   "groupe": "motsALire"
+  },
+  {
+   "cle": "lila-a-un-chat-gris",
+   "texte": "Lila a un chat gris.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "il-dort-sur-le-tapis",
+   "texte": "Il dort sur le tapis.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "le-soir-il-joue-avec-une-balle",
+   "texte": "Le soir, il joue avec une balle.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "papa-va-au-marche",
+   "texte": "Papa va au marché.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "il-achete-des-tomates-et-du-pain",
+   "texte": "Il achète des tomates et du pain.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "le-panier-est-tres-lourd",
+   "texte": "Le panier est très lourd.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "tom-a-construit-une-cabane",
+   "texte": "Tom a construit une cabane.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "elle-est-cachee-derriere-le-grand-arbre",
+   "texte": "Elle est cachée derrière le grand arbre.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "ses-amis-viennent-jouer-dedans",
+   "texte": "Ses amis viennent jouer dedans.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "ils-inventent-des-histoires-de-pirates",
+   "texte": "Ils inventent des histoires de pirates.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "nino-dessine-une-fusee-rouge",
+   "texte": "Nino dessine une fusée rouge.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "elle-decolle-vers-la-lune",
+   "texte": "Elle décolle vers la lune.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "a-bord-il-y-a-un-petit-robot",
+   "texte": "À bord, il y a un petit robot.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "le-robot-salue-les-etoiles",
+   "texte": "Le robot salue les étoiles.",
+   "langue": "fr-FR",
+   "groupe": "phrasesLecture"
+  },
+  {
+   "cle": "le-chat-dort",
+   "texte": "Le chat dort.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "papa-lit-le-journal",
+   "texte": "Papa lit le journal.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "le-chien-court-vite",
+   "texte": "Le chien court vite.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "maman-coupe-le-gateau",
+   "texte": "Maman coupe le gâteau.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "la-fleur-sent-bon",
+   "texte": "La fleur sent bon.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "le-chat-dort-sur-le-tapis",
+   "texte": "Le chat dort sur le tapis.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "la-fille-joue-dans-le-jardin",
+   "texte": "La fille joue dans le jardin.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "le-bateau-avance-sur-la-mer",
+   "texte": "Le bateau avance sur la mer.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "mon-frere-range-son-cartable",
+   "texte": "Mon frère range son cartable.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "le-soleil-brille-ce-matin",
+   "texte": "Le soleil brille ce matin.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "le-petit-lapin-mange-une-carotte-orange",
+   "texte": "Le petit lapin mange une carotte orange.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "nous-allons-a-la-foret-avec-mamie",
+   "texte": "Nous allons à la forêt avec mamie.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "la-voiture-rouge-roule-sur-la-route",
+   "texte": "La voiture rouge roule sur la route.",
+   "langue": "fr-FR",
+   "groupe": "phrasesConstruire"
+  },
+  {
+   "cle": "est-ce-que-tu-connais-le-bolero-de-ravel",
+   "texte": "Est-ce que tu connais le Boléro de Ravel?",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "le-pianiste-joue-un-morceau-tres-doux",
+   "texte": "Le pianiste joue un morceau très doux.",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "quelle-belle-melodie",
+   "texte": "Quelle belle mélodie!",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "sais-tu-jouer-du-violon",
+   "texte": "Sais-tu jouer du violon?",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "comme-ce-tambour-est-fort",
+   "texte": "Comme ce tambour est fort!",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "mon-frere-apprend-la-trompette",
+   "texte": "Mon frère apprend la trompette.",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "qui-a-compose-cette-uvre",
+   "texte": "Qui a composé cette œuvre?",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "bravo-pour-ce-concert",
+   "texte": "Bravo pour ce concert!",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "dans-l-orchestre-il-y-a-des-violons",
+   "texte": "Dans l'orchestre, il y a des violons.",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "il-joue-de-trois-instruments-le-piano-la-flute-et-la-corde",
+   "texte": "Il joue de trois instruments: le piano, la flûte et la corde.",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "d-abord-il-imagine-la-melodie-ensuite-il-la-joue",
+   "texte": "D'abord il imagine la mélodie, ensuite il la joue.",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "voici-ce-qu-il-faut-du-bois-du-cuivre-et-des-cordes",
+   "texte": "Voici ce qu'il faut: du bois, du cuivre et des cordes.",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "le-tambour-la-flute-et-le-violon-jouent-ensemble",
+   "texte": "Le tambour, la flûte et le violon jouent ensemble.",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "il-a-une-idee-inventer-un-morceau",
+   "texte": "Il a une idée: inventer un morceau.",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "pendant-le-concert-le-monde-ecoute-en-silence",
+   "texte": "Pendant le concert, le monde écoute en silence.",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "la-musique-est-partout-dans-la-rue-a-l-ecole-a-la-maison",
+   "texte": "La musique est partout: dans la rue, à l'école, à la maison.",
+   "langue": "fr-FR",
+   "groupe": "ponctuation"
+  },
+  {
+   "cle": "le-violon-est-un-instrument",
+   "texte": "Le violon est un instrument.",
+   "langue": "fr-FR",
+   "groupe": "majuscules"
+  },
+  {
+   "cle": "marie-joue-de-la-flute",
+   "texte": "Marie joue de la flûte.",
+   "langue": "fr-FR",
+   "groupe": "majuscules"
+  },
+  {
+   "cle": "ce-morceau-est-tres-connu",
+   "texte": "Ce morceau est très connu.",
+   "langue": "fr-FR",
+   "groupe": "majuscules"
+  },
+  {
+   "cle": "nous-ecoutons-un-ballet",
+   "texte": "Nous écoutons un ballet.",
+   "langue": "fr-FR",
+   "groupe": "majuscules"
+  },
+  {
+   "cle": "la-melodie-est-douce",
+   "texte": "La mélodie est douce.",
+   "langue": "fr-FR",
+   "groupe": "majuscules"
+  },
+  {
+   "cle": "il-invente-une-chanson",
+   "texte": "Il invente une chanson.",
+   "langue": "fr-FR",
+   "groupe": "majuscules"
+  },
+  {
+   "cle": "cabane",
+   "texte": "cabane",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "tapis",
+   "texte": "tapis",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "nid",
+   "texte": "nid",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "valise",
+   "texte": "valise",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "jupe",
+   "texte": "jupe",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "jouet",
+   "texte": "jouet",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "enfant",
+   "texte": "enfant",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "pont",
+   "texte": "pont",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "roi",
+   "texte": "roi",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "coussin",
+   "texte": "coussin",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "chaussure",
+   "texte": "chaussure",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "cousin",
+   "texte": "cousin",
+   "langue": "fr-FR",
+   "groupe": "confusions"
+  },
+  {
+   "cle": "le-visage",
+   "texte": "le visage",
+   "langue": "fr-FR",
+   "groupe": "dictee"
+  },
+  {
+   "cle": "les-epaules",
+   "texte": "les épaules",
+   "langue": "fr-FR",
+   "groupe": "dictee"
+  },
+  {
+   "cle": "petite",
+   "texte": "petite",
+   "langue": "fr-FR",
+   "groupe": "dictee"
+  },
+  {
+   "cle": "une-fille",
+   "texte": "une fille",
+   "langue": "fr-FR",
+   "groupe": "dictee"
+  },
+  {
+   "cle": "la-bouche",
+   "texte": "la bouche",
+   "langue": "fr-FR",
+   "groupe": "dictee"
+  },
+  {
+   "cle": "le-nez",
+   "texte": "le nez",
+   "langue": "fr-FR",
+   "groupe": "dictee"
+  },
+  {
+   "cle": "la-joue",
+   "texte": "la joue",
+   "langue": "fr-FR",
+   "groupe": "dictee"
+  },
+  {
+   "cle": "belle",
+   "texte": "belle",
+   "langue": "fr-FR",
+   "groupe": "dictee"
+  },
+  {
+   "cle": "dans",
+   "texte": "dans",
+   "langue": "fr-FR",
+   "groupe": "dictee"
+  },
+  {
+   "cle": "et",
+   "texte": "et",
+   "langue": "fr-FR",
+   "groupe": "dictee"
+  },
+  {
+   "cle": "est",
+   "texte": "est",
+   "langue": "fr-FR",
+   "groupe": "dictee"
+  },
+  {
+   "cle": "elle-a-un-beau-le-visage",
+   "texte": "Elle a un beau le visage.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "elle-a-les-epaules-droites",
+   "texte": "Elle a les épaules droites.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "la-petite-fille-sourit",
+   "texte": "La petite fille sourit.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "c-est-une-fille-qui-regarde",
+   "texte": "C'est une fille qui regarde.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "elle-ouvre-la-bouche",
+   "texte": "Elle ouvre la bouche.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "elle-a-le-nez-tout-droit",
+   "texte": "Elle a le nez tout droit.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "elle-pose-la-main-sur-la-joue",
+   "texte": "Elle pose la main sur la joue.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "la-sculpture-est-tres-belle",
+   "texte": "La sculpture est très belle.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "le-visage-est-sculpte-dans-le-marbre",
+   "texte": "Le visage est sculpté dans le marbre.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "le-nez-et-la-bouche",
+   "texte": "Le nez et la bouche.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "la-fille-est-petite",
+   "texte": "La fille est petite.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "elle-a-les-epaules-et-le-cou-droits",
+   "texte": "Elle a les épaules et le cou droits.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "le-marbre-est-beau",
+   "texte": "Le marbre est beau.",
+   "langue": "fr-FR",
+   "groupe": "dicteePhrases"
+  },
+  {
+   "cle": "en/red",
+   "texte": "red",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/blue",
+   "texte": "blue",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/green",
+   "texte": "green",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/yellow",
+   "texte": "yellow",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/black",
+   "texte": "black",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/white",
+   "texte": "white",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/orange",
+   "texte": "orange",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/purple",
+   "texte": "purple",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/one",
+   "texte": "one",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/two",
+   "texte": "two",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/three",
+   "texte": "three",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/four",
+   "texte": "four",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/five",
+   "texte": "five",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/six",
+   "texte": "six",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/seven",
+   "texte": "seven",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/eight",
+   "texte": "eight",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/nine",
+   "texte": "nine",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/ten",
+   "texte": "ten",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/cat",
+   "texte": "cat",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/dog",
+   "texte": "dog",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/bird",
+   "texte": "bird",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/fish",
+   "texte": "fish",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/horse",
+   "texte": "horse",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/cow",
+   "texte": "cow",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/pig",
+   "texte": "pig",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/sheep",
+   "texte": "sheep",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/rabbit",
+   "texte": "rabbit",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/mouse",
+   "texte": "mouse",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/bear",
+   "texte": "bear",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/frog",
+   "texte": "frog",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/apple",
+   "texte": "apple",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/banana",
+   "texte": "banana",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/bread",
+   "texte": "bread",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/milk",
+   "texte": "milk",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/water",
+   "texte": "water",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/cake",
+   "texte": "cake",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/egg",
+   "texte": "egg",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/cheese",
+   "texte": "cheese",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/mother",
+   "texte": "mother",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/father",
+   "texte": "father",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/sister",
+   "texte": "sister",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/brother",
+   "texte": "brother",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/baby",
+   "texte": "baby",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/hand",
+   "texte": "hand",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/foot",
+   "texte": "foot",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/eye",
+   "texte": "eye",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/nose",
+   "texte": "nose",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/ear",
+   "texte": "ear",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/book",
+   "texte": "book",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/pen",
+   "texte": "pen",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/pencil",
+   "texte": "pencil",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/bag",
+   "texte": "bag",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/chair",
+   "texte": "chair",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/door",
+   "texte": "door",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/house",
+   "texte": "house",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/car",
+   "texte": "car",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/sun",
+   "texte": "sun",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/moon",
+   "texte": "moon",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/tree",
+   "texte": "tree",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "en/flower",
+   "texte": "flower",
+   "langue": "en-GB",
+   "groupe": "anglais"
+  },
+  {
+   "cle": "mes-missions-du-jour",
+   "texte": "Mes missions du jour.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "choisis-un-jeu",
+   "texte": "Choisis un jeu.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "choisis-ce-qui-te-va-le-mieux",
+   "texte": "Choisis ce qui te va le mieux.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "comment-ca-s-ecrit-en-anglais",
+   "texte": "Comment ça s'écrit en anglais ?",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "trouve-le-bon-resultat",
+   "texte": "Trouve le bon résultat.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "choisis-la-lettre-qui-manque",
+   "texte": "Choisis la lettre qui manque.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "ecoute-le-mot-choisis-la-lettre-qui-manque",
+   "texte": "Écoute le mot. Choisis la lettre qui manque.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "ecoute-la-phrase-choisis-le-mot-qui-manque",
+   "texte": "Écoute la phrase. Choisis le mot qui manque.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "ecoute-le-mot-montre-le-bon-mot",
+   "texte": "Écoute le mot. Montre le bon mot.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "lis-cette-phrase-prends-ton-temps",
+   "texte": "Lis cette phrase. Prends ton temps.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "lis-le-mot-montre-la-bonne-image",
+   "texte": "Lis le mot. Montre la bonne image.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "quel-mot-manque-dans-le-nombre",
+   "texte": "Quel mot manque dans le nombre ?",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "remets-les-mots-dans-l-ordre",
+   "texte": "Remets les mots dans l'ordre.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "quel-signe-manque",
+   "texte": "Quel signe manque ?",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "ecoute-la-phrase-choisis-la-lettre-qui-manque",
+   "texte": "Écoute la phrase. Choisis la lettre qui manque.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "remets-les-syllabes-dans-l-ordre",
+   "texte": "Remets les syllabes dans l'ordre.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "seance-terminee",
+   "texte": "Séance terminée.",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "bravo-tu-es-maintenant",
+   "texte": "Bravo ! Tu es maintenant",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "bravo",
+   "texte": "Bravo !",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "c-est-ca",
+   "texte": "C'est ça !",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "tres-bien",
+   "texte": "Très bien !",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "parfait",
+   "texte": "Parfait !",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  },
+  {
+   "cle": "bien-joue",
+   "texte": "Bien joué !",
+   "langue": "fr-FR",
+   "groupe": "interface"
+  }
+ ]
+}
