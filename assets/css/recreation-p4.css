@@ -1,0 +1,302 @@
+/* ---------------------------------------------------------------
+   recreation-p4.css — « Puissance 4 », salle de récréation.
+
+   Aucune couleur en dur : tout vient des variables de tokens.css,
+   pour que les six fonds de lecture et le mode sombre restent
+   corrects sans retouche.
+
+   Le plateau est construit en papier découpé : un cadre posé
+   devant le fond, des trous percés dedans, et les jetons posés
+   dans les trous. La profondeur vient de la superposition.
+   --------------------------------------------------------------- */
+
+/* La teinte du jeu, pour la pastille et le liseré de la carte.
+   Elle ne porte jamais de texte : le contraste n'en dépend pas. */
+:root { --jeu-p4: #c0442f; }
+html[data-fond="sombre"] { --jeu-p4: #ef9b80; }
+/* Appareil en mode sombre avant tout choix de fond : même teinte
+   claircie, sinon le rouge sombre disparaît dans l'anthracite. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) { --jeu-p4: #ef9b80; }
+}
+
+.p4 {
+  --p4-cadre: var(--accent-doux);
+  --p4-trou: var(--surface);
+  --p4-moi: var(--jeu-p4);
+  --p4-lui: var(--accent);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ------------------------- L'annonce -------------------------
+   Une seule phrase, à gauche, son bouton d'écoute à sa gauche :
+   la même disposition que partout ailleurs dans l'application. */
+.p4-annonce {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.p4-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.p4-phrase {
+  margin: 0;
+  font-weight: 600;
+  max-width: var(--largeur-ligne);
+}
+
+/* ------------------------- Les jetons -------------------------
+   Deux camps, deux FORMES : rond plein pour l'enfant, rond percé
+   d'un anneau pour l'application. Un enfant daltonien distingue
+   les deux sans jamais avoir besoin de la couleur. */
+.p4-pion,
+.p4-jeton {
+  position: relative;
+  border-radius: 50%;
+  display: block;
+}
+.p4-pion {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: 0 0 auto;
+  background: var(--surface-2);
+  box-shadow: var(--ombre);
+}
+.p4-pion.moi, .p4-jeton.moi { background: var(--p4-moi); }
+.p4-pion.lui, .p4-jeton.lui { background: var(--p4-lui); }
+
+/* L'anneau : un trou dans le jeton de l'application, de la couleur
+   du creux, comme si le jeton était percé. */
+.p4-pion.lui::after,
+.p4-jeton.lui::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40%;
+  height: 40%;
+  margin: -20% 0 0 -20%;
+  border-radius: 50%;
+  background: var(--p4-trou);
+}
+.p4-pion.lui::after { background: var(--fond); }
+
+/* ------------------------- Le plateau ------------------------- */
+.p4-plateau {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  padding: 6px;
+  background: var(--p4-cadre);
+  border: 3px solid var(--p4-lui);
+  border-radius: 22px;
+  box-shadow: var(--ombre);
+}
+
+/* Chaque colonne est un bouton : toute sa hauteur est touchable,
+   et au moins 44 px de large sur un téléphone. */
+.p4-colonne {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 20px 4px 4px;
+  margin: 0;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;      /* le jeton semble tomber du haut de la colonne */
+  -webkit-tap-highlight-color: transparent;
+}
+.p4-colonne[aria-disabled="true"] { cursor: default; }
+
+/* La colonne visée se signale de trois façons à la fois : son fond
+   change, une flèche apparaît en haut, et le creux d'arrivée
+   montre un rond en pointillés. */
+.p4-colonne.visee { background: var(--attention-doux); }
+.p4-fleche {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 20px;
+  color: var(--attention);
+  opacity: 0;
+}
+.p4-colonne.visee .p4-fleche { opacity: 1; }
+
+.p4-creux {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: var(--p4-trou);
+  box-shadow: inset 0 0 0 2px var(--bordure);
+}
+/* Navigateur sans aspect-ratio : on garde des creux ronds et hauts. */
+@supports not (aspect-ratio: 1 / 1) {
+  .p4-creux { height: 40px; }
+}
+
+.p4-jeton {
+  position: absolute;
+  left: 6%;
+  top: 6%;
+  width: 88%;
+  height: 88%;
+  background: transparent;
+}
+.p4-jeton.moi, .p4-jeton.lui { box-shadow: var(--ombre); }
+
+/* L'aperçu du coup à venir : la forme du jeton de l'enfant, en
+   pointillés, posée dans le creux où il va tomber. */
+.p4-apercu {
+  position: absolute;
+  left: 10%;
+  top: 10%;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  border: 4px dashed var(--p4-moi);
+  opacity: 0;
+}
+.p4-apercu.vu { opacity: 1; }
+
+/* Les quatre jetons alignés s'allument : un anneau ambré, visible
+   sur les six fonds, par-dessus tout le reste. */
+.p4-jeton.gagnant {
+  box-shadow: 0 0 0 5px var(--attention), var(--ombre);
+  z-index: 2;
+}
+
+/* ------------------------- Le niveau ------------------------- */
+.p4-niveaux {
+  display: flex;
+  gap: 10px;
+}
+.p4-niveau {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 62px;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 6px;
+  text-align: center;
+  justify-content: center;
+}
+.p4-etoiles {
+  font-size: 0.9rem;
+  line-height: 1;
+  letter-spacing: 1px;
+  color: var(--attention);
+}
+.p4-nom-niveau { font-size: 0.78rem; line-height: 1.2; }
+.p4-niveau[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-contraste);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.p4-niveau[aria-pressed="true"] .p4-etoiles { color: var(--accent-contraste); }
+
+/* ------------------------- Le pied ------------------------- */
+.p4-pied {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.p4-rejouer, .p4-fini {
+  flex: 1 1 auto;
+  min-height: 62px;
+  justify-content: center;
+  font-weight: 700;
+}
+/* Partie terminée : « Rejouer » devient le geste évident. */
+.p4-rejouer-fort {
+  background: var(--accent);
+  color: var(--accent-contraste);
+  border-color: var(--accent);
+}
+.p4-icone-rejouer { font-size: 1.3rem; line-height: 1; }
+.p4-trophees {
+  margin-left: auto;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------
+   Le mouvement.
+
+   Tout est sous html[data-animations="oui"] : si le réglage est à
+   « non », l'attribut change et il ne reste plus une seule
+   animation — le jeton apparaît directement dans son creux et le
+   jeu se joue exactement pareil.
+   --------------------------------------------------------------- */
+
+@keyframes p4-chute {
+  0% {
+    transform: translateY(calc(-1 * var(--p4-chute, 260px))) scale(1, 1);
+    animation-timing-function: cubic-bezier(.45, 0, .85, .5);  /* la gravité accélère */
+  }
+  58%  { transform: translateY(0) scale(1, 1); }
+  70%  { transform: translateY(0) scale(1.1, 0.84); }          /* écrasement à l'arrivée */
+  82%  { transform: translateY(-14%) scale(0.96, 1.06); }      /* rebond léger */
+  92%  { transform: translateY(0) scale(1.03, 0.97); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+
+@keyframes p4-eclat {
+  0%   { box-shadow: 0 0 0 3px var(--attention), var(--ombre); transform: scale(1); }
+  50%  { box-shadow: 0 0 0 7px var(--attention), var(--ombre); transform: scale(1.08); }
+  100% { box-shadow: 0 0 0 5px var(--attention), var(--ombre); transform: scale(1); }
+}
+
+html[data-animations="oui"] .p4-jeton.chute {
+  animation: p4-chute 440ms cubic-bezier(.34, 1.56, .64, 1) both;
+}
+/* Deux battements lents (environ 1 Hz) : on voit l'alignement
+   s'allumer, et jamais de clignotement rapide. */
+html[data-animations="oui"] .p4-jeton.gagnant {
+  animation: p4-eclat 900ms ease-out 2 both;
+}
+html[data-animations="oui"] .p4-apercu,
+html[data-animations="oui"] .p4-fleche,
+html[data-animations="oui"] .p4-colonne {
+  transition: opacity 140ms ease-out, background 140ms ease-out;
+}
+
+/* Préférence système : même coupure, sans dépendre du réglage. */
+@media (prefers-reduced-motion: reduce) {
+  .p4-jeton.chute,
+  .p4-jeton.gagnant { animation: none !important; }
+  .p4-apercu, .p4-fleche, .p4-colonne { transition: none !important; }
+}
+
+/* ---------------------------------------------------------------
+   Très petits écrans : on reprend la marge de la page pour garder
+   des colonnes larges à toucher.
+   --------------------------------------------------------------- */
+@media (max-width: 380px) {
+  .p4-plateau { margin: 0 -10px; gap: 4px; padding: 5px; }
+  .p4-colonne { padding: 18px 3px 3px; }
+}
+
+/* Texte réglé très grand : les mots des niveaux passent à la ligne
+   plutôt que de déborder. */
+@media (max-width: 340px) {
+  .p4-nom-niveau { font-size: 0.7rem; }
+}
