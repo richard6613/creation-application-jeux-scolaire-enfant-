@@ -1,0 +1,369 @@
+/* ---------------------------------------------------------------
+   heros-dragon.css — les couleurs de Tison, et sa vie au repos.
+
+   Deux principes, repris de filou.css parce qu'ils ne sont pas
+   négociables :
+
+   1. Le mouvement est en CSS, jamais en JavaScript. Une règle CSS
+      se coupe net ; une boucle de minuteries, non. Toutes les
+      animations sont donc sous html:not([data-animations="non"]),
+      et annulées une seconde fois sous prefers-reduced-motion.
+      Tison immobile reste exactement aussi lisible : son dessin ne
+      doit rien à ses animations.
+
+   2. On n'annule JAMAIS en « transform: none ». Sur un SVG, la
+      propriété CSS transform écrase l'attribut transform du
+      dessin : la tête du dragon retomberait au coin du cadre. On
+      coupe l'animation, pas la transformation.
+   --------------------------------------------------------------- */
+
+/* ------------------------- Les écailles de Tison -------------------------
+   Toutes les couleurs du personnage vivent ici, en variables, avec
+   leur version pour le mode sombre. Le dragon doit rester lisible
+   sur les six fonds de lecture : le pétrole moyen tient sur crème,
+   sable, bleu, vert et gris ; sur fond sombre il est éclairci,
+   sinon la silhouette se fond dans l'anthracite. */
+:root {
+  --heros-dragon: #1f7f93;       /* la teinte du personnage, pour les écrans de choix */
+
+  --dragon-ecaille: #1f7f93;     /* le corps */
+  --dragon-ecaille-2: #14596b;   /* membres, queue, ailerons — la couche du dessous */
+  --dragon-ecaille-3: #45bac5;   /* la plaque de front, posée dessus */
+  --dragon-museau: #2f9eac;      /* museau et mains */
+
+  --dragon-corne: #f7e9ca;       /* l'os des cornes */
+  --dragon-corne-2: #e0c89d;
+  --dragon-corne-3: #a8865a;     /* les stries */
+  --dragon-ventre: #f3e3c3;      /* les écailles du ventre */
+  --dragon-ventre-2: #cdb086;
+
+  --dragon-membrane: #e8873a;    /* les ailes */
+  --dragon-membrane-2: #ffb54b;
+  --dragon-nervure: #14596b;
+
+  --dragon-braise: #ee8536;      /* la braise du poitrail et de la queue */
+  --dragon-braise-vif: #ffd87a;
+  --dragon-joue: #ee8536;
+
+  --dragon-trait: #0a222c;       /* le trait du visage — jamais du noir pur */
+  --dragon-oeil: #f7e9ca;
+  --dragon-iris: #ffa726;
+  --dragon-reflet: #fffdf6;
+  --dragon-bouche: #8c3a36;
+  --dragon-langue: #d8694f;
+
+  --dragon-eclat: #e8ae3c;       /* les étoiles de joie */
+  --dragon-bulle: #b9c6d4;       /* bulles de sommeil, points de réflexion */
+  --dragon-coeur: #e07f86;
+
+  /* L'icône de l'écran d'accueil ne suit NI le fond de lecture NI
+     le mode sombre : une icône posée sur le téléphone doit être la
+     même tous les jours. Ces quatre-là ne sont donc jamais
+     redéfinies plus bas. */
+  --dragon-ico-nuit: #0e2130;
+  --dragon-ico-ciel: #163a4e;
+  --dragon-ico-disque: #1d5062;
+  --dragon-ico-sol: #0a1a26;
+}
+
+/* Les éclaircissements du mode sombre, écrits une fois. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --heros-dragon: #3bb0c4;
+    --dragon-ecaille: #2fa2b7;
+    --dragon-ecaille-2: #1d7083;
+    --dragon-ecaille-3: #63d2dc;
+    --dragon-museau: #44b8c4;
+    --dragon-corne: #fbf1dc;
+    --dragon-corne-2: #e8d6b4;
+    --dragon-corne-3: #b99a6e;
+    --dragon-ventre: #f6ebd4;
+    --dragon-ventre-2: #d8bf96;
+    --dragon-membrane: #f0a056;
+    --dragon-membrane-2: #ffc46b;
+    --dragon-nervure: #11505f;
+    --dragon-braise: #f79a4e;
+    --dragon-braise-vif: #ffe29b;
+    --dragon-joue: #f79a4e;
+    --dragon-trait: #082029;
+    --dragon-oeil: #fbf1dc;
+    --dragon-iris: #ffb93f;
+    --dragon-bouche: #9b453f;
+    --dragon-langue: #e07b5f;
+    --dragon-eclat: #f0c361;
+    --dragon-bulle: #8d9aa8;
+    --dragon-coeur: #e9949a;
+  }
+}
+
+/* Fond sombre choisi explicitement : même traitement. */
+:root[data-fond="sombre"] {
+  --heros-dragon: #3bb0c4;
+  --dragon-ecaille: #2fa2b7;
+  --dragon-ecaille-2: #1d7083;
+  --dragon-ecaille-3: #63d2dc;
+  --dragon-museau: #44b8c4;
+  --dragon-corne: #fbf1dc;
+  --dragon-corne-2: #e8d6b4;
+  --dragon-corne-3: #b99a6e;
+  --dragon-ventre: #f6ebd4;
+  --dragon-ventre-2: #d8bf96;
+  --dragon-membrane: #f0a056;
+  --dragon-membrane-2: #ffc46b;
+  --dragon-nervure: #11505f;
+  --dragon-braise: #f79a4e;
+  --dragon-braise-vif: #ffe29b;
+  --dragon-joue: #f79a4e;
+  --dragon-trait: #082029;
+  --dragon-oeil: #fbf1dc;
+  --dragon-iris: #ffb93f;
+  --dragon-bouche: #9b453f;
+  --dragon-langue: #e07b5f;
+  --dragon-eclat: #f0c361;
+  --dragon-bulle: #8d9aa8;
+  --dragon-coeur: #e9949a;
+}
+
+/* Le dessin déborde volontairement de son cadre (cornes, ailes,
+   braises) : sans overflow visible, Chrome les coupe net. */
+.dragon { display: block; flex: 0 0 auto; overflow: visible; }
+
+/* ------------------------- Tison vivant -------------------------
+   Respiration, clignement, battement d'aile, braise qui pulse :
+   rien de spectaculaire, et surtout rien de rapide. C'est
+   justement ce qui fait qu'un personnage semble vivant plutôt que
+   collé sur la page. La respiration dure quatre secondes, l'aile
+   bat toutes les huit secondes, le clignement arrive toutes les
+   six à neuf secondes — et chaque dragon tire ses propres durées
+   (voir dragon.js) pour que deux Tison ne soient jamais
+   synchrones. */
+
+.dragon .d-corps,
+.dragon .d-tete,
+.dragon .d-queue,
+.dragon .d-oeil,
+.dragon .d-aile,
+.dragon .d-braise,
+.dragon .d-bras-d,
+.dragon .d-eclat,
+.dragon .d-bulle {
+  /* Sans fill-box, l'origine d'une rotation SVG se calcule depuis
+     le coin du cadre entier et le mouvement partirait de travers. */
+  transform-box: fill-box;
+}
+
+.dragon .d-corps { transform-origin: 50% 100%; }
+.dragon .d-tete { transform-origin: 50% 96%; }
+.dragon .d-queue { transform-origin: 90% 92%; }
+.dragon .d-queue-buste { transform-origin: 72% 100%; }
+.dragon .d-oeil { transform-origin: 50% 50%; }
+/* Chaque aile pivote depuis son épaule, pas depuis son milieu :
+   une aile qui bat autour de son centre donne une hélice. */
+.dragon .d-aile-g { transform-origin: 100% 100%; }
+.dragon .d-aile-d { transform-origin: 100% 100%; }
+.dragon .d-braise { transform-origin: 50% 70%; }
+.dragon .d-bras-d { transform-origin: 22% 88%; }
+.dragon .d-eclat,
+.dragon .d-bulle { transform-origin: 50% 50%; }
+
+@keyframes d-respire {
+  0%, 100% { transform: scale(1, 1); }
+  50%      { transform: scale(1.025, 0.975); }
+}
+@keyframes d-tete-vit {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  35%      { transform: rotate(1.3deg) translateY(-0.5px); }
+  70%      { transform: rotate(-1.1deg) translateY(0.3px); }
+}
+@keyframes d-queue-onde {
+  0%, 100% { transform: rotate(0deg); }
+  30%      { transform: rotate(-6deg); }
+  65%      { transform: rotate(4deg); }
+}
+/* Le clignement : 94 % du cycle les yeux sont ouverts. Un cycle long
+   et un seul battement court, c'est ça qui fait « vivant » ; un
+   clignement régulier ferait métronome. */
+@keyframes d-cligne {
+  0%, 92%, 100% { transform: scaleY(1); }
+  94%           { transform: scaleY(0.08); }
+  96%           { transform: scaleY(1); }
+}
+/* Le battement d'aile : très lent, très court, et il revient au
+   repos entre deux. Une aile qui bat sans arrêt, c'est un insecte,
+   et ça attire l'œil pendant qu'on lit à côté. */
+@keyframes d-aile-bat {
+  0%, 74%, 100% { transform: rotate(0deg) scaleY(1); }
+  82%           { transform: rotate(-3.5deg) scaleY(1.05); }
+  90%           { transform: rotate(1.5deg) scaleY(0.98); }
+}
+/* La braise : elle respire, elle ne clignote pas. Jamais plus de
+   0,4 Hz — on reste très loin des 3 Hz interdits. */
+@keyframes d-braise-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.88; }
+  50%      { transform: scale(1.12); opacity: 1; }
+}
+@keyframes d-scintille {
+  0%, 100% { transform: scale(0.7) rotate(0deg); opacity: 0.45; }
+  50%      { transform: scale(1.15) rotate(25deg); opacity: 1; }
+}
+@keyframes d-monte {
+  0%   { transform: translateY(6px) scale(0.6); opacity: 0; }
+  30%  { opacity: 0.95; }
+  100% { transform: translateY(-6px) scale(1.05); opacity: 0; }
+}
+@keyframes d-coucou-patte {
+  0%, 100% { transform: rotate(-14deg); }
+  50%      { transform: rotate(16deg); }
+}
+
+html:not([data-animations="non"]) .dragon .d-corps {
+  animation: d-respire var(--d-resp, 4s) ease-in-out infinite;
+}
+html:not([data-animations="non"]) .dragon .d-tete {
+  animation: d-tete-vit 6.6s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .dragon .d-queue {
+  animation: d-queue-onde var(--d-queue, 5.2s) ease-in-out infinite;
+  animation-delay: var(--d-queue-retard, 0s);
+}
+html:not([data-animations="non"]) .dragon .d-oeil {
+  animation: d-cligne var(--d-cligne, 7s) ease-in-out infinite;
+  animation-delay: var(--d-cligne-retard, 0s);
+}
+html:not([data-animations="non"]) .dragon .d-aile {
+  animation: d-aile-bat var(--d-aile, 8s) ease-in-out infinite;
+  animation-delay: var(--d-aile-retard, 0s);
+}
+/* L'aile droite décale son battement d'un demi-temps : deux ailes
+   parfaitement synchrones font un jouet mécanique. */
+html:not([data-animations="non"]) .dragon .d-aile-d {
+  animation-delay: calc(var(--d-aile-retard, 0s) - 0.35s);
+}
+html:not([data-animations="non"]) .dragon .d-braise {
+  animation: d-braise-pulse var(--d-braise, 3.2s) ease-in-out infinite;
+  animation-delay: var(--d-braise-retard, 0s);
+}
+/* La braise du poitrail bat un peu plus lentement que celle de la
+   queue : c'est le cœur, il ne s'affole pas. */
+html:not([data-animations="non"]) .dragon .d-braise-coeur {
+  animation-duration: calc(var(--d-braise, 3.2s) * 1.35);
+}
+html:not([data-animations="non"]) .dragon .d-eclat {
+  animation: d-scintille 2.4s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .dragon .d-eclat-2 { animation-delay: 0.5s; }
+html:not([data-animations="non"]) .dragon .d-eclat-3 { animation-delay: 1s; }
+html:not([data-animations="non"]) .dragon .d-bulle {
+  animation: d-monte 3.4s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .dragon .d-bulle-2 { animation-delay: 0.6s; }
+html:not([data-animations="non"]) .dragon .d-bulle-3 { animation-delay: 1.2s; }
+
+/* ------------------------- Humeurs qui bougent toutes seules ------------------------- */
+
+/* Il dort : il respire plus lentement, ses ailes ne battent plus,
+   et sa tête ne cherche rien. */
+html:not([data-animations="non"]) .dragon-dort .d-corps { animation-duration: 6.4s; }
+html:not([data-animations="non"]) .dragon-dort .d-tete { animation: none; }
+html:not([data-animations="non"]) .dragon-dort .d-aile { animation: none; }
+html:not([data-animations="non"]) .dragon-dort .d-queue { animation-duration: 8.5s; }
+
+/* Il fait coucou : la patte levée salue, en boucle douce. */
+html:not([data-animations="non"]) .dragon-coucou .d-bras-d {
+  animation: d-coucou-patte 1.3s ease-in-out infinite;
+}
+
+/* Il réfléchit : rien d'autre que les bulles. Pas de tête qui remue
+   — une image calme doit rester calme. */
+html:not([data-animations="non"]) .dragon-reflechit .d-tete { animation: none; }
+
+/* Il encourage : la braise du poitrail se réchauffe un peu, et
+   c'est tout. Rien ne sursaute quand l'enfant vient de se tromper. */
+html:not([data-animations="non"]) .dragon-courage .d-braise-coeur {
+  animation-duration: 2.6s;
+}
+html:not([data-animations="non"]) .dragon-courage .d-aile { animation: none; }
+
+@keyframes d-saut-doux {
+  0%, 62%, 100% { transform: translateY(0) scale(1, 1); }
+  10%           { transform: translateY(1px) scale(1.06, 0.92); }
+  32%           { transform: translateY(-12%) scale(0.96, 1.07); }
+  52%           { transform: translateY(0) scale(1.05, 0.95); }
+}
+/* L'humeur « saute » : il rebondit, avec un temps d'arrêt entre
+   deux sauts. Sans pause, ça devient un clignotement. */
+html:not([data-animations="non"]) .dragon-saute {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: d-saut-doux 1.8s cubic-bezier(.34, 1.56, .64, 1) infinite;
+}
+
+@keyframes d-sursaut {
+  0%   { transform: scale(0.9, 1.1); }
+  60%  { transform: scale(1.04, 0.97); }
+  100% { transform: scale(1, 1); }
+}
+html:not([data-animations="non"]) .dragon-surprise {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: d-sursaut 420ms cubic-bezier(.34, 1.56, .64, 1) 1;
+}
+
+/* Habillé, le dragon ne bouge plus tout seul : c'est la boîte —
+   dragon ET affaires — qui joue l'animation, exactement comme pour
+   Filou. Sinon le chapeau resterait en l'air pendant que le dragon
+   redescend. */
+html:not([data-animations="non"]) .filou-boite > .dragon-saute,
+html:not([data-animations="non"]) .filou-boite > .dragon-surprise {
+  animation: none;
+}
+
+/* ------------------------- Animations déclenchables -------------------------
+   Jeu.Compagnon.animer() pose .filou-anime-* sur le dessin ou sur
+   la boîte. Les images-clés sont celles de filou.css : les deux
+   personnages doivent sauter, danser et dire oui de la même façon,
+   sinon l'application change de rythme quand l'enfant change de
+   héros. On ne redéclare ici que ce qui vise des pièces propres au
+   dragon. */
+html:not([data-animations="non"]) .dragon.filou-anime-salue .d-bras-d,
+html:not([data-animations="non"]) .filou-boite.filou-anime-salue .d-bras-d {
+  animation: d-coucou-patte 300ms ease-in-out 4;
+}
+html:not([data-animations="non"]) .dragon.filou-anime-oui .d-tete,
+html:not([data-animations="non"]) .filou-boite.filou-anime-oui .d-tete {
+  animation: f-nod 400ms ease-in-out 2;
+}
+html:not([data-animations="non"]) .dragon.filou-anime-non .d-tete,
+html:not([data-animations="non"]) .filou-boite.filou-anime-non .d-tete {
+  animation: f-shake 400ms ease-in-out 2;
+}
+
+/* ------------------------- L'icône ------------------------- */
+
+/* Jamais animée : une icône d'écran d'accueil est une image fixe. */
+.dragon-icone,
+.dragon-icone * { animation: none !important; }
+
+/* ------------------------- La coupure, pour de vrai -------------------------
+   On annule l'animation, JAMAIS la transformation : sur un SVG,
+   « transform: none » écraserait l'attribut transform du dessin et
+   démonterait le dragon. Tison s'arrête net, et reste entier.
+
+   Deux captures prises à 1,5 s d'intervalle doivent être
+   rigoureusement identiques — c'est le test. */
+html[data-animations="non"] .dragon,
+html[data-animations="non"] .dragon *,
+html[data-animations="non"] .filou-boite,
+html[data-animations="non"] .filou-boite * {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dragon,
+  .dragon *,
+  .filou-boite,
+  .filou-boite * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,234 @@
+/* ---------------------------------------------------------------
+   heros-robot.css — les couleurs de Rivet, et sa vie au repos.
+
+   Deux principes, repris de filou.css parce qu'ils ont fait leurs
+   preuves :
+
+   1. Le mouvement est en CSS, jamais en JavaScript. Une règle CSS
+      se coupe net sous html[data-animations="non"] ; une boucle de
+      minuteries continue de tourner. Rivet immobile doit rester
+      exactement aussi lisible : son dessin ne doit rien à ses
+      animations.
+
+   2. On n'anime JAMAIS un groupe qui porte déjà un attribut
+      transform. Sur un SVG, la propriété CSS transform écrase
+      l'attribut, et le robot se démonterait. D'où les groupes
+      doubles dans robot.js : un pour la pose (attribut), un pour le
+      mouvement (classe CSS).
+   --------------------------------------------------------------- */
+
+/* ------------------------- Les nuances -------------------------
+   Rivet est en métal : il n'a aucune couleur en commun avec Filou.
+   Elles sont donc toutes définies ici, et nulle part en dur dans le
+   JavaScript. --heros-robot est sa teinte d'identité, celle qui
+   servira à le désigner dans l'écran de choix. */
+:root {
+  --heros-robot: #2f5d8a;
+
+  --robot-contour: #1e2a32;        /* le trait qui tient la silhouette */
+  --robot-trait: #46596a;          /* les détails internes, plus doux */
+  --robot-acier-clair: #e6edf2;
+  --robot-acier: #b4c3cf;
+  --robot-acier-fonce: #7d90a0;
+  --robot-bleu: #2f5d8a;           /* la même famille que --accent */
+  --robot-bleu-fonce: #22456a;
+  --robot-visiere: #13202a;        /* le verre, presque noir */
+  --robot-visiere-halo: #17a2a6;   /* la teinte du verre, en voile */
+  --robot-lueur: #22c9b8;          /* l'expression : assez foncée pour
+                                      rester lisible sur le verre */
+  --robot-lueur-clair: #a8f4ea;
+  --robot-chaud: #f2a03d;          /* le réacteur et le cœur */
+  --robot-chaud-clair: #ffd98f;
+  --robot-reflet: #ffffff;
+  --robot-fond-icone: #1b3352;
+  --robot-fond-icone-2: #2f5d8a;
+}
+
+/* Fond sombre : on n'éclaircit pas le contour, on éclaircit les
+   masses. Un contour clair dissoudrait les formes internes du
+   casque, qui est déjà gris pâle ; tandis qu'un bleu relevé détache
+   les épaulières du fond anthracite, où le bleu nuit d'origine
+   tombait sous 2:1 et disparaissait. */
+:root[data-fond="sombre"] {
+  --heros-robot: #8fbde8;
+  --robot-contour: #16222c;
+  --robot-trait: #7c8fa0;
+  --robot-acier-clair: #f3f8fb;
+  --robot-acier: #c6d3de;
+  --robot-acier-fonce: #93a5b4;
+  --robot-bleu: #5b93c9;
+  --robot-bleu-fonce: #42749f;
+  --robot-visiere: #0f1a24;
+  --robot-visiere-halo: #1fb9bd;
+  --robot-lueur: #4ef0dd;
+  --robot-lueur-clair: #ddfffa;
+  --robot-chaud: #ffb75e;
+  --robot-chaud-clair: #ffe3ab;
+  --robot-fond-icone: #1b3352;
+  --robot-fond-icone-2: #3f74a8;
+}
+
+/* Appareil en mode sombre avant tout choix de fond : même logique
+   que tokens.css, on ne joue que si aucun fond n'a encore été choisi. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --heros-robot: #8fbde8;
+    --robot-contour: #16222c;
+    --robot-trait: #7c8fa0;
+    --robot-acier-clair: #f3f8fb;
+    --robot-acier: #c6d3de;
+    --robot-acier-fonce: #93a5b4;
+    --robot-bleu: #5b93c9;
+    --robot-bleu-fonce: #42749f;
+    --robot-visiere: #0f1a24;
+    --robot-visiere-halo: #1fb9bd;
+    --robot-lueur: #4ef0dd;
+    --robot-lueur-clair: #ddfffa;
+    --robot-chaud: #ffb75e;
+    --robot-chaud-clair: #ffe3ab;
+    --robot-fond-icone: #1b3352;
+    --robot-fond-icone-2: #3f74a8;
+  }
+}
+
+.heros-robot { display: block; flex: 0 0 auto; }
+.heros-icone-robot { display: block; }
+
+/* ------------------------- Rivet vivant -------------------------
+   Rien de spectaculaire : il flotte sur son réacteur, sa bille
+   d'antenne respire, sa visière cligne de loin en loin, son cœur
+   bat. C'est tout, et c'est ce qui suffit à ne pas le prendre pour
+   une image collée sur la page.
+
+   Les durées sont tirées au sort par chaque Rivet (voir robot.js) :
+   deux robots côte à côte parfaitement synchrones font mécanique. */
+
+.heros-robot .rb-vol,
+.heros-robot .rb-flamme,
+.heros-robot .rb-bille,
+.heros-robot .rb-antenne,
+.heros-robot .rb-visage,
+.heros-robot .rb-coeur,
+.heros-robot .rb-eclat,
+.heros-robot .rb-monte {
+  /* Sans fill-box, l'origine se calcule depuis le coin du cadre
+     entier et le mouvement partirait de travers. */
+  transform-box: fill-box;
+}
+
+.heros-robot .rb-vol { transform-origin: 50% 50%; }
+.heros-robot .rb-flamme { transform-origin: 50% 0%; }
+.heros-robot .rb-bille { transform-origin: 50% 50%; }
+.heros-robot .rb-antenne { transform-origin: 98% 98%; }
+.heros-robot .rb-visage { transform-origin: 50% 50%; }
+.heros-robot .rb-coeur { transform-origin: 50% 50%; }
+.heros-robot .rb-eclat,
+.heros-robot .rb-monte { transform-origin: 50% 50%; }
+
+/* Le vol : trois pixels de haut en bas, pas plus. Au-delà, l'œil
+   suit le robot au lieu de lire la consigne à côté. */
+@keyframes rb-flotte {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2.2px); }
+}
+/* La flamme bat comme une veilleuse : jamais plus de 3 Hz, et par
+   l'échelle plutôt que par l'opacité — un clignotement d'opacité
+   attire bien plus l'œil. */
+@keyframes rb-souffle {
+  0%, 100% { transform: scaleY(1) scaleX(1); }
+  35%      { transform: scaleY(0.88) scaleX(1.06); }
+  70%      { transform: scaleY(1.07) scaleX(0.96); }
+}
+@keyframes rb-respire-bille {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.16); opacity: 0.82; }
+}
+@keyframes rb-penche-antenne {
+  0%, 100% { transform: rotate(0deg); }
+  35%      { transform: rotate(4deg); }
+  70%      { transform: rotate(-3deg); }
+}
+/* Le clignement de la visière : 95 % du cycle elle est allumée.
+   Un seul battement court et un cycle long, c'est ce qui fait
+   « vivant » ; un rythme régulier ferait métronome. */
+@keyframes rb-cligne {
+  0%, 93%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(0.1); }
+  97%           { transform: scaleY(1); }
+}
+@keyframes rb-bat-coeur {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.07); }
+}
+@keyframes rb-scintille {
+  0%, 100% { transform: scale(0.72) rotate(0deg); opacity: 0.45; }
+  50%      { transform: scale(1.12) rotate(22deg); opacity: 1; }
+}
+@keyframes rb-monte {
+  0%   { transform: translateY(6px) scale(0.6); opacity: 0; }
+  30%  { opacity: 0.95; }
+  100% { transform: translateY(-6px) scale(1.05); opacity: 0; }
+}
+
+html:not([data-animations="non"]) .heros-robot .rb-vol {
+  animation: rb-flotte var(--rb-flot, 4.2s) ease-in-out infinite;
+  animation-delay: var(--rb-flot-retard, 0s);
+}
+html:not([data-animations="non"]) .heros-robot .rb-flamme {
+  animation: rb-souffle 1.1s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-robot .rb-bille {
+  animation: rb-respire-bille var(--rb-bille, 3.2s) ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-robot .rb-antenne {
+  animation: rb-penche-antenne var(--rb-ant, 5.4s) ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-robot .rb-visage {
+  animation: rb-cligne var(--rb-bille, 7.4s) ease-in-out infinite;
+  animation-duration: 7.4s;
+  animation-delay: var(--rb-flot-retard, 0s);
+}
+html:not([data-animations="non"]) .heros-robot .rb-coeur {
+  animation: rb-bat-coeur 2.8s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-robot .rb-eclat {
+  animation: rb-scintille 2.4s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-robot .rb-eclat-2 { animation-delay: 0.5s; }
+html:not([data-animations="non"]) .heros-robot .rb-eclat-3 { animation-delay: 1s; }
+html:not([data-animations="non"]) .heros-robot .rb-monte {
+  animation: rb-monte 3.4s ease-in-out infinite;
+}
+html:not([data-animations="non"]) .heros-robot .rb-monte-2 { animation-delay: 0.6s; }
+html:not([data-animations="non"]) .heros-robot .rb-monte-3 { animation-delay: 1.2s; }
+
+/* Il dort : le réacteur est éteint, plus rien ne cligne, il flotte
+   deux fois plus lentement. */
+html:not([data-animations="non"]) .heros-robot.rb-dort .rb-vol { animation-duration: 8.4s; }
+html:not([data-animations="non"]) .heros-robot.rb-dort .rb-visage { animation: none; }
+html:not([data-animations="non"]) .heros-robot.rb-dort .rb-antenne { animation: none; }
+
+/* Il réfléchit : seules les bulles bougent. Une tête qui remue
+   pendant qu'un enfant déchiffre est une gêne, pas un cadeau. */
+html:not([data-animations="non"]) .heros-robot.rb-reflechit .rb-vol { animation-duration: 6.4s; }
+
+/* ------------------------- La coupure, pour de vrai -------------------------
+   On annule l'animation, JAMAIS la transformation : « transform: none »
+   écraserait les attributs transform du dessin et démonterait Rivet.
+   Il s'arrête net, et reste entier. */
+html[data-animations="non"] .heros-robot,
+html[data-animations="non"] .heros-robot *,
+html[data-animations="non"] .heros-icone-robot,
+html[data-animations="non"] .heros-icone-robot * {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .heros-robot,
+  .heros-robot *,
+  .heros-icone-robot,
+  .heros-icone-robot * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

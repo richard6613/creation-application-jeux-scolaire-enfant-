@@ -24,13 +24,13 @@
 }
 
 html[data-fond="sombre"] {
-  --jeu-memory: #b49ae8;
+  --jeu-memory: #8f6fcf;
   --jeu-morpion: #68c7b4;
 }
 /* Appareil en sombre avant tout choix de fond : même traitement. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-fond]) {
-    --jeu-memory: #b49ae8;
+    --jeu-memory: #8f6fcf;
     --jeu-morpion: #68c7b4;
   }
 }
@@ -61,6 +61,21 @@ html[data-fond="sombre"] {
   min-height: calc(1em * var(--interligne));
   color: var(--texte-doux);
   max-width: var(--largeur-ligne);
+}
+
+/* Une seule phrase à l'écran à la fois : quand la carte de fin porte le
+   message, l'annonce en direct passe hors de vue, sans quitter le DOM —
+   les lecteurs d'écran continuent de l'entendre. */
+.mm-annonce.mm-muette {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  margin: 0;
+  min-height: 0;
 }
 
 .mm-pied {
@@ -260,6 +275,12 @@ html[data-fond="sombre"] {
   line-height: 1;
 }
 
+.mm-carte.mm-ouverte .mm-face {
+  /* Retournée mais pas encore appariée : sur fond sombre, la surface
+     d'une carte ouverte ressemble trop au fond de la page. Le liseré
+     dit « celle-ci est en l'air en ce moment ». */
+  border-color: var(--accent);
+}
 .mm-carte.mm-trouvee .mm-face {
   border-color: var(--succes);
   background: var(--succes-doux);
@@ -312,7 +333,7 @@ html[data-fond="sombre"] {
 .mm-plateau {
   position: relative;
   width: 100%;
-  max-width: 340px;
+  max-width: 400px;
   aspect-ratio: 1 / 1;
 }
 
@@ -345,6 +366,13 @@ html[data-fond="sombre"] {
    c'est le dessin qui compte. */
 .mm-case[disabled][data-mm=""] { background: var(--surface-2); }
 .mm-case:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
+/* Les trois cases de l'alignement se marquent elles-mêmes : le trait
+   seul passerait par-dessus les symboles et les rendrait moins
+   lisibles, alors que c'est justement le moment où on les regarde. */
+.mm-case.mm-gagnante {
+  border-color: var(--jeu-morpion);
+  background: var(--surface-2);
+}
 
 /* Les deux symboles. Le rond et la croix se distinguent d'abord par
    leur forme et par l'épaisseur du trait ; la couleur n'est qu'un
@@ -383,7 +411,7 @@ html[data-fond="sombre"] {
 }
 .mm-trait {
   stroke: var(--jeu-morpion);
-  stroke-width: 7;
+  stroke-width: 5;
   stroke-linecap: round;
   fill: none;
   /* Le trait se dessine d'un bout à l'autre. 200 couvre largement

@@ -289,6 +289,7 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       bloc.appendChild(zoneFin);
       bloc.appendChild(sortie());
       annonce.textContent = '';
+      annonce.classList.remove('mm-muette');
 
       /* Déplacement au clavier dans la grille, en plus de la
          tabulation : les flèches sont le réflexe devant un damier. */
@@ -392,7 +393,11 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
 
         Jeu.Ui.vider(zoneFin);
         zoneFin.appendChild(carte);
+        /* La carte de fête dit déjà la phrase : l'annonce en direct
+           sort de la vue plutôt que de la répéter juste au-dessus,
+           tout en restant lisible par les lecteurs d'écran. */
         annonce.textContent = phraseFin;
+        annonce.classList.add('mm-muette');
 
         son('fin');
         try {

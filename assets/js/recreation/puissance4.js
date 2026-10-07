@@ -714,7 +714,10 @@ Jeu.Puissance4 = (function () {
       toutesLesColonnes();
 
       if (gagnants) {
-        for (var i = 0; i < gagnants.length; i++) jetons[gagnants[i]].classList.add('gagnant');
+        for (var i = 0; i < gagnants.length; i++) {
+          jetons[gagnants[i]].classList.add('gagnant');
+          creux[gagnants[i]].classList.add('gagnante');
+        }
       }
 
       if (vainqueur === MOI) {
@@ -754,6 +757,7 @@ Jeu.Puissance4 = (function () {
       for (var i = 0; i < CASES; i++) {
         jetons[i].className = 'p4-jeton';
         jetons[i].style.removeProperty('--p4-chute');
+        creux[i].classList.remove('gagnante');
         apercus[i].classList.remove('vu');
       }
       for (var c = 0; c < COLONNES; c++) colonnes[c].classList.remove('visee', 'pleine');

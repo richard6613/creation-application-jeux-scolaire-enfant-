@@ -410,7 +410,12 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
 
     function terminer(resultat, ligne) {
       attenteAppli = false;
-      if (ligne) tracerLigne(ligne);
+      if (ligne) {
+        tracerLigne(ligne);
+        // Le trait passe par-dessus les symboles : on marque aussi les
+        // trois cases, pour que l'alignement reste lisible sans lui.
+        ligne.forEach(function (c) { cases[c].classList.add('mm-gagnante'); });
+      }
       majCases();
 
       var texte;
@@ -418,7 +423,11 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       else if (resultat === 'appli') texte = 'L\'application a aligné. On en refait une ?';
       else texte = 'Égalité : personne n\'aligne. Belle partie !';
 
+      /* La carte de fin porte désormais la phrase : l'annonce en
+         direct dirait la même chose deux fois à l'écran. Elle garde le
+         texte pour les lecteurs d'écran, mais sort de la vue. */
       annonce.textContent = texte;
+      annonce.classList.add('mm-muette');
 
       var carte = el('div', 'mm-bravo' + (resultat === 'enfant' ? '' : ' mm-calme'));
       if (resultat === 'enfant') {
@@ -512,6 +521,8 @@ window.Jeu.Recreations = window.Jeu.Recreations || [];
       enCours = ['', '', '', '', '', '', '', '', ''];
       attenteAppli = false;
       effacerLigne();
+      annonce.classList.remove('mm-muette');
+      if (cases) cases.forEach(function (c) { c.classList.remove('mm-gagnante'); });
       Jeu.Ui.vider(zoneFin);
       majCases();
       // L'enfant commence toujours : c'est ce qui rend le niveau

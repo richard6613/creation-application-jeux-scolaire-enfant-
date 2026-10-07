@@ -123,7 +123,10 @@ html[data-fond="sombre"] { --jeu-p4: #ef9b80; }
 /* La colonne visée se signale de trois façons à la fois : son fond
    change, une flèche apparaît en haut, et le creux d'arrivée
    montre un rond en pointillés. */
-.p4-colonne.visee { background: var(--attention-doux); }
+.p4-colonne.visee {
+  background: var(--attention-doux);
+  box-shadow: inset 0 0 0 3px var(--attention);
+}
 .p4-fleche {
   position: absolute;
   top: 0;
@@ -175,10 +178,20 @@ html[data-fond="sombre"] { --jeu-p4: #ef9b80; }
 }
 .p4-apercu.vu { opacity: 1; }
 
-/* Les quatre jetons alignés s'allument : un anneau ambré, visible
-   sur les six fonds, par-dessus tout le reste. */
+/* Les quatre jetons alignés s'allument : c'est le CREUX qui
+   s'éclaire en ambre, et le jeton qui rétrécit un peu pour laisser
+   voir la lumière autour de lui. Un anneau posé autour du jeton
+   aurait rejoint celui du voisin et les quatre se seraient
+   confondus en une seule tache. */
+.p4-creux.gagnante {
+  background: var(--attention-doux);
+  box-shadow: inset 0 0 0 3px var(--attention);
+}
 .p4-jeton.gagnant {
-  box-shadow: 0 0 0 5px var(--attention), var(--ombre);
+  left: 15%;
+  top: 15%;
+  width: 70%;
+  height: 70%;
   z-index: 2;
 }
 
@@ -260,9 +273,9 @@ html[data-fond="sombre"] { --jeu-p4: #ef9b80; }
 }
 
 @keyframes p4-eclat {
-  0%   { box-shadow: 0 0 0 3px var(--attention), var(--ombre); transform: scale(1); }
-  50%  { box-shadow: 0 0 0 7px var(--attention), var(--ombre); transform: scale(1.08); }
-  100% { box-shadow: 0 0 0 5px var(--attention), var(--ombre); transform: scale(1); }
+  0%   { transform: scale(0.86); }
+  60%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
 }
 
 html[data-animations="oui"] .p4-jeton.chute {
@@ -282,7 +295,7 @@ html[data-animations="oui"] .p4-colonne {
 /* Préférence système : même coupure, sans dépendre du réglage. */
 @media (prefers-reduced-motion: reduce) {
   .p4-jeton.chute,
-  .p4-jeton.gagnant { animation: none !important; }
+  .p4-jeton.gagnant { animation: none !important; transform: none !important; }
   .p4-apercu, .p4-fleche, .p4-colonne { transition: none !important; }
 }
 
