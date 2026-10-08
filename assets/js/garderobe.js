@@ -451,6 +451,20 @@ Jeu.Garderobe = (function () {
     return Math.max(0, a.prix - pieces());
   }
 
+  /* Dépenser des pièces sans rien acheter dans la boutique : c'est
+     la récréation qui s'en sert pour vendre une partie de plus. La
+     bourse est la même, et c'est voulu — Julien arbitre entre un
+     chapeau et une partie de Puissance 4, les deux sont des
+     récompenses et le choix lui appartient. */
+  function depenser(combien) {
+    var n = Math.max(0, Math.round(combien || 0));
+    if (!n || pieces() < n) return false;
+    var e = etat();
+    e.depense += n;
+    sauver(e);
+    return true;
+  }
+
   function acheter(cle) {
     var a = PAR_CLE[cle];
     if (!a || possede(cle) || pieces() < a.prix) return false;
@@ -802,6 +816,7 @@ Jeu.Garderobe = (function () {
     retirer: retirer,
     basculer: basculer,
     manque: manque,
+    depenser: depenser,
     nombrePossedes: nombrePossedes,
     total: total,
     ecran: ecran,

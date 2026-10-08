@@ -485,11 +485,18 @@ Jeu.Panneau = (function () {
     carte.appendChild(el('h2', null, 'La salle de jeux'));
 
     carte.appendChild(interrupteur('Ouvrir la salle de jeux', 'recreation',
-      'Les paires, le morpion, le Puissance 4. Un jeton donne droit à une partie.'));
+      'Onze jeux. Entrer et regarder ne coûte rien ; un jeton paie une partie, une seule.'));
 
-    carte.appendChild(curseur('Jetons gagnés par séance terminée', 'jetonsParSeance',
-      0, 3, 1, function (n) { return n === 0 ? 'aucun' : Jeu.Ui.accord(n, 'jeton'); },
-      'Le jeton récompense le fait d\'aller au bout, pas le nombre de bonnes réponses. À zéro, la salle reste ouverte mais ne s\'ouvre plus en travaillant.'));
+    carte.appendChild(curseur('Parties gagnées par séance terminée', 'jetonsParSeance',
+      0, 6, 1, function (n) { return n === 0 ? 'aucune' : Jeu.Ui.accord(n, 'partie'); },
+      'C\'est le plancher garanti : il récompense le fait d\'aller au bout, pas le nombre de bonnes réponses. Faire dépendre la récréation des résultats punirait deux fois le même soir un enfant qui bute.'));
+
+    carte.appendChild(interrupteur('Permettre d\'acheter des parties', 'acheterDesParties',
+      'Au-delà du plancher, l\'enfant peut payer une partie de plus avec ses pièces. Une pièce vaut une bonne réponse : c\'est là que le travail bien fait paie, en plus et jamais à la place.'));
+
+    carte.appendChild(curseur('Prix d\'une partie, en pièces', 'prixPartieEnPieces',
+      2, 30, 1, function (n) { return Jeu.Ui.accord(n, 'pièce'); },
+      'La bourse est celle de la boutique : l\'enfant arbitre entre un chapeau et une partie de Puissance 4. Les deux sont des récompenses, le choix lui appartient.'));
 
     /* L'état du compteur, pour que le parent voie l'effet du réglage
        sans avoir à ouvrir l'application côté enfant. */
@@ -497,9 +504,10 @@ Jeu.Panneau = (function () {
       var etat = el('p', 'petit zone-sourdine');
       try {
         var tout = Jeu.Jetons.gagnesEnTout();
-        etat.textContent = 'En ce moment : ' + Jeu.Ui.accord(Jeu.Jetons.solde(), 'jeton') +
-          ' en réserve, ' + Jeu.Ui.accord(tout, 'jeton') +
-          (tout > 1 ? ' gagnés' : ' gagné') + ' en tout.';
+        etat.textContent = 'En ce moment : ' + Jeu.Ui.accord(Jeu.Jetons.solde(), 'partie') +
+          ' en réserve, ' + Jeu.Ui.accord(tout, 'partie') +
+          (tout > 1 ? ' gagnées' : ' gagnée') + ' en tout. ' +
+          Jeu.Ui.accord(Jeu.Jetons.piecesDisponibles(), 'pièce') + ' en bourse.';
         carte.appendChild(etat);
       } catch (e) { /* le compteur est un confort, pas une condition */ }
     }

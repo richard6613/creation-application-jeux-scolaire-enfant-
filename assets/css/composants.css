@@ -1671,3 +1671,21 @@ html[data-animations="non"] .hud-filou:active { transform: none; }
 
 .nouveau-jeu-corps .nom-jeu { font-size: 1.15rem; font-weight: 700; }
 .nouveau-jeu-corps .quoi-jeu { opacity: .8; }
+
+/* ------------------------- La bourse de la récréation -------------------------
+
+   Ce qu'il reste de parties, et comment en avoir d'autres. Placée
+   tout en haut de la salle : c'est la première chose à savoir avant
+   de choisir un jeu. */
+.bourse-recre { margin-bottom: 14px; }
+
+.bourse-signe { font-size: 1.6rem; line-height: 1; }
+
+.bourse-compte {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.bourse-aide { margin-top: 10px; }
+.bourse-aide p { margin: 0 0 10px; }

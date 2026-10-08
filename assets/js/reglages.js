@@ -38,7 +38,9 @@ Jeu.Reglages = (function () {
 
     // La récréation : on travaille, puis on joue.
     recreation: true,       // la salle de jeux est-elle ouverte
-    jetonsParSeance: 1,     // ce que rapporte une séance TERMINÉE
+    jetonsParSeance: 2,     // un jeton = une partie ; deux par séance TERMINÉE
+    acheterDesParties: true,   // au-delà, on achète une partie avec ses pièces
+    prixPartieEnPieces: 10,    // une pièce = une bonne réponse
 
     // Rythme
     longueurSession: 8,     // nombre d'exercices par session

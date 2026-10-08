@@ -7,20 +7,30 @@
    son fils ait droit à un vrai petit jeu. Ce fichier tient la
    monnaie de ce droit.
 
-   UN CHOIX QUI MÉRITE D'ÊTRE EXPLIQUÉ
+   UN JETON = UNE PARTIE
 
-   Le jeton s'obtient en TERMINANT une séance, pas en la réussissant.
+   C'était d'abord un jeton pour ENTRER dans la salle, et une fois
+   la porte passée on jouait autant qu'on voulait. Julien a enchaîné
+   les morpions tout un soir : la récompense n'en était plus une.
+   Un jeton paie maintenant une partie, une seule.
 
-   La demande du père était « s'il travaille bien ». La traduction
-   littérale serait : plus de bonnes réponses, plus de jeu. Mais pour
-   un enfant dyslexique, elle punirait deux fois le même soir — il
-   bute sur un mot, et en plus il perd sa récréation. Au bout de trois
-   soirs, il n'ouvre plus l'application.
+   DEUX FAÇONS D'EN AVOIR, ET C'EST VOULU
 
-   Ce qu'on veut encourager, ce n'est pas d'avoir juste. C'est de s'y
-   mettre et d'aller au bout. C'est donc exactement ça qu'on paie.
-   La qualité du travail, elle, est déjà prise en charge par le moteur
-   adaptatif, qui fait revenir plus souvent ce qui accroche.
+   1. Terminer une séance en rapporte deux. Ce qu'on paie là, c'est
+      de s'y être mis et d'être allé au bout — pas d'avoir eu juste.
+      Pour un enfant dyslexique, faire dépendre la récréation du
+      nombre de bonnes réponses, c'est le punir deux fois le même
+      soir : il bute sur un mot, et en plus il perd son jeu. Au bout
+      de trois soirs, il n'ouvre plus l'application.
+
+   2. Au-delà, il ACHÈTE une partie avec ses pièces, et une pièce
+      vaut exactement une bonne réponse. C'est là que le travail
+      bien fait paie — mais en PLUS, jamais à la place. Le plancher
+      des deux parties est garanti quoi qu'il arrive ; ce qui est au
+      -dessus se mérite.
+
+   Cette asymétrie est tout le dispositif : on ne peut pas descendre
+   en dessous du minimum, on peut monter autant qu'on travaille.
 
    ET CE QUI NE SE PERD JAMAIS
 
@@ -81,6 +91,46 @@ Jeu.Jetons = (function () {
     return (n === undefined || n === null) ? 1 : Math.max(0, n);
   }
 
+  /* Le prix d'une partie supplémentaire, en pièces. Une pièce vaut
+     une bonne réponse : à dix, une partie de plus coûte à peu près
+     une séance bien menée. Réglable par le parent. */
+  function prixEnPieces() {
+    var n = Jeu.Reglages.get('prixPartieEnPieces');
+    return (n === undefined || n === null) ? 10 : Math.max(1, Math.round(n));
+  }
+
+  /* Peut-il s'offrir une partie de plus ? On passe par la garde-robe,
+     qui tient la bourse : les pièces de la boutique et celles de la
+     récréation sont les mêmes, et c'est exprès. Julien arbitre entre
+     un chapeau et une partie de Puissance 4 — c'est un vrai choix,
+     et les deux sont des récompenses. */
+  function piecesDisponibles() {
+    try { return Jeu.Garderobe.pieces() || 0; } catch (e) { return 0; }
+  }
+
+  function peutAcheter() {
+    return achatPossible() && piecesDisponibles() >= prixEnPieces();
+  }
+
+  /* L'achat est-il seulement proposé ? Le parent peut le couper : un
+     soir où la seule chose qui compte est d'aller se coucher, deux
+     parties suffisent. */
+  function achatPossible() {
+    var r = Jeu.Reglages.get('acheterDesParties');
+    return r === undefined ? true : !!r;
+  }
+
+  /* Achète un jeton avec des pièces. Rend true si ça s'est fait.
+     Jamais de dette : on refuse plutôt que de descendre sous zéro. */
+  function acheter() {
+    if (!peutAcheter()) return false;
+    var ok = false;
+    try { ok = Jeu.Garderobe.depenser(prixEnPieces()); } catch (e) { ok = false; }
+    if (!ok) return false;
+    gagner(1);
+    return true;
+  }
+
   /* La salle de jeux est-elle ouverte du tout ? Le parent peut la
      fermer entièrement depuis son espace — certains soirs, on ne veut
      pas de récréation, et c'est son droit. */
@@ -94,9 +144,13 @@ Jeu.Jetons = (function () {
      qui est toujours à une séance de distance. */
   function commentEnGagner() {
     var n = parSeance();
-    return n > 1
+    var phrase = n > 1
       ? 'Finis une séance et tu gagnes ' + n + ' jetons.'
       : 'Finis une séance et tu gagnes un jeton.';
+    if (achatPossible()) {
+      phrase += ' Ou achète une partie avec ' + prixEnPieces() + ' pièces.';
+    }
+    return phrase;
   }
 
   function reinitialiser() { Jeu.Stockage.effacer(CLE); }
@@ -107,6 +161,11 @@ Jeu.Jetons = (function () {
     gagner: gagner,
     depenser: depenser,
     parSeance: parSeance,
+    prixEnPieces: prixEnPieces,
+    piecesDisponibles: piecesDisponibles,
+    achatPossible: achatPossible,
+    peutAcheter: peutAcheter,
+    acheter: acheter,
     salleOuverte: salleOuverte,
     commentEnGagner: commentEnGagner,
     reinitialiser: reinitialiser

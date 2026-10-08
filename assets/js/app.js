@@ -16,7 +16,6 @@ Jeu.App = (function () {
      faire payer chaque partie séparément serait mesquin et pousserait
      l'enfant à ne jamais oser commencer. Revenir au chemin referme la
      salle ; il faudra un nouveau jeton pour y retourner. */
-  var recreOuverte = false;
 
   function el(b, c, t) { return Jeu.Ui.el(b, c, t); }
   function zone() { return document.getElementById('zone-jeu'); }
@@ -32,8 +31,6 @@ Jeu.App = (function () {
     b.hidden = true;
 
     teinterEcran(null);
-    // Revenir au chemin referme la récréation.
-    if (ecran === 'accueil') recreOuverte = false;
     if (ecran === 'accueil') { accueil(z); majBarre('Mon royaume', false); }
     else if (ecran === 'tous') { tousLesJeux(z); majBarre('Tous les jeux', true); }
     else if (ecran === 'filou') { garderobe(z); majBarre('Les affaires de ' + Jeu.Compagnon.nom(), true); }
@@ -112,6 +109,80 @@ Jeu.App = (function () {
     } else {
       b.appendChild(Jeu.Ui.bouton('Mes affaires 🎩', 'btn', function () { aller('filou'); }));
     }
+  }
+
+  /* ------------------------- La bourse de la salle -------------------------
+
+     Ce qu'il lui reste, et comment en avoir plus. Trois états, et
+     aucun des trois ne gronde :
+
+     - il a des jetons : on les compte, c'est tout ;
+     - il n'en a plus mais il a les pièces : on lui propose
+       d'acheter, c'est une offre, pas un péage ;
+     - il n'a ni l'un ni l'autre : on dit ce qu'il manque, en pièces,
+       et on montre la porte vers une séance. Jamais « tu ne peux
+       pas » : toujours « voilà par où ».
+
+     Le prix est en PIÈCES, et une pièce vaut une bonne réponse. Il
+     voit donc directement ce que son travail lui achète. */
+  function bourseRecreation(solde) {
+    var carte = el('div', 'carte bourse-recre');
+
+    var ligne = el('div', 'ligne');
+    var sg = el('span', 'bourse-signe', '🎟️');
+    sg.setAttribute('aria-hidden', 'true');
+    ligne.appendChild(sg);
+    var phrase = solde > 0
+      ? 'Il te reste ' + Jeu.Ui.accord(solde, 'partie') + ' à jouer.'
+      : 'Tu as joué tes parties.';
+    ligne.appendChild(el('p', 'bourse-compte', phrase));
+    carte.appendChild(ligne);
+
+    if (!Jeu.Jetons.achatPossible()) {
+      if (solde === 0) carte.appendChild(aidePourJeton());
+      return carte;
+    }
+
+    var prix = Jeu.Jetons.prixEnPieces();
+    var pieces = Jeu.Jetons.piecesDisponibles();
+
+    if (pieces >= prix) {
+      var b = Jeu.Ui.bouton('Acheter une partie — ' + prix + ' 🪙',
+        'btn' + (solde === 0 ? ' btn-principal' : ''), function () {
+          if (!Jeu.Jetons.acheter()) { aller('recreation'); return; }
+          if (Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('piece');
+          Jeu.Voix.dire('Une partie de plus !');
+          aller('recreation');
+        });
+      b.setAttribute('aria-label',
+        'Acheter une partie de plus pour ' + Jeu.Ui.accord(prix, 'pièce') + '.');
+      carte.appendChild(b);
+      carte.appendChild(el('p', 'petit zone-sourdine',
+        'Tu as ' + Jeu.Ui.accord(pieces, 'pièce') + '. Une bonne réponse vaut une pièce.'));
+    } else if (solde === 0) {
+      carte.appendChild(aidePourJeton(prix - pieces));
+    }
+
+    return carte;
+  }
+
+  /* Le chemin pour rejouer, sans un mot de reproche. */
+  function aidePourJeton(manquePieces) {
+    var d = el('div', 'bourse-aide');
+    var phrase = Jeu.Jetons.commentEnGagner();
+    if (manquePieces > 0) {
+      phrase = 'Encore ' + Jeu.Ui.accord(manquePieces, 'bonne réponse') +
+        ' et tu pourras acheter une partie. Ou finis une séance.';
+    }
+    var l = el('div', 'ligne');
+    l.appendChild(Jeu.Voix.bouton(phrase, 'Écouter'));
+    l.appendChild(el('p', null, phrase));
+    d.appendChild(l);
+    d.appendChild(Jeu.Ui.bouton('Jouer une séance', 'btn btn-principal', function () {
+      var jeu = jeuLePlusUtile();
+      if (jeu) aller('jeu', jeu); else aller('accueil');
+    }));
+    return d;
   }
 
   /* ------------------------- Un jeu s'ouvre -------------------------
@@ -683,19 +754,19 @@ Jeu.App = (function () {
       return;
     }
 
-    // Il faut un jeton pour entrer. Une fois entré, on y reste.
-    if (!recreOuverte) {
-      if (!Jeu.Jetons.depenser(1)) { porteFermee(z); return; }
-      recreOuverte = true;
-      try {
-        if (Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('coffre');
-      } catch (e) { /* rien */ }
-    }
+    /* L'entrée est libre : c'est la PARTIE qui coûte un jeton, plus
+       la porte. Avec un jeton pour entrer, Julien enchaînait les
+       morpions tout un soir et la récompense n'en était plus une.
+       Il peut toujours venir regarder ses jeux et voir ceux qui
+       arrivent — ça ne coûte rien de rêver devant la vitrine. */
+    var solde = Jeu.Jetons.solde();
 
     var intro = el('div', 'ligne');
     intro.appendChild(Jeu.Voix.bouton('C\'est la récréation. Choisis un jeu.', 'Écouter'));
     intro.appendChild(el('p', null, 'C\'est la récréation !'));
     z.appendChild(intro);
+
+    z.appendChild(bourseRecreation(solde));
 
     /* Les jeux dans l'ordre où ils s'ouvrent : les siens d'abord,
        puis ceux qui arrivent. Les seconds sont montrés exprès — un
@@ -734,8 +805,16 @@ Jeu.App = (function () {
       if (ouvert) {
         c.appendChild(el('span', 'nom-jeu', r.nom));
         if (r.quoi) c.appendChild(el('span', 'quoi-jeu', r.quoi));
-        c.setAttribute('aria-label', r.nom + '. ' + (r.quoi || ''));
-        c.addEventListener('click', function () { aller('recreJeu', r); });
+        c.setAttribute('aria-label', r.nom + '. ' + (r.quoi || '') +
+          ' Une partie coûte un jeton.');
+        c.addEventListener('click', function () {
+          /* Le jeton est dépensé au LANCEMENT, jamais à la fin :
+             perdre une partie ne doit rien coûter de plus que de la
+             gagner. C'est la règle de toute la salle. */
+          if (!Jeu.Jetons.depenser(1)) { aller('recreation'); return; }
+          if (Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('coffre');
+          aller('recreJeu', r);
+        });
       } else {
         /* Ni le nom ni le dessin : c'est la surprise qui donne envie
            d'y revenir. Mais le compte exact, lui, est écrit — un but
@@ -767,27 +846,6 @@ Jeu.App = (function () {
 
   /* Pas de jeton : on ne reproche rien, on montre le chemin. Il est
      toujours à une seule séance de distance. */
-  function porteFermee(z) {
-    var carte = el('div', 'carte pile porte-fermee');
-    var sg = el('div', 'porte-signe', '🎟️');
-    sg.setAttribute('aria-hidden', 'true');
-    carte.appendChild(sg);
-
-    var phrase = Jeu.Jetons.commentEnGagner();
-    var ligne = el('div', 'ligne');
-    ligne.appendChild(Jeu.Voix.bouton('Il te faut un jeton. ' + phrase, 'Écouter'));
-    ligne.appendChild(el('p', null, phrase));
-    carte.appendChild(ligne);
-    z.appendChild(carte);
-
-    var b = Jeu.Ui.vider(bas());
-    b.hidden = false;
-    b.appendChild(Jeu.Ui.bouton('Retour au chemin', 'btn', function () { aller('accueil'); }));
-    b.appendChild(Jeu.Ui.bouton('Jouer une séance', 'btn btn-principal', function () {
-      var jeu = jeuLePlusUtile();
-      if (jeu) aller('jeu', jeu); else aller('accueil');
-    }));
-  }
 
   function jouerRecreation(z, r) {
     if (!r || typeof r.afficher !== 'function') { aller('recreation'); return; }
