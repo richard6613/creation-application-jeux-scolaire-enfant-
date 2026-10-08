@@ -693,50 +693,61 @@ html[data-animations="non"] .bp-fente.bp-prise { opacity: 0.4 !important; }
 .bp-t5 { --bp-pierre-haut: #c8a8e8; --bp-pierre-base: #9566c8; --bp-pierre-bas: #633d8e; }
 .bp-t6 { --bp-pierre-haut: #88dbdd; --bp-pierre-base: #35a8ab; --bp-pierre-bas: #1b6c6e; }
 
-/* Le plateau s'assombrit. Sur un damier crème, des pierres claires
-   ne ressortent pas : c'est le contraste entre un fond profond et
-   des pièces franches qui donne au jeu son allure de jeu, et c'est
-   exactement ce qu'on voit sur les block puzzles du commerce.
+/* Le plateau prend une couleur, sans devenir sombre.
 
-   Ces trois tons-là ne portent eux non plus aucune information : ils
-   ne servent qu'à faire ressortir ce qui est posé dessus. Le creux
-   d'une case vide et le relief d'une pierre restent, eux, lisibles
-   sans aucune couleur. */
+   Première tentative : un plateau ardoise, presque noir, comme sur
+   les block puzzles du commerce. Les pierres y ressortaient très
+   bien — mais le père de Julien a été net, et il a raison : cette
+   application doit rester claire et colorée. Un écran noir au milieu
+   d'une application crème, c'est un trou.
+
+   La réponse n'était pas de revenir au beige sur beige, qui faisait
+   échiquier. C'est un bleu franc, de la même famille que l'accent de
+   l'application : assez soutenu pour que les six couleurs de pierre
+   claquent dessus, assez clair pour qu'on ne parle jamais de mode
+   sombre. Le creux d'une case vide et le relief d'une pierre restent
+   lisibles sans aucune couleur. */
 :root,
-html[data-fond="sombre"],
+html[data-fond="creme"],
+html[data-fond="sable"],
 html[data-fond="bleu"],
 html[data-fond="vert"],
 html[data-fond="gris"] {
-  --bp-cadre: #4b5666;
-  --bp-cadre-bord: #333d4b;
-  --bp-damier-a: #39434f;
-  --bp-damier-b: #313a45;
-  --bp-mortier: rgba(0, 0, 0, 0.32);
-  --bp-creux: rgba(0, 0, 0, 0.36);
-  --bp-rail: #4b5666;
-  --bp-rail-bord: #333d4b;
-  --bp-fente: #39434f;
-  --bp-fente-bord: #2b333d;
+  --bp-cadre: #6f9ec9;
+  --bp-cadre-bord: #4a7aa6;
+  --bp-damier-a: #9dc4e4;
+  --bp-damier-b: #8bb7dc;
+  --bp-mortier: rgba(32, 62, 92, 0.26);
+  --bp-creux: rgba(32, 62, 92, 0.22);
+  --bp-rail: #6f9ec9;
+  --bp-rail-bord: #4a7aa6;
+  --bp-fente: #9dc4e4;
+  --bp-fente-bord: #7ba9d2;
   /* Le viseur et la marque « cette ligne va partir » doivent rester
-     francs sur ce fond profond. */
+     francs sur ce bleu : un vert profond et un or sombre y tiennent
+     mieux que les teintes claires prévues pour l'ardoise. */
+  --bp-vise-trait: #1d6b42;
+  --bp-vise-fond: rgba(29, 107, 66, 0.22);
+  --bp-pret-trait: #8a5a06;
+  --bp-pret-signe: #5c3b02;
+  --bp-pret-halo: rgba(255, 252, 242, 0.92);
+}
+
+/* Le fond sombre reste un vrai fond sombre : si le parent le
+   choisit, c'est qu'il le veut, et un plateau bleu clair y ferait
+   une lampe en pleine page. */
+html[data-fond="sombre"] {
+  --bp-cadre: #3f5570;
+  --bp-cadre-bord: #2b3b4f;
+  --bp-damier-a: #40546b;
+  --bp-damier-b: #384a5f;
+  --bp-rail: #3f5570;
+  --bp-rail-bord: #2b3b4f;
+  --bp-fente: #40546b;
+  --bp-fente-bord: #2f3f52;
   --bp-vise-trait: #7fd9a2;
   --bp-vise-fond: rgba(127, 217, 162, 0.2);
   --bp-pret-trait: #ffd979;
   --bp-pret-signe: #fff3d2;
   --bp-pret-halo: rgba(0, 0, 0, 0.55);
-  /* Le petit rempart du compteur, lui, reste posé sur le fond de la
-     page et non sur le plateau : il garde donc ses tons d'origine. */
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-fond]) {
-    --bp-cadre: #4b5666;
-    --bp-cadre-bord: #333d4b;
-    --bp-damier-a: #39434f;
-    --bp-damier-b: #313a45;
-    --bp-rail: #4b5666;
-    --bp-rail-bord: #333d4b;
-    --bp-fente: #39434f;
-    --bp-fente-bord: #2b333d;
-  }
 }

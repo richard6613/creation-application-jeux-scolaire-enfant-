@@ -115,18 +115,27 @@ Jeu.Reglages = (function () {
 
   function charger() {
     var sauve = Jeu.Stockage.lire(CLE, {});
-    var premiereFois = !sauve || Object.keys(sauve).length === 0;
     etat = {};
     Object.keys(DEFAUTS).forEach(function (k) {
       etat[k] = (sauve && sauve[k] !== undefined) ? sauve[k] : DEFAUTS[k];
     });
-    // Premier lancement sur un appareil réglé en sombre : on suit l'appareil.
-    // Ensuite, c'est le choix fait dans l'application qui commande.
-    if (premiereFois && typeof window.matchMedia === 'function') {
-      try {
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) etat.fond = 'sombre';
-      } catch (e) { /* rien */ }
-    }
+    /* L'APPLICATION NE SUIT PAS LE MODE SOMBRE DE L'APPAREIL.
+
+       Elle le faisait, et c'était une erreur. Un iPhone bascule en
+       sombre tout seul au coucher du soleil, ou parce que quelqu'un
+       a coché la case une fois il y a six mois — et l'enfant se
+       retrouvait devant une application grise, décor de nuit
+       compris, sans que personne ne l'ait voulu. Pour un enfant de
+       huit ans, une application terne est une application qu'on
+       n'ouvre pas.
+
+       Le fond sombre existe toujours, et il est utile : certains
+       enfants dyslexiques lisent mieux dessus. Mais c'est un des six
+       fonds de lecture, qu'on choisit dans l'espace de confort. Un
+       réglage du téléphone n'a pas à décider à la place du parent.
+
+       Le réglage, une fois choisi dans l'application, est respecté :
+       c'est seulement la devinette de départ qu'on supprime. */
 
     // Les nouveautés de la semaine passent devant, une seule fois.
     var faits = (sauve && sauve.coupsDePouce) ? sauve.coupsDePouce.slice() : [];
