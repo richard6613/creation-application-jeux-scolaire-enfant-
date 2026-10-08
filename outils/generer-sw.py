@@ -17,8 +17,13 @@ html = (racine / 'index.html').read_text(encoding='utf-8')
 fichiers = ['./', './index.html', './manifest.webmanifest']
 fichiers += ['./' + h for h in re.findall(r'<link rel="stylesheet" href="([^"]+)"', html)]
 fichiers += ['./' + s for s in re.findall(r'<script src="([^"]+)"', html)]
+# Les icônes ne sont pas toutes citées dans index.html : les PNG du
+# manifeste n'y figurent pas. On les nomme donc ici, sans quoi
+# l'application installée sur l'écran d'accueil perdrait son icône
+# dès qu'elle serait ouverte sans réseau.
 fichiers += ['./assets/icone.svg', './assets/icone-192.png',
-             './assets/icone-512.png', './assets/icone-apple-180.png']
+             './assets/icone-512.png', './assets/icone-apple-180.png',
+             './assets/icone-512-masquable.png']
 
 # version.js est contrôlé après coup : il est écrit plus bas par ce
 # même script, il peut donc manquer au premier passage.

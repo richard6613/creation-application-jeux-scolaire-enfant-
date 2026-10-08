@@ -9,7 +9,7 @@
    récupérée en arrière-plan quand il y en a une.
    --------------------------------------------------------------- */
 
-var VERSION = 'mes-jeux-2e89e842421c';
+var VERSION = 'mes-jeux-8eea4d39b5a5';
 
 var FICHIERS = [
   './',
@@ -98,7 +98,8 @@ var FICHIERS = [
   './assets/icone.svg',
   './assets/icone-192.png',
   './assets/icone-512.png',
-  './assets/icone-apple-180.png'
+  './assets/icone-apple-180.png',
+  './assets/icone-512-masquable.png'
 ];
 
 self.addEventListener('install', function (ev) {

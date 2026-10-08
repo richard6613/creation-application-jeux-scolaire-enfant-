@@ -29,7 +29,7 @@
       "purpose": "any"
     },
     {
-      "src": "assets/icone-512.png",
+      "src": "assets/icone-512-masquable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

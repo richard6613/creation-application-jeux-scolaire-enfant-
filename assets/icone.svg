@@ -1,49 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="i" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <defs>
-    <linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#2b3f7a"/><stop offset="0.55" stop-color="#4a5fa8"/><stop offset="1" stop-color="#7b6bb5"/>
-    </linearGradient>
-    <linearGradient id="colline" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#4f9d69"/><stop offset="1" stop-color="#2f7d50"/>
-    </linearGradient>
-    <radialGradient id="lune" cx="0.35" cy="0.35"><stop offset="0" stop-color="#fff8e2"/><stop offset="1" stop-color="#f4e2b0"/></radialGradient>
-  </defs>
+<!-- Fabriqué par outils/generer-icone.js. Ne pas modifier à la main.
 
-  <rect width="512" height="512" rx="112" fill="url(#ciel)"/>
-
-  <!-- étoiles -->
-  <g fill="#fff8e2">
-    <circle cx="96" cy="86" r="7" opacity=".9"/><circle cx="168" cy="48" r="4.5" opacity=".7"/>
-    <circle cx="408" cy="70" r="6" opacity=".85"/><circle cx="452" cy="140" r="4" opacity=".6"/>
-    <circle cx="64" cy="168" r="4" opacity=".55"/><circle cx="344" cy="40" r="3.6" opacity=".5"/>
+     L'écu couronné et la clé d'or : les mots sont la clé du royaume.
+     C'est volontairement un emblème et non un personnage. L'enfant
+     choisit son héros parmi cinq et peut en changer quand il veut ;
+     l'icône, elle, ne bouge jamais. Elle doit rester la même sur
+     l'écran d'accueil quoi que l'enfant décide à l'intérieur. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Le Royaume des Mots">
+  <rect width="512" height="512" fill="#1b2d4d"/>
+  <g opacity=".16" fill="#ffffff">
+  <path transform="rotate(0 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(22.5 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(45 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(67.5 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(90 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(112.5 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(135 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(157.5 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(180 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(202.5 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(225 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(247.5 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(270 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(292.5 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(315 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
+  <path transform="rotate(337.5 256 256)" d="M256 256 L228 -120 L284 -120 Z"/>
   </g>
-  <circle cx="404" cy="124" r="40" fill="url(#lune)" opacity=".95"/>
-
-  <!-- collines en papier découpé -->
-  <path d="M0 392 Q 120 330 236 382 Q 360 438 512 368 L512 512 L0 512 Z" fill="#3b6f9e" opacity=".55"/>
-  <path d="M0 424 Q 140 366 268 414 Q 392 460 512 410 L512 512 L0 512 Z" fill="url(#colline)"/>
-
-  <!-- Filou -->
-  <g transform="translate(256 288) scale(2.42) translate(-50 -56)">
-    <path d="M22 34 L26 12 L44 24 Z" fill="#e8a05c"/>
-    <path d="M78 34 L74 12 L56 24 Z" fill="#e8a05c"/>
-    <path d="M27 31 L29 19 L39 26 Z" fill="#f0c3a0"/>
-    <path d="M73 31 L71 19 L61 26 Z" fill="#f0c3a0"/>
-    <circle cx="50" cy="56" r="34" fill="#e8a05c"/>
-    <ellipse cx="50" cy="66" rx="16" ry="12" fill="#f7ddc4"/>
-    <circle cx="24" cy="62" r="7" fill="#e2725b" opacity="0.6"/>
-    <circle cx="76" cy="62" r="7" fill="#e2725b" opacity="0.6"/>
-    <path d="M31 50 Q38 43 45 50" stroke="#3a2d22" stroke-width="4.4" fill="none" stroke-linecap="round"/>
-    <path d="M55 50 Q62 43 69 50" stroke="#3a2d22" stroke-width="4.4" fill="none" stroke-linecap="round"/>
-    <path d="M44 62 Q50 67 56 62" fill="#d98b7a"/>
-    <path d="M50 66 Q44 74 38 70" stroke="#3a2d22" stroke-width="3.4" fill="none" stroke-linecap="round"/>
-    <path d="M50 66 Q56 74 62 70" stroke="#3a2d22" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+  <circle cx="256" cy="264" r="208" fill="#2f5d8a" opacity=".5"/>
+  <g transform="translate(0 26)">
+  <path d="M256 92 L420 140 V282 C420 372 348 424 256 452 C164 424 92 372 92 282 V140 Z" fill="#101a2e" opacity=".4" transform="translate(0 13)"/>
+  <clipPath id="ecu">
+  <path d="M256 92 L420 140 V282 C420 372 348 424 256 452 C164 424 92 372 92 282 V140 Z"/>
+  </clipPath>
+  <g clip-path="url(#ecu)">
+  <rect width="512" height="512" fill="#fdf6e6"/>
+  <path d="M92 298 L420 298 V460 H92 Z" fill="#4a86c4"/>
+  <path d="M92 140 L256 92 L420 140 V170 L256 124 L92 170 Z" fill="#ffffff" opacity=".32"/>
   </g>
-
-  <!-- la couronne : c'est le Royaume des Mots -->
-  <g transform="translate(256 150)">
-    <path d="M-52 20 L-52 -14 L-30 2 L-10 -22 L10 2 L32 -14 L32 20 Z" fill="#e8c24a" stroke="#b8922c" stroke-width="5" stroke-linejoin="round"/>
-    <circle cx="-10" cy="-30" r="7" fill="#fff0b8"/>
+  <path d="M256 92 L420 140 V282 C420 372 348 424 256 452 C164 424 92 372 92 282 V140 Z" fill="none" stroke="#101a2e" stroke-width="18" stroke-linejoin="round"/>
+  <g stroke="#101a2e" stroke-width="17" stroke-linejoin="round" stroke-linecap="round" fill="#f0bb42">
+  <circle cx="256" cy="216" r="62"/>
+  <rect x="230" y="256" width="52" height="150" rx="14"/>
+  <path d="M282 300h66v42h-66z"/>
+  <path d="M282 358h48v42h-48z"/>
+  </g>
+  <circle cx="256" cy="216" r="24" fill="#fdf6e6"/>
+  <rect x="240" y="272" width="13" height="118" rx="7" fill="#ffe8a8" opacity=".85"/>
+  <path d="M216 180 a56 56 0 0 1 36 -24" stroke="#ffe8a8" stroke-width="13" fill="none" stroke-linecap="round" opacity=".9"/>
+  <g transform="translate(0 18)">
+  <path fill="#f0bb42" stroke="#101a2e" stroke-width="15" stroke-linejoin="round" d="M168 78 L150 -4 L206 36 L256 -28 L306 36 L362 -4 L344 78 Z"/>
+  <rect x="166" y="70" width="180" height="28" rx="10" fill="#b9831d" stroke="#101a2e" stroke-width="15" stroke-linejoin="round"/>
+  <circle cx="198" cy="28" r="10" fill="#ffe8a8"/>
+  <circle cx="314" cy="28" r="10" fill="#ffe8a8"/>
+  </g>
   </g>
 </svg>
