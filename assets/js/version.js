@@ -3,4 +3,4 @@
    la dernière version publiée. */
 
 window.Jeu = window.Jeu || {};
-Jeu.Version = { numero: '5c207d', date: '8 octobre 2026' };
+Jeu.Version = { numero: '6b01e1', date: '8 octobre 2026' };

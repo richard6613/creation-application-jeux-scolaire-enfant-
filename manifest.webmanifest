@@ -1,7 +1,7 @@
 {
-  "name": "Le Royaume des Mots",
-  "short_name": "Royaume",
-  "description": "Le Royaume des Mots : lecture, orthographe, calcul et anglais, du CE1 au CM1, pensé pour la dyslexie.",
+  "name": "L'Académie du Royaume",
+  "short_name": "Académie",
+  "description": "L'Académie du Royaume : lecture, orthographe, calcul et anglais, du CE1 au CM1, pensé pour la dyslexie.",
   "lang": "fr",
   "dir": "ltr",
   "id": "./",
