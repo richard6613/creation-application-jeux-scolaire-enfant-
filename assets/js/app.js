@@ -69,6 +69,18 @@ Jeu.App = (function () {
   /* ------------------------- Accueil ------------------------- */
 
   function accueil(z) {
+    /* Un jeu vient de s'ouvrir : l'annonce passe AVANT le bandeau.
+
+       Elle était d'abord sous le bandeau, et le bandeau remplit
+       l'écran à lui seul — décor, bonjour, héros, rang, compteurs.
+       L'annonce se retrouvait donc sous la ligne de flottaison, et
+       une récompense qu'il faut aller chercher en faisant défiler
+       n'est pas une récompense. Elle est maintenant la première
+       chose que l'enfant voit en ouvrant l'application, et elle
+       n'apparaît qu'une fois par jeu. */
+    var neuf = jeuQuiSOuvre();
+    if (neuf) { neuf.classList.add('surgit', 'surgit-1'); z.appendChild(neuf); }
+
     z.appendChild(hud());
 
     // Une partie laissée en plan se reprend là où elle s'est arrêtée.
@@ -100,6 +112,73 @@ Jeu.App = (function () {
     } else {
       b.appendChild(Jeu.Ui.bouton('Mes affaires 🎩', 'btn', function () { aller('filou'); }));
     }
+  }
+
+  /* ------------------------- Un jeu s'ouvre -------------------------
+
+     La carte n'apparaît qu'une fois par jeu, et seulement si la
+     salle est ouverte : annoncer une récompense qu'on ne peut pas
+     aller chercher serait cruel.
+
+     Elle ne dit pas « tu as gagné » ni « bravo » : elle dit qu'un
+     jeu est là, et elle montre la porte. La fête, l'enfant se la
+     fait tout seul en y allant. */
+  function jeuQuiSOuvre() {
+    if (!(window.Jeu && Jeu.Decouvertes && Jeu.Recreations)) return null;
+    if (!(Jeu.Jetons && Jeu.Jetons.salleOuverte())) return null;
+
+    var neufs;
+    try { neufs = Jeu.Decouvertes.nouvelles(Jeu.Recreations); } catch (e) { return null; }
+    if (!neufs.length) return null;
+
+    var jeu = neufs[0];
+    Jeu.Decouvertes.marquerVues(neufs);
+
+    var c = el('div', 'carte carte-nouveau-jeu');
+    if (jeu.teinte) c.style.setProperty('--teinte', 'var(' + jeu.teinte + ')');
+
+    var phrase = 'Un nouveau jeu t\'attend dans la salle : ' + jeu.nom + ' !';
+    var ligne = el('div', 'ligne');
+    ligne.appendChild(Jeu.Voix.bouton(phrase, 'Écouter'));
+    ligne.appendChild(el('h2', null, 'Un nouveau jeu !'));
+    c.appendChild(ligne);
+
+    var corps = el('div', 'ligne nouveau-jeu-corps');
+    var sg = el('span', 'emoji-jeu', jeu.emoji || '🎮');
+    sg.setAttribute('aria-hidden', 'true');
+    corps.appendChild(sg);
+    var txt = el('span', null);
+    txt.appendChild(el('span', 'nom-jeu', jeu.nom));
+    if (jeu.quoi) {
+      txt.appendChild(document.createElement('br'));
+      txt.appendChild(el('span', 'quoi-jeu', jeu.quoi));
+    }
+    corps.appendChild(txt);
+    c.appendChild(corps);
+
+    if (neufs.length > 1) {
+      /* « Et 1 autre aussi » se lit mal. En dessous de quatre, le
+         nombre s'écrit en toutes lettres : l'enfant déchiffre une
+         phrase, pas un relevé. */
+      var MOTS = ['', 'un', 'deux', 'trois'];
+      var n = neufs.length - 1;
+      c.appendChild(el('p', 'petit', n < MOTS.length
+        ? 'Et ' + MOTS[n] + ' autre' + (n > 1 ? 's' : '') + ' aussi.'
+        : 'Et ' + n + ' autres aussi.'));
+    }
+
+    c.appendChild(Jeu.Ui.bouton('Aller le voir', 'btn btn-principal', function () {
+      aller('recreation');
+    }));
+
+    /* Le compagnon fête, et la voix dit la même chose que l'écran :
+       l'enfant n'a pas besoin de lire pour comprendre. */
+    try {
+      if (Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('coffre');
+      Jeu.Voix.dire(phrase);
+    } catch (e) { /* une fête muette reste une fête */ }
+
+    return c;
   }
 
   /* Les trois missions du jour, ramassées sur trois lignes. Rien n'y
@@ -618,18 +697,63 @@ Jeu.App = (function () {
     intro.appendChild(el('p', null, 'C\'est la récréation !'));
     z.appendChild(intro);
 
+    /* Les jeux dans l'ordre où ils s'ouvrent : les siens d'abord,
+       puis ceux qui arrivent. Les seconds sont montrés exprès — un
+       enfant ne réclame pas ce qu'il ignore. */
+    var dec = window.Jeu && Jeu.Decouvertes;
+    var liste = dec ? Jeu.Decouvertes.classer(jeux) : jeux;
+
+    /* On ne montre que les TROIS prochains jeux à venir, pas les huit.
+
+       Huit cartes « un jeu arrive », dont une à deux cent quinze
+       étoiles, n'annoncent pas une récompense : elles annoncent une
+       montagne. Trois suffisent à dire qu'il y a une suite, et le
+       plus proche reste à portée de quelques séances — c'est ça qui
+       fait revenir. Les autres apparaîtront en leur temps, et ce
+       sera une surprise de plus. */
+    if (dec) {
+      var reste = 3;
+      liste = liste.filter(function (r) {
+        if (Jeu.Decouvertes.ouvert(r.id)) return true;
+        reste -= 1;
+        return reste >= 0;
+      });
+    }
+
     var grille = el('div', 'grille-jeux');
-    jeux.forEach(function (r) {
-      var c = el('button', 'carte-jeu carte-recre');
+    liste.forEach(function (r) {
+      var ouvert = !dec || Jeu.Decouvertes.ouvert(r.id);
+      var c = el('button', 'carte-jeu carte-recre' + (ouvert ? '' : ' carte-a-venir'));
       c.type = 'button';
       if (r.teinte) c.style.setProperty('--teinte', 'var(' + r.teinte + ')');
-      var e = el('span', 'emoji-jeu', r.emoji || '🎮');
+
+      var e = el('span', 'emoji-jeu', ouvert ? (r.emoji || '🎮') : '✨');
       e.setAttribute('aria-hidden', 'true');
       c.appendChild(e);
-      c.appendChild(el('span', 'nom-jeu', r.nom));
-      if (r.quoi) c.appendChild(el('span', 'quoi-jeu', r.quoi));
-      c.setAttribute('aria-label', r.nom + '. ' + (r.quoi || ''));
-      c.addEventListener('click', function () { aller('recreJeu', r); });
+
+      if (ouvert) {
+        c.appendChild(el('span', 'nom-jeu', r.nom));
+        if (r.quoi) c.appendChild(el('span', 'quoi-jeu', r.quoi));
+        c.setAttribute('aria-label', r.nom + '. ' + (r.quoi || ''));
+        c.addEventListener('click', function () { aller('recreJeu', r); });
+      } else {
+        /* Ni le nom ni le dessin : c'est la surprise qui donne envie
+           d'y revenir. Mais le compte exact, lui, est écrit — un but
+           qu'on ne peut pas chiffrer n'est pas un but. */
+        var reste = Jeu.Decouvertes.restePour(r.id);
+        c.appendChild(el('span', 'nom-jeu', 'Un jeu arrive'));
+        c.appendChild(el('span', 'quoi-jeu',
+          'Encore ' + Jeu.Ui.accord(reste, 'étoile')));
+        c.setAttribute('aria-label',
+          'Un jeu arrive. Encore ' + Jeu.Ui.accord(reste, 'étoile') + ' à gagner.');
+        /* Le toucher ne refuse rien et ne gronde pas : il redit à
+           voix haute ce qu'il reste à faire. */
+        c.addEventListener('click', function () {
+          if (Jeu.Sons && Jeu.Sons.jouer) Jeu.Sons.jouer('tap');
+          Jeu.Voix.dire('Ce jeu arrive bientôt. Encore ' +
+            Jeu.Ui.accord(Jeu.Decouvertes.restePour(r.id), 'étoile') + ' et il est à toi.');
+        });
+      }
       grille.appendChild(c);
     });
     z.appendChild(grille);
@@ -774,6 +898,13 @@ Jeu.App = (function () {
     Jeu.Adaptatif.charger();
 
     brancherLesSons();
+
+    /* Les deux jeux ouverts dès le départ ne sont pas des
+       découvertes : l'enfant n'a rien fait pour eux, et une fête au
+       tout premier lancement ne récompenserait rien. */
+    if (window.Jeu && Jeu.Decouvertes && Jeu.Recreations) {
+      try { Jeu.Decouvertes.amorcer(Jeu.Recreations); } catch (e) { /* rien */ }
+    }
 
     document.getElementById('btn-retour').addEventListener('click', function () {
       if (ecranCourant === 'parent') Jeu.Parent.fermer();

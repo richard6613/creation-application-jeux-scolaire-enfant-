@@ -1619,3 +1619,55 @@ html[data-animations="non"] .hud-filou:active { transform: none; }
    phrase et un haut-parleur, puis on laisse la place aux héros. */
 .entete-heros { margin-bottom: 14px; }
 .entete-heros .petit { margin: 6px 0 0; }
+
+/* ------------------------- Un jeu qui arrive -------------------------
+
+   La carte d'un jeu pas encore ouvert. Elle doit se lire d'un coup
+   d'œil comme « il y a quelque chose là, mais pas encore » — sans
+   cadenas, sans gris mort, sans rien qui ressemble à une porte
+   fermée au nez. Une silhouette claire, en pointillés, avec des
+   étincelles : ce qui se prépare, pas ce qui est interdit.
+
+   Elle reste un vrai bouton, touchable et au clavier : le toucher
+   redit à voix haute combien d'étoiles il manque. Une carte morte
+   n'apprend rien à l'enfant. */
+.carte-a-venir {
+  border-style: dashed;
+  opacity: .82;
+}
+
+.carte-a-venir .emoji-jeu {
+  background: var(--surface-2, var(--surface));
+  color: var(--teinte, var(--accent));
+}
+
+.carte-a-venir .nom-jeu { font-style: normal; }
+
+.carte-a-venir .quoi-jeu {
+  font-weight: 700;
+  color: var(--teinte, var(--accent));
+}
+
+/* ------------------------- L'annonce -------------------------
+
+   Elle passe avant tout le reste sur le chemin, et elle ne s'affiche
+   qu'une fois par jeu. Un liseré à la couleur du jeu, et le bouton
+   qui mène droit à la salle : l'enfant n'a pas une décision à
+   prendre, il a une porte à pousser. */
+.carte-nouveau-jeu {
+  border-color: var(--teinte, var(--accent));
+  border-width: 3px;
+  background:
+    linear-gradient(0deg,
+      color-mix(in srgb, var(--teinte, var(--accent)) 10%, transparent),
+      color-mix(in srgb, var(--teinte, var(--accent)) 10%, transparent)),
+    var(--surface);
+}
+
+.nouveau-jeu-corps {
+  gap: 14px;
+  margin: 10px 0 14px;
+}
+
+.nouveau-jeu-corps .nom-jeu { font-size: 1.15rem; font-weight: 700; }
+.nouveau-jeu-corps .quoi-jeu { opacity: .8; }

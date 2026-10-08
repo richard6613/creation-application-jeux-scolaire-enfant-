@@ -454,6 +454,10 @@ Jeu.Parent = (function () {
         Jeu.Grade.reinitialiser();
         if (Jeu.Quetes && Jeu.Quetes.reinitialiser) Jeu.Quetes.reinitialiser();
         if (Jeu.Jetons && Jeu.Jetons.reinitialiser) Jeu.Jetons.reinitialiser();
+        /* Les étoiles repartent de zéro : les jeux découverts aussi,
+           sans quoi la salle resterait pleine de jeux que le compteur
+           dit fermés. */
+        if (Jeu.Decouvertes && Jeu.Decouvertes.reinitialiser) Jeu.Decouvertes.reinitialiser();
         /* Le héros choisi n'est pas un résultat : c'est l'enfant qui
            a choisi son personnage, et l'effacement des résultats n'a
            aucune raison de le lui reprendre. Il reste donc en place. */
