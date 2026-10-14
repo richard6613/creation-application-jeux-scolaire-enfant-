@@ -40,7 +40,7 @@
    Les cinq étapes de la progression sont les cinq notions suivies par
    le moteur adaptatif. Elles s'ouvrent l'une après l'autre, et le
    palier (1 à 5) à l'intérieur de chacune fait monter les sommes, le
-   nombre de pièces, et la part de manipulation :
+   nombre de pièces et la part de manipulation :
 
      étape 1  monnaie.euros     euros entiers, jusqu'à 10 €
      étape 2  monnaie.centimes  centimes ronds (50 c, 20 c, 10 c)
@@ -52,12 +52,12 @@
 
      compter  un tas de pièces, combien en tout ?
      payer    on GLISSE les pièces dans le porte-monnaie ;
-              toutes les bonnes combinaisons sont acceptées —
-              3 € se paient avec trois pièces de 1 € ou avec une de
-              2 € et une de 1 €, les deux sont justes ;
+              toutes les bonnes combinaisons sont acceptées — 3 € se
+              paient avec trois pièces de 1 € ou avec une de 2 € et
+              une de 1 €, les deux sont justes ;
      juste    le même, mais au plus juste ;
-     rendre   « il donne 10 €, ça coûte 6 € 50 » — on pose ce que
-              le marchand rend.
+     rendre   « il donne 10 €, ça coûte 6 € 50 » — on pose ce que le
+              marchand rend.
 
    « payer » est la forme centrale : de la manipulation, pas de la
    lecture.
@@ -65,12 +65,13 @@
    ──────────────────────────────────────────────────────────────
    UNE PIÈCE DE TROP N'EST PAS UNE FAUTE
 
-   On ne gronde jamais. Le porte-monnaie dit en permanence ce qu'il y
-   a dedans ; si la somme n'est pas la bonne, on dit combien il y a
-   et combien il faut, et on nomme le geste exact (« enlève 1 € »).
-   Une pièce posée se reprend d'un geste. Et au bout de trois essais,
-   on ne laisse pas tourner en rond : on pose soi-même la solution,
-   on la lui montre, et on passe à la suite. Jamais de série sans fin.
+   On ne gronde jamais, et on ne refuse jamais un geste. Le
+   porte-monnaie dit en permanence ce qu'il contient ; si la somme
+   n'est pas la bonne, on dit combien il y a, combien il faut, et on
+   nomme le geste exact (« enlève 1 € »). Une pièce posée se reprend
+   d'un geste. Et au bout de trois essais on ne laisse pas tourner en
+   rond : on pose soi-même la solution, on la lui montre, et on
+   passe. Jamais de série sans fin, jamais de perte.
    --------------------------------------------------------------- */
 
 window.Jeu = window.Jeu || {};
@@ -85,9 +86,9 @@ Jeu.Exercices = Jeu.Exercices || [];
   var VALEURS = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
   var PREMIER_BILLET = 500;
 
-  /* Ce qui est disponible dans le bac, étape par étape. L'étape 1 ne
-     montre aucun centime : un enfant qui apprend « 2 € + 1 € » n'a
-     rien à faire d'une pièce de 2 c sous les yeux. */
+  /* Ce qui est disponible, étape par étape. L'étape 1 ne montre aucun
+     centime : un enfant qui apprend « 2 € + 1 € » n'a rien à faire
+     d'une pièce de 2 c sous les yeux. */
   var DISPO = {
     1: [100, 200, 500, 1000],
     2: [10, 20, 50, 100, 200, 500, 1000, 2000],
@@ -96,9 +97,10 @@ Jeu.Exercices = Jeu.Exercices || [];
     5: [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000]
   };
 
-  /* Le pas des sommes tirées pour « compter » : à l'étape 2 on ne
-     descend pas sous la dizaine de centimes. */
   var PLAFOND = { 1: 1000, 2: 2000, 3: 2000, 4: 2000, 5: 5000 };
+
+  /* En dessous de ce plancher, un tas à compter n'apprend rien. */
+  var PLANCHER = { 1: 300, 2: 60, 3: 30, 4: 30, 5: 30 };
 
   var ETAPES = {
     'monnaie.euros': 1,
@@ -124,18 +126,19 @@ Jeu.Exercices = Jeu.Exercices || [];
     return t;
   }
 
+  function decroissant(a, b) { return b - a; }
+
   /* --------------------------------------------------------------
      1. ÉCRIRE ET DIRE UNE SOMME
 
      À l'écrit : « 6 € 50 », et non « 6,50 € ». C'est la notation de
-     l'école élémentaire, celle que l'enfant a sur son cahier, et
-     elle a l'avantage énorme de ne contenir aucune virgule à
-     interpréter — les euros d'un côté du symbole, les centimes de
-     l'autre.
+     l'école élémentaire, celle que l'enfant a sur son cahier, et elle
+     a l'avantage énorme de ne contenir aucune virgule à interpréter :
+     les euros d'un côté du symbole, les centimes de l'autre.
 
      À l'oral : « six euros cinquante ». On n'épelle pas le symbole,
      on ne dit pas « six virgule cinquante », et le singulier est
-     respecté : un euro, un centime.
+     respecté — un euro, un centime.
      -------------------------------------------------------------- */
 
   function ecrire(centimes) {
@@ -163,7 +166,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     var t = enMots(e) + (e === 1 ? ' euro' : ' euros');
     if (r === 0) return t;
     /* « six euros cinquante » s'entend tout seul ; « six euros cinq »
-       s'entend comme un nombre coupé, on remet le mot centimes. */
+       s'entend comme un nombre coupé : on remet le mot centimes. */
     if (r < 10) return t + ' et ' + enMots(r) + (r === 1 ? ' centime' : ' centimes');
     return t + ' ' + enMots(r);
   }
@@ -173,68 +176,74 @@ Jeu.Exercices = Jeu.Exercices || [];
   }
 
   /* --------------------------------------------------------------
-     2. ARITHMÉTIQUE DES PIÈCES
+     2. ARITHMÉTIQUE DES PIÈCES, EN ENTIERS
 
-     Tout en entiers. `minJetons` est un sac à dos borné : il rend le
-     plus petit nombre de pièces du bac qui font exactement la somme,
-     ou -1 si c'est impossible. Il sert à deux choses, et c'est
-     pourquoi il est exact plutôt que glouton : juger « au plus
-     juste » sur le bac réellement posé devant l'enfant, et savoir
-     qu'un item est soluble avant de l'afficher.
+     `resoudre` est un sac à dos 0/1 sur le bac RÉELLEMENT posé devant
+     l'enfant : chaque pièce du bac est un objet distinct, les
+     doublons se gèrent donc tout seuls. Il rend la combinaison la
+     plus courte qui fait exactement la somme, ou null si c'est
+     impossible.
+
+     Pourquoi exact, et pas glouton ? Pour deux emplois où le glouton
+     mentirait :
+
+     - juger « au plus juste » sur le bac posé, et pas sur un jeu de
+       pièces idéal : exiger 2 € + 1 € quand le bac n'a que trois
+       pièces de 1 € serait injuste ;
+     - savoir qu'un item est soluble AVANT de l'afficher. La règle
+       qu'on ne négocie pas : jamais d'exercice impossible.
+
+     Et comme il rend la combinaison elle-même, c'est aussi elle qu'on
+     pose sous les yeux de l'enfant quand on lui montre la solution :
+     toutes les pièces montrées sont des pièces qu'il avait vraiment.
      -------------------------------------------------------------- */
-
-  function parValeur(liste) {
-    var m = {};
-    for (var i = 0; i < liste.length; i++) {
-      m[liste[i]] = (m[liste[i]] || 0) + 1;
-    }
-    return m;
-  }
 
   var INFINI = 999999;
 
-  function minJetons(bac, cible) {
-    if (cible === 0) return 0;
-    if (cible < 0) return -1;
-    var dp = new Array(cible + 1);
-    var i, j;
-    for (i = 0; i <= cible; i++) dp[i] = INFINI;
-    dp[0] = 0;
+  function resoudre(bac, cible) {
+    if (cible < 0) return null;
+    if (cible === 0) return [];
+    var n = bac.length;
+    var i, s;
 
-    var m = parValeur(bac);
-    var cles = Object.keys(m);
-    for (i = 0; i < cles.length; i++) {
-      var v = parseInt(cles[i], 10);
-      var reste = m[cles[i]];
-      /* Découpage binaire du stock : un paquet de 1, puis 2, puis 4…
-         Chaque nombre de copies entre 0 et le stock s'obtient comme
-         somme de ces paquets, et on reste linéaire. */
-      var pas = 1;
-      while (reste > 0) {
-        var k = Math.min(pas, reste);
-        var poids = v * k;
-        if (poids <= cible) {
-          for (j = cible; j >= poids; j--) {
-            if (dp[j - poids] + k < dp[j]) dp[j] = dp[j - poids] + k;
-          }
-        }
-        reste -= k;
-        pas *= 2;
+    var dp = new Array(n + 1);
+    for (i = 0; i <= n; i++) {
+      dp[i] = new Array(cible + 1);
+      for (s = 1; s <= cible; s++) dp[i][s] = INFINI;
+      dp[i][0] = 0;
+    }
+    for (i = 1; i <= n; i++) {
+      var v = bac[i - 1];
+      for (s = 1; s <= cible; s++) {
+        var sans = dp[i - 1][s];
+        var avec = (s >= v) ? dp[i - 1][s - v] + 1 : INFINI;
+        dp[i][s] = (sans < avec) ? sans : avec;
       }
     }
-    return dp[cible] >= INFINI ? -1 : dp[cible];
+    if (dp[n][cible] >= INFINI) return null;
+
+    var sortie = [];
+    s = cible;
+    for (i = n; i >= 1; i--) {
+      // Valeur différente de la ligne du dessus : cette pièce sert.
+      if (dp[i][s] !== dp[i - 1][s]) {
+        sortie.push(bac[i - 1]);
+        s -= bac[i - 1];
+      }
+    }
+    return sortie.sort(decroissant);
   }
 
   function faisable(bac, cible) {
-    return minJetons(bac, cible) >= 0;
+    return resoudre(bac, cible) !== null;
   }
 
   /* Décomposition gloutonne sur un jeu de valeurs illimité. Avec les
-     valeurs de l'euro, le glouton est optimal — c'est la propriété
-     qui fait de « payer au plus juste » un exercice faisable de tête
-     en CE2, et c'est elle qu'on apprend. */
+     valeurs de l'euro le glouton est optimal — c'est la propriété qui
+     fait de « payer au plus juste » un exercice faisable de tête en
+     CE2, et c'est elle qu'on apprend. */
   function glouton(cible, valeurs) {
-    var tri = valeurs.slice().sort(function (a, b) { return b - a; });
+    var tri = valeurs.slice().sort(decroissant);
     var reste = cible;
     var sortie = [];
     for (var i = 0; i < tri.length; i++) {
@@ -245,13 +254,11 @@ Jeu.Exercices = Jeu.Exercices || [];
 
   /* Une décomposition « d'enfant » : pas forcément la plus courte,
      justement. Elle tire au sort parmi les valeurs qui tiennent dans
-     le reste, avec un penchant pour les grosses, puis casse parfois
-     une pièce en deux plus petites. C'est ce qui fait rencontrer
-     plusieurs façons de payer la même somme.  */
+     le reste, avec un penchant pour les grosses, pour que l'enfant
+     rencontre plusieurs façons de payer la même somme. */
   function decomposer(cible, valeurs, maxJetons) {
-    var tri = valeurs.slice().sort(function (a, b) { return b - a; });
-    var essai;
-    for (essai = 0; essai < 40; essai++) {
+    var tri = valeurs.slice().sort(decroissant);
+    for (var essai = 0; essai < 40; essai++) {
       var reste = cible;
       var sortie = [];
       var securite = 0;
@@ -262,31 +269,43 @@ Jeu.Exercices = Jeu.Exercices || [];
           if (tri[i] <= reste) possibles.push(tri[i]);
         }
         if (!possibles.length) break;
-        /* Penchant pour les grosses pièces : on tire dans le premier
-           tiers des valeurs possibles deux fois sur trois. Sans ce
-           penchant, 7 € 35 se paie en trente-cinq pièces de 1 c. */
+        /* Deux fois sur trois dans le premier tiers des valeurs
+           possibles. Sans ce penchant, 7 € 35 se paie en
+           trente-cinq pièces de 1 c. */
         var hautes = possibles.slice(0, Math.max(1, Math.ceil(possibles.length / 3)));
         var choisie = (Math.random() < 0.68) ? piocher(hautes) : piocher(possibles);
         sortie.push(choisie);
         reste -= choisie;
         if (sortie.length > maxJetons + 4) break;
       }
-      if (reste === 0 && sortie.length <= maxJetons) {
-        return sortie.sort(function (a, b) { return b - a; });
-      }
+      if (reste === 0 && sortie.length <= maxJetons) return sortie.sort(decroissant);
     }
     return glouton(cible, valeurs);
+  }
+
+  /* Ce qu'il faut retirer d'un porte-monnaie trop garni pour tomber
+     sur la combinaison la plus courte : la différence des deux sacs,
+     en entiers, sans toucher aux pièces qui servent. */
+  function enTropParRapportA(posees, solution) {
+    var reste = solution.slice();
+    var sortie = [];
+    for (var i = 0; i < posees.length; i++) {
+      var j = reste.indexOf(posees[i]);
+      if (j >= 0) reste.splice(j, 1);
+      else sortie.push(posees[i]);
+    }
+    return sortie;
   }
 
   /* --------------------------------------------------------------
      3. LE DESSIN DES JETONS
 
-     Un jeton = une forme SVG (le papier découpé, le biseau, le
-     cranté du bord) et, par-dessus, la valeur en HTML. La valeur est
-     en HTML et pas en <text> SVG pour une raison pratique : le
-     centrage d'un <text> dépend des métriques de la police, et la
-     police est réglable par l'enfant. En HTML, c'est un flex centré,
-     et ça tombe juste avec les six polices.
+     Un jeton = une forme SVG (le papier découpé, le biseau, le bord
+     cranté) et, par-dessus, la valeur en HTML. La valeur est en HTML
+     et pas en <text> SVG pour une raison pratique : le centrage d'un
+     <text> dépend des métriques de la police, et la police est
+     réglable par l'enfant. En HTML c'est un flex centré, et ça tombe
+     juste avec les six polices.
 
      Aucune couleur ici : tout est dans monnaie.css, en clair comme en
      sombre.
@@ -300,42 +319,39 @@ Jeu.Exercices = Jeu.Exercices || [];
     return e;
   }
 
-  function formePiece(v) {
+  function formePiece() {
     var svg = svgEl('svg', {
       'class': 'mo-forme',
       viewBox: '0 0 100 100',
       'aria-hidden': 'true',
-      focusable: 'false',
-      preserveAspectRatio: 'none'
+      focusable: 'false'
     });
 
-    /* Le bord cranté : douze encoches, en papier découpé. Elles
-       disent « pièce » sans rien imiter. */
+    /* Le bord cranté : douze encoches en papier découpé. Elles disent
+       « pièce » sans rien imiter. */
     var g = svgEl('g', { 'class': 'mo-crans' });
     for (var i = 0; i < 12; i++) {
       var a = (i * 30) * Math.PI / 180;
-      var cx = 50 + Math.cos(a) * 46;
-      var cy = 50 + Math.sin(a) * 46;
-      g.appendChild(svgEl('circle', { cx: cx.toFixed(2), cy: cy.toFixed(2), r: '5.2' }));
+      g.appendChild(svgEl('circle', {
+        cx: (50 + Math.cos(a) * 46).toFixed(2),
+        cy: (50 + Math.sin(a) * 46).toFixed(2),
+        r: '5.2'
+      }));
     }
     svg.appendChild(g);
 
     svg.appendChild(svgEl('circle', { 'class': 'mo-anneau', cx: '50', cy: '50', r: '47' }));
     svg.appendChild(svgEl('circle', { 'class': 'mo-coeur', cx: '50', cy: '50', r: '37' }));
-    /* Le biseau : une couche de plus, décalée en haut à gauche, comme
-       une chute de papier posée sur le disque. */
+    /* Le biseau : une chute de papier posée en haut à gauche du
+       disque. C'est ce qui donne les deux plans. */
     svg.appendChild(svgEl('path', {
       'class': 'mo-biseau',
-      d: 'M 50 13 A 37 37 0 0 0 13 50 A 37 37 0 0 1 50 13 Z'
-    }));
-    svg.appendChild(svgEl('path', {
-      'class': 'mo-biseau mo-biseau-large',
-      d: 'M 17 68 A 37 37 0 0 1 50 13 A 31 31 0 0 0 23 66 Z'
+      d: 'M 50 13 A 37 37 0 0 0 13 50 L 20 50 A 30 30 0 0 1 50 20 Z'
     }));
     return svg;
   }
 
-  function formeBillet(v) {
+  function formeBillet() {
     var svg = svgEl('svg', {
       'class': 'mo-forme',
       viewBox: '0 0 200 120',
@@ -345,47 +361,48 @@ Jeu.Exercices = Jeu.Exercices || [];
     });
 
     svg.appendChild(svgEl('rect', {
-      'class': 'mo-anneau', x: '1', y: '1', width: '198', height: '118', rx: '15'
+      'class': 'mo-anneau', x: '0', y: '0', width: '200', height: '120', rx: '16'
     }));
     svg.appendChild(svgEl('rect', {
-      'class': 'mo-coeur', x: '9', y: '9', width: '182', height: '102', rx: '10'
+      'class': 'mo-coeur', x: '8', y: '8', width: '184', height: '104', rx: '10'
     }));
     /* La bande de gauche et ses trois pastilles : un motif
        géométrique inventé pour l'application, qui ne renvoie à aucune
        coupure existante. Il sert surtout à ce que la zone du chiffre
        soit toujours la même, à droite. */
     svg.appendChild(svgEl('rect', {
-      'class': 'mo-bande', x: '9', y: '9', width: '48', height: '102', rx: '10'
+      'class': 'mo-bande', x: '8', y: '8', width: '48', height: '104', rx: '10'
     }));
     var g = svgEl('g', { 'class': 'mo-motif' });
     for (var i = 0; i < 3; i++) {
       g.appendChild(svgEl('rect', {
-        x: '21', y: String(20 + i * 30), width: '24', height: '22', rx: '7'
+        x: '20', y: String(20 + i * 30), width: '24', height: '22', rx: '7'
       }));
     }
     svg.appendChild(g);
-    /* Biseau haut et pli du coin : les deux plans du papier découpé. */
+    /* Biseau du haut et pli du coin : les deux plans du papier. */
     svg.appendChild(svgEl('path', {
-      'class': 'mo-biseau', d: 'M 9 19 A 10 10 0 0 1 19 9 L 181 9 A 10 10 0 0 1 191 19 L 191 27 L 9 27 Z'
+      'class': 'mo-biseau',
+      d: 'M 8 18 A 10 10 0 0 1 18 8 L 182 8 A 10 10 0 0 1 192 18 L 192 26 L 8 26 Z'
     }));
     svg.appendChild(svgEl('path', {
-      'class': 'mo-pli', d: 'M 191 83 L 191 101 A 10 10 0 0 1 181 111 L 163 111 Z'
+      'class': 'mo-pli',
+      d: 'M 192 84 L 192 102 A 10 10 0 0 1 182 112 L 164 112 Z'
     }));
     return svg;
   }
 
-  /* Un jeton complet : forme + valeur. `role` vaut 'bac' (à prendre),
-     'pose' (dans le porte-monnaie, reprenable) ou 'tas' (décor à
-     compter, rien à toucher). */
+  /* Un jeton complet. `role` vaut 'bac' (à prendre), 'pose' (dans le
+     porte-monnaie, reprenable) ou 'tas' (décor à compter). */
   function faireJeton(v, role) {
     var billet = v >= PREMIER_BILLET;
     var d = Jeu.Ui.el('div', 'mo-jeton mo-v' + v + (billet ? ' mo-billet' : ' mo-piece'));
     d.setAttribute('data-valeur', String(v));
-    d.appendChild(billet ? formeBillet(v) : formePiece(v));
+    d.appendChild(billet ? formeBillet() : formePiece());
 
     var val = Jeu.Ui.el('span', 'mo-valeur');
-    var brut = v < 100 ? String(v) : String(Math.floor(v / 100));
-    val.appendChild(Jeu.Ui.el('span', 'mo-nombre', brut));
+    val.appendChild(Jeu.Ui.el('span', 'mo-nombre',
+      v < 100 ? String(v) : String(Math.floor(v / 100))));
     val.appendChild(Jeu.Ui.el('span', 'mo-unite', v < 100 ? 'c' : '€'));
     val.setAttribute('aria-hidden', 'true');
     d.appendChild(val);
@@ -394,7 +411,8 @@ Jeu.Exercices = Jeu.Exercices || [];
       d.setAttribute('role', 'img');
       d.setAttribute('aria-label', nomJeton(v));
     } else {
-      d.setAttribute('aria-label', (role === 'pose' ? 'Reprendre la ' : 'Prendre la ') + nomJeton(v));
+      d.setAttribute('aria-label',
+        (role === 'pose' ? 'Reprendre la ' : 'Prendre la ') + nomJeton(v));
     }
     return d;
   }
@@ -405,40 +423,49 @@ Jeu.Exercices = Jeu.Exercices || [];
      Règle tenue par construction : la solution est fabriquée
      d'abord, le bac est fabriqué autour d'elle. Un item sans
      solution ne peut donc pas exister. On le vérifie quand même
-     avant de rendre l'item — une vérification qui ne coûte rien et
-     qui rattraperait une étourderie future.
+     avant de rendre l'item — ça ne coûte rien et ça rattraperait une
+     étourderie future.
      -------------------------------------------------------------- */
 
-  /* Combien de pièces au plus dans le tas ou dans la solution : un
-     enfant de huit ans et demi ne compte pas douze pièces de front. */
+  /* Un enfant de huit ans et demi ne compte pas douze pièces de front. */
   function plafondJetons(palier) {
     return palier >= 4 ? 6 : (palier >= 2 ? 5 : 4);
   }
 
+  /* Le tas à compter. Construit sous contrainte de budget plutôt que
+     tiré puis rejeté : chaque pièce se choisit dans ce qui laisse de
+     quoi finir, et on garde une part moyenne pour que le tas ne soit
+     pas un gros billet et quatre centimes. */
   function tasAcompter(etape, palier) {
-    var dispo = DISPO[etape];
+    var dispo = DISPO[etape].slice().sort(function (a, b) { return a - b; });
     var plaf = PLAFOND[etape];
+    var plancher = PLANCHER[etape];
     var nbMax = plafondJetons(palier) + 1;
-    var nb, tas, i;
-    for (var essai = 0; essai < 80; essai++) {
-      nb = hasard(3, nbMax);
-      tas = [];
-      for (i = 0; i < nb; i++) tas.push(piocher(dispo));
-      var t = somme(tas);
-      /* Un tas qui ne fait rien de rond n'est pas un défaut — c'est
-         justement ce qu'il y a dans un porte-monnaie. On écarte
-         seulement ce qui dépasse le plafond de l'étape, et les tas
-         d'une seule pièce. */
-      if (t > 0 && t <= plaf) {
-        return tas.sort(function (a, b) { return b - a; });
+    var meilleur = null;
+
+    for (var essai = 0; essai < 24; essai++) {
+      var nb = hasard(3, nbMax);
+      var budget = plaf;
+      var tas = [];
+      for (var i = 0; i < nb; i++) {
+        var reserve = (nb - 1 - i) * dispo[0];
+        var moyenne = Math.floor((budget - reserve) / (nb - i));
+        var hautPiece = Math.max(dispo[0], Math.min(budget - reserve, moyenne * 2));
+        var ok = dispo.filter(function (v) { return v <= hautPiece; });
+        var v = piocher(ok.length ? ok : [dispo[0]]);
+        tas.push(v);
+        budget -= v;
       }
+      var t = somme(tas);
+      if (t >= plancher && t <= plaf) return tas.sort(decroissant);
+      if (meilleur === null || t > somme(meilleur)) meilleur = tas;
     }
-    return [100, 100, 50];
+    return meilleur.sort(decroissant);
   }
 
   /* Trois leurres plausibles : une pièce oubliée, une pièce comptée
      deux fois, et l'erreur reine — compter les PIÈCES au lieu des
-     euros. Jamais deux leurres de même valeur, jamais de négatif. */
+     euros. Jamais deux leurres égaux, jamais de négatif. */
   function leurres(tas, total) {
     var vus = {};
     vus[total] = true;
@@ -454,15 +481,14 @@ Jeu.Exercices = Jeu.Exercices || [];
 
     var melange = Jeu.Adaptatif.melanger(tas.slice());
     for (i = 0; i < melange.length; i++) ajouter(total - melange[i]);
-    for (i = 0; i < melange.length; i++) ajouter(total + melange[i]);
     /* « Il y a cinq pièces, donc cinq euros. » On la lui montre pour
        qu'il la reconnaisse et l'écarte. */
     ajouter(tas.length * 100);
+    for (i = 0; i < melange.length; i++) ajouter(total + melange[i]);
     ajouter(total + 100);
-    ajouter(total >= 110 ? total - 100 : total + 10);
-    ajouter(total + 10);
+    ajouter(total > 100 ? total - 100 : total + 10);
     var ecart = 1;
-    while (sortie.length < 3 && ecart < 400) {
+    while (sortie.length < 3 && ecart < 500) {
       ajouter(total + ecart * 5);
       ajouter(total - ecart * 5);
       ecart += 1;
@@ -470,18 +496,15 @@ Jeu.Exercices = Jeu.Exercices || [];
     return sortie.slice(0, 3);
   }
 
-  /* Les pièces en trop dans le bac. Elles servent à deux choses :
-     il faut choisir, et plusieurs combinaisons deviennent possibles
-     — ce qui est exactement ce qu'on veut faire sentir. */
+  /* Les pièces en trop dans le bac : il faut choisir, et plusieurs
+     combinaisons deviennent possibles — ce qui est exactement ce
+     qu'on veut faire sentir. Rien de plus gros que la cible : un
+     billet de 50 € devant un croissant est du bruit. */
   function garnir(bac, dispo, combien, cible) {
-    var i;
-    for (i = 0; i < combien; i++) {
-      var v = piocher(dispo);
-      /* Rien de plus gros que la cible : un billet de 50 € devant un
-         croissant est du bruit, pas une difficulté. */
-      if (v > cible) continue;
-      if (bac.length >= 11) break;
-      bac.push(v);
+    var utiles = dispo.filter(function (v) { return v <= cible; });
+    if (!utiles.length) return bac;
+    for (var i = 0; i < combien && bac.length < 11; i++) {
+      bac.push(piocher(utiles));
     }
     return bac;
   }
@@ -491,46 +514,28 @@ Jeu.Exercices = Jeu.Exercices || [];
     var maxJetons = plafondJetons(palier);
     var plaf = PLAFOND[etape];
 
-    /* Le prix s'adapte au palier : on ne lance pas un enfant de
-       palier 1 sur 16 € 55. */
-    var hautPrix = Math.min(plaf, palier >= 4 ? plaf
-                                 : palier >= 3 ? Math.round(plaf * 0.75)
-                                 : palier >= 2 ? Math.round(plaf * 0.5)
-                                 : Math.round(plaf * 0.35));
+    /* Le prix suit le palier : on ne lance pas un enfant de palier 1
+       sur 16 € 55. */
+    var hautPrix = palier >= 4 ? plaf
+                 : palier >= 3 ? Math.round(plaf * 0.75)
+                 : palier >= 2 ? Math.round(plaf * 0.5)
+                 : Math.round(plaf * 0.35);
 
     var objet = Jeu.Data.monnaie.tirer(etape, function (prix) {
       return prix <= hautPrix;
     });
     var cible = objet.prix;
 
-    var solution;
-    if (forme === 'juste') {
-      solution = glouton(cible, dispo);
-    } else {
-      solution = decomposer(cible, dispo, maxJetons);
-    }
+    var solution = (forme === 'juste')
+      ? glouton(cible, dispo)
+      : decomposer(cible, dispo, maxJetons);
     if (!solution) solution = glouton(cible, dispo);
-    if (!solution) {                       // ne peut pas arriver : 1 c est dans DISPO
-      solution = [];
-      var reste = cible;
-      while (reste > 0) { solution.push(1); reste -= 1; }
-    }
 
-    var bac = solution.slice();
-    var enTrop = palier >= 3 ? hasard(3, 4) : hasard(2, 3);
-    garnir(bac, dispo, enTrop, cible);
+    var bac = solution ? solution.slice() : [];
+    garnir(bac, dispo, palier >= 3 ? hasard(3, 4) : hasard(2, 3), cible);
     Jeu.Adaptatif.melanger(bac);
 
-    return {
-      forme: forme,
-      objet: objet,
-      cible: cible,
-      bac: bac,
-      /* Le nombre minimum de pièces calculé sur le bac RÉELLEMENT
-         posé devant l'enfant, pas sur un jeu idéal : c'est la seule
-         exigence juste. */
-      mini: minJetons(bac, cible)
-    };
+    return { forme: forme, objet: objet, cible: cible, bac: bac };
   }
 
   /* Étape 5. Le billet donné est le plus petit billet rond qui couvre
@@ -538,7 +543,7 @@ Jeu.Exercices = Jeu.Exercices || [];
      au-dessus de temps en temps, aux paliers hauts. */
   var RONDS = [500, 1000, 2000, 5000];
 
-  function itemRendre(etape, palier) {
+  function itemRendre(palier) {
     var dispo = DISPO[5];
     var maxJetons = plafondJetons(palier);
 
@@ -550,34 +555,27 @@ Jeu.Exercices = Jeu.Exercices || [];
       if (palier <= 2) return (prix % 50) === 0;
       return true;
     });
-    var cible0 = objet.prix;
+    var prix = objet.prix;
 
-    var i, donne = null;
+    var i, donne = 5000;
     for (i = 0; i < RONDS.length; i++) {
-      if (RONDS[i] > cible0) { donne = RONDS[i]; break; }
+      if (RONDS[i] > prix) { donne = RONDS[i]; break; }
     }
-    if (donne === null) donne = 5000;
     if (palier >= 4 && Math.random() < 0.35) {
       for (i = 0; i < RONDS.length; i++) {
         if (RONDS[i] > donne) { donne = RONDS[i]; break; }
       }
     }
 
-    var rendu = donne - cible0;
+    var rendu = donne - prix;
     var solution = decomposer(rendu, dispo, maxJetons) || glouton(rendu, dispo);
-
-    var bac = solution.slice();
+    var bac = solution ? solution.slice() : [];
     garnir(bac, dispo, hasard(3, 4), rendu);
     Jeu.Adaptatif.melanger(bac);
 
     return {
-      forme: 'rendre',
-      objet: objet,
-      prix: cible0,
-      donne: donne,
-      cible: rendu,
-      bac: bac,
-      mini: minJetons(bac, rendu)
+      forme: 'rendre', objet: objet,
+      prix: prix, donne: donne, cible: rendu, bac: bac
     };
   }
 
@@ -587,13 +585,13 @@ Jeu.Exercices = Jeu.Exercices || [];
     if (etape === 4) return 'juste';
     if (etape === 5) return 'rendre';
     var partCompter;
-    if (etape === 1) partCompter = palier <= 1 ? 1 : (palier === 2 ? 0.5 : 0.3);
-    else if (etape === 2) partCompter = palier <= 1 ? 0.6 : 0.3;
-    else partCompter = palier <= 1 ? 0.5 : 0.25;
+    if (etape === 1) partCompter = (palier <= 1) ? 1 : (palier === 2 ? 0.5 : 0.3);
+    else if (etape === 2) partCompter = (palier <= 1) ? 0.6 : 0.3;
+    else partCompter = (palier <= 1) ? 0.5 : 0.25;
     if (Math.random() < partCompter) return 'compter';
-    /* À l'étape 3, palier 5 : on demande parfois le plus juste avant
-       que l'étape 4 ne s'ouvre. Rencontrer l'exigence une fois de
-       temps en temps vaut mieux que la découvrir d'un coup. */
+    /* Étape 3, palier 5 : on demande parfois le plus juste avant que
+       l'étape 4 ne s'ouvre. Rencontrer l'exigence de temps en temps
+       vaut mieux que la découvrir d'un coup. */
     if (etape === 3 && palier >= 5 && Math.random() < 0.3) return 'juste';
     return 'payer';
   }
@@ -610,21 +608,19 @@ Jeu.Exercices = Jeu.Exercices || [];
     var total = item.total;
 
     var carte = Jeu.Ui.el('div', 'carte mo-carte');
-
     var ligne = Jeu.Ui.el('div', 'ligne mo-ligne-son');
     ligne.appendChild(Jeu.Voix.bouton(function () {
       /* Le bouton dit ce qui est à l'écran, pièce par pièce, dans
          l'ordre où elles sont posées. Il n'annonce jamais le total :
          c'est la réponse. */
       return tas.map(function (v) { return dire(v); }).join(', ');
-    }, 'Écouter les pièces'));
-    ligne.appendChild(Jeu.Ui.el('p', 'mo-etiquette',
-      Jeu.Ui.accord(tas.length, tas.length === 1 ? 'pièce' : 'pièce')));
+    }, 'Écouter les pièces une par une'));
+    ligne.appendChild(Jeu.Ui.el('p', 'mo-etiquette', 'Dans la main'));
     carte.appendChild(ligne);
 
     var planche = Jeu.Ui.el('div', 'mo-tas');
     planche.setAttribute('role', 'group');
-    planche.setAttribute('aria-label', 'Le tas : ' +
+    planche.setAttribute('aria-label', 'Dans la main : ' +
       tas.map(function (v) { return nomJeton(v); }).join(', '));
     tas.forEach(function (v) { planche.appendChild(faireJeton(v, 'tas')); });
     carte.appendChild(planche);
@@ -636,19 +632,19 @@ Jeu.Exercices = Jeu.Exercices || [];
 
     var grille = Jeu.Ui.choix(options, function (o, btn) {
       Jeu.Ui.figerChoix(grille);
-      var juste = (o.ref === total);
-      btn.classList.add(juste ? 'juste' : 'faux');
-      if (!juste) {
+      var bon = (o.ref === total);
+      btn.classList.add(bon ? 'juste' : 'faux');
+      if (!bon) {
         Array.prototype.forEach.call(grille.querySelectorAll('.choix-btn'), function (a, i) {
           if (options[i].ref === total) a.classList.add('juste');
         });
       }
       outils.repondre({
-        juste: juste,
+        juste: bon,
         element: btn,
         typeErreur: 'notion',
-        detail: 'compter ' + ecrire(total) + (juste ? '' : ' (a répondu ' + ecrire(o.ref) + ')'),
-        bonneReponse: juste ? '' : 'Il y a ' + dire(total) + '.'
+        detail: 'compter ' + ecrire(total) + (bon ? '' : ' (a répondu ' + ecrire(o.ref) + ')'),
+        bonneReponse: bon ? '' : 'Il y a ' + dire(total) + '.'
       });
     }, { deuxColonnes: true });
     outils.zone.appendChild(grille);
@@ -664,12 +660,11 @@ Jeu.Exercices = Jeu.Exercices || [];
 
   function afficherPoser(item, outils) {
     var cible = item.cible;
-    var juste = item.forme === 'juste';
+    var auPlusJuste = (item.forme === 'juste');
 
-    var consigneDepart = juste ? 'Paie avec le moins de pièces possible.'
+    outils.consigne(auPlusJuste ? 'Paie avec le moins de pièces possible.'
       : item.forme === 'rendre' ? 'Pose la monnaie qu\'on doit rendre.'
-      : 'Pose ce qu\'il faut pour payer.';
-    outils.consigne(consigneDepart);
+      : 'Pose ce qu\'il faut pour payer.');
 
     /* ---- L'étal : l'objet, son prix, et de quoi l'entendre ---- */
     var carte = Jeu.Ui.el('div', 'carte mo-carte');
@@ -681,13 +676,9 @@ Jeu.Exercices = Jeu.Exercices || [];
       etal.appendChild(ic);
     }
 
-    var phrase;
-    if (item.forme === 'rendre') {
-      phrase = item.objet.sujet + ' coûte ' + dire(item.prix) +
-               '. Il donne ' + dire(item.donne) + '.';
-    } else {
-      phrase = item.objet.sujet + ' coûte ' + dire(cible) + '.';
-    }
+    var phrase = (item.forme === 'rendre')
+      ? item.objet.sujet + ' coûte ' + dire(item.prix) + '. Il donne ' + dire(item.donne) + '.'
+      : item.objet.sujet + ' coûte ' + dire(cible) + '.';
 
     var bloc = Jeu.Ui.el('div', 'mo-prix-bloc');
     var hautLigne = Jeu.Ui.el('div', 'ligne mo-ligne-son');
@@ -697,14 +688,12 @@ Jeu.Exercices = Jeu.Exercices || [];
 
     if (item.forme === 'rendre') {
       var t = Jeu.Ui.el('div', 'mo-compte');
-      var l1 = Jeu.Ui.el('div', 'mo-compte-ligne');
-      l1.appendChild(Jeu.Ui.el('span', 'mo-compte-quoi', 'ça coûte'));
-      l1.appendChild(Jeu.Ui.el('span', 'mo-compte-combien', ecrire(item.prix)));
-      var l2 = Jeu.Ui.el('div', 'mo-compte-ligne');
-      l2.appendChild(Jeu.Ui.el('span', 'mo-compte-quoi', 'il donne'));
-      l2.appendChild(Jeu.Ui.el('span', 'mo-compte-combien', ecrire(item.donne)));
-      t.appendChild(l1);
-      t.appendChild(l2);
+      [['ça coûte', item.prix], ['il donne', item.donne]].forEach(function (paire) {
+        var l = Jeu.Ui.el('div', 'mo-compte-ligne');
+        l.appendChild(Jeu.Ui.el('span', 'mo-compte-quoi', paire[0]));
+        l.appendChild(Jeu.Ui.el('span', 'mo-compte-combien', ecrire(paire[1])));
+        t.appendChild(l);
+      });
       bloc.appendChild(t);
     } else {
       bloc.appendChild(Jeu.Ui.el('p', 'mo-prix', ecrire(cible)));
@@ -715,9 +704,11 @@ Jeu.Exercices = Jeu.Exercices || [];
 
     Jeu.Voix.enchainer(phrase, { vitesse: 0.85 });
 
-    /* ---- Le porte-monnaie : une seule grande case, très tolérante ---- */
+    /* ---- Le porte-monnaie : une seule grande case, très tolérante.
+       Tout le rectangle accepte le dépôt, sans aucune précision
+       demandée — c'est la condition pour qu'une main maladroite
+       joue comme les autres. ---- */
     var porte = Jeu.Ui.el('div', 'mo-porte');
-    porte.setAttribute('data-role', 'porte-monnaie');
     var dedans = Jeu.Ui.el('div', 'mo-dedans');
     var vide = Jeu.Ui.el('p', 'mo-vide', 'Pose les pièces ici.');
     vide.setAttribute('aria-hidden', 'true');
@@ -738,7 +729,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     /* ---- Le bac : ce qu'il a dans la poche ---- */
     var bac = Jeu.Ui.el('div', 'mo-bac');
     bac.setAttribute('role', 'group');
-    bac.setAttribute('aria-label', 'Tes pièces');
+    bac.setAttribute('aria-label', 'Tes pièces et tes billets');
     var jetons = item.bac.map(function (v) {
       var j = faireJeton(v, 'bac');
       bac.appendChild(j);
@@ -746,7 +737,6 @@ Jeu.Exercices = Jeu.Exercices || [];
     });
     outils.zone.appendChild(bac);
 
-    /* ---- État ---- */
     var posees = [];      // { valeur, noeud, source }
     var essais = 0;
     var fini = false;
@@ -755,6 +745,10 @@ Jeu.Exercices = Jeu.Exercices || [];
       var t = 0;
       for (var i = 0; i < posees.length; i++) t += posees[i].valeur;
       return t;
+    }
+
+    function valeursPosees() {
+      return posees.map(function (p) { return p.valeur; });
     }
 
     function son(nom) {
@@ -767,15 +761,14 @@ Jeu.Exercices = Jeu.Exercices || [];
       var t = sommePosee();
       totalTexte.textContent = 'Tu as posé : ' + (t === 0 ? 'rien' : ecrire(t));
       vide.hidden = posees.length > 0;
-
-      var detail = posees.length
-        ? posees.map(function (p) { return nomJeton(p.valeur); }).join(', ')
-        : 'vide';
+      porte.classList.toggle('mo-pleine', posees.length > 0);
       /* L'étiquette dit les deux choses demandées : ce qui est posé,
          et le total. Au lecteur d'écran comme à l'œil. */
-      porte.setAttribute('aria-label',
-        'Porte-monnaie : ' + detail + '. Total : ' + dire(t) + '.');
-      porte.classList.toggle('mo-pleine', posees.length > 0);
+      porte.setAttribute('aria-label', 'Porte-monnaie : ' +
+        (posees.length
+          ? posees.map(function (p) { return nomJeton(p.valeur); }).join(', ')
+          : 'vide') +
+        '. Total : ' + dire(t) + '.');
     }
 
     function nettoyerIndices() {
@@ -790,7 +783,10 @@ Jeu.Exercices = Jeu.Exercices || [];
       n.setAttribute('role', 'button');
       var entree = { valeur: valeur, noeud: n, source: sourceJeton };
 
-      function reprendre() {
+      function reprendre(ev) {
+        /* Sans cela, reprendre une pièce vaudrait aussi un clic sur le
+           porte-monnaie, qui reposerait la pièce sélectionnée. */
+        if (ev && ev.stopPropagation) ev.stopPropagation();
         if (fini) return;
         var i = posees.indexOf(entree);
         if (i < 0) return;
@@ -803,7 +799,7 @@ Jeu.Exercices = Jeu.Exercices || [];
       }
       n.addEventListener('click', reprendre);
       n.addEventListener('keydown', function (ev) {
-        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); reprendre(); }
+        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); reprendre(ev); }
       });
 
       dedans.appendChild(n);
@@ -811,7 +807,6 @@ Jeu.Exercices = Jeu.Exercices || [];
       nettoyerIndices();
       son('piece');
       rafraichir();
-      return entree;
     }
 
     Jeu.Glisser.activer({
@@ -820,9 +815,9 @@ Jeu.Exercices = Jeu.Exercices || [];
       surDepot: function (jeton) {
         if (fini) return false;
         if (jeton.classList.contains('posee')) return false;
-        /* Une pièce de trop n'est JAMAIS refusée : on l'accepte, on
-           met le total à jour, et c'est le total qui parle. Refuser
-           le geste de l'enfant, c'est le gronder sans le dire. */
+        /* Une pièce de trop n'est JAMAIS refusée : on l'accepte, le
+           total se met à jour, et c'est le total qui parle. Refuser le
+           geste de l'enfant, c'est le gronder sans le dire. */
         jeton.classList.add('posee');
         poser(parseInt(jeton.getAttribute('data-valeur'), 10), jeton);
         return true;
@@ -832,31 +827,38 @@ Jeu.Exercices = Jeu.Exercices || [];
 
     rafraichir();
 
-    /* ---- La validation, et l'aide qui va avec ---- */
-
-    function montrerSolution() {
-      /* On vide, on pose la solution, et on la nomme. L'enfant n'a
-         plus rien à chercher : il a sous les yeux ce qu'il faut. */
+    function viderPorte() {
       while (posees.length) {
         var p = posees.pop();
         if (p.noeud.parentNode) p.noeud.parentNode.removeChild(p.noeud);
         if (p.source) p.source.classList.remove('posee');
       }
-      var dejaPris = [];
-      item.solutionMontree.forEach(function (v) {
+    }
+
+    /* On pose soi-même la solution, en reprenant les pièces du bac :
+       tout ce qui apparaît dans le porte-monnaie est une pièce qu'il
+       avait vraiment sous les yeux. */
+    function montrerSolution() {
+      viderPorte();
+      var pris = [];
+      item.solution.forEach(function (v) {
         var src = null;
         for (var i = 0; i < jetons.length; i++) {
-          if (dejaPris.indexOf(i) >= 0) continue;
+          if (pris.indexOf(i) >= 0) continue;
           if (parseInt(jetons[i].getAttribute('data-valeur'), 10) === v) {
-            src = jetons[i]; dejaPris.push(i); break;
+            src = jetons[i];
+            pris.push(i);
+            break;
           }
         }
         if (src) src.classList.add('posee');
         poser(v, src);
       });
-      rafraichir();
+      nettoyerIndices();
     }
 
+    /* L'aide gestuelle : on montre LA pièce à prendre, ou LA pièce à
+       enlever. Un repère, pas une couleur : un anneau épais. */
     function indiquer(ecart) {
       nettoyerIndices();
       var i;
@@ -875,10 +877,22 @@ Jeu.Exercices = Jeu.Exercices || [];
             return;
           }
         }
+      } else {
+        /* Bonne somme, trop de pièces : on entoure celles dont on
+           peut se passer. */
+        var trop = enTropParRapportA(valeursPosees(), item.solution);
+        var reste = trop.slice();
+        for (i = 0; i < posees.length; i++) {
+          var j = reste.indexOf(posees[i].valeur);
+          if (j >= 0) {
+            reste.splice(j, 1);
+            posees[i].noeud.classList.add('mo-indique');
+          }
+        }
       }
     }
 
-    function conclure(sansAide) {
+    function conclure(sansAide, message) {
       fini = true;
       jetons.forEach(function (j) { j.classList.add('mo-figee'); });
       posees.forEach(function (p) {
@@ -892,9 +906,9 @@ Jeu.Exercices = Jeu.Exercices || [];
         typeErreur: 'notion',
         detail: item.forme + ' ' + ecrire(cible) +
                 (sansAide ? '' : ' (' + Jeu.Ui.accord(essais, 'essai') + ')'),
-        /* La bonne somme est sous ses yeux, posée par lui : on ne lui
-           dit pas « pas tout à fait ». */
-        message: sansAide ? '' : 'Tu y es arrivé. Regarde bien ces pièces.',
+        /* La bonne somme est sous ses yeux : on ne lui dit pas « pas
+           tout à fait » devant un porte-monnaie juste. */
+        message: sansAide ? '' : message,
         bonneReponse: sansAide ? '' : 'Il fallait ' + dire(cible) + '.'
       });
     }
@@ -910,32 +924,27 @@ Jeu.Exercices = Jeu.Exercices || [];
         return;
       }
 
-      if (t === cible && (!juste || posees.length <= item.mini)) {
+      if (t === cible && (!auPlusJuste || posees.length <= item.solution.length)) {
         son('juste');
-        conclure(essais === 0);
+        conclure(essais === 0, 'Tu y es arrivé. Regarde bien ces pièces.');
         return;
       }
 
       essais += 1;
       son('douce');
 
+      /* Troisième essai : on arrête de chercher. On pose la solution,
+         on la nomme, et on passe. Jamais de série sans fin. */
       if (essais >= 3) {
         montrerSolution();
-        outils.remplacerConsigne('Voilà ' + ecrire(cible) + '. Compte avec moi.');
-        fini = true;
-        setTimeout(function () {
-          fini = false;      // conclure() remettra le verrou proprement
-          conclure(false);
-        }, 60);
+        conclure(false, 'Regarde : voilà ' + dire(cible) + '. Compte avec moi.');
         return;
       }
 
       var mot;
       if (t === cible) {
-        /* Bonne somme, trop de pièces : on le dit comme une réussite
-           partielle, parce que c'en est une. */
-        mot = 'C\'est la bonne somme. Essaie avec ' +
-              Jeu.Ui.accord(item.mini, 'pièce') + '.';
+        mot = 'C\'est la bonne somme. Essaie d\'en poser moins : il en faut ' +
+              item.solution.length + '.';
       } else if (t > cible) {
         mot = 'Tu as ' + ecrire(t) + '. Il faut ' + ecrire(cible) +
               '. Enlève ' + ecrire(t - cible) + '.';
@@ -965,11 +974,11 @@ Jeu.Exercices = Jeu.Exercices || [];
     /* Les cinq étapes s'ouvrent l'une après l'autre. On ne met pas
        « rendre la monnaie » devant un enfant qui hésite encore sur
        « deux euros plus un euro » — mais on ne le fait pas attendre
-       non plus : deux réussites d'affilée suffisent à ouvrir la
-       suivante, le moteur adaptatif monte le palier à trois. */
+       non plus : trois réussites d'affilée montent le palier d'un
+       cran, et l'étape suivante s'ouvre. */
     notions: function () {
-      var n = ['monnaie.euros'];
       var p = Jeu.Adaptatif.palier;
+      var n = ['monnaie.euros'];
       if (p('monnaie.euros') >= 2) n.push('monnaie.centimes');
       if (p('monnaie.centimes') >= 2) n.push('monnaie.melange');
       if (p('monnaie.melange') >= 3) n.push('monnaie.juste');
@@ -986,28 +995,28 @@ Jeu.Exercices = Jeu.Exercices || [];
       if (forme === 'compter') {
         var tas = tasAcompter(etape, pal);
         var total = somme(tas);
-        item = { forme: 'compter', tas: tas, total: total, options: leurres(tas, total).concat([total]) };
-      } else if (forme === 'rendre') {
-        item = itemRendre(etape, pal);
-      } else {
-        item = itemPayer(etape, pal, forme);
+        item = {
+          forme: 'compter', tas: tas, total: total,
+          options: leurres(tas, total).concat([total])
+        };
+        return item;
       }
 
-      if (item.forme !== 'compter') {
-        /* Vérification de sûreté : un item dont la cible ne peut pas
-           être payée avec le bac n'arrive jamais à l'écran. Par
-           construction c'est impossible ; si ça le devenait, on
-           remplace le bac par une solution gloutonne plutôt que de
-           mettre l'enfant devant un exercice insoluble. */
-        if (!faisable(item.bac, item.cible)) {
-          var secours = glouton(item.cible, DISPO[etape]) || [];
-          item.bac = secours.concat(item.bac).slice(0, 11);
-          item.mini = minJetons(item.bac, item.cible);
-        }
-        item.solutionMontree = glouton(item.cible, DISPO[etape]) || [];
-        /* Au plus juste, la solution montrée EST le minimum du bac :
-           le glouton sur les valeurs de l'euro l'atteint toujours. */
+      item = (forme === 'rendre') ? itemRendre(pal) : itemPayer(etape, pal, forme);
+
+      /* Filet de sûreté : un item dont la cible ne peut pas être
+         payée avec le bac n'arrive jamais à l'écran. Par construction
+         c'est impossible — la solution est posée dans le bac avant
+         tout le reste. Si ça le devenait, on ajoute une décomposition
+         gloutonne plutôt que de mettre l'enfant devant un exercice
+         insoluble. */
+      if (!faisable(item.bac, item.cible)) {
+        var secours = glouton(item.cible, DISPO[etape]) || [];
+        item.bac = secours.concat(item.bac).slice(0, 11);
       }
+      /* La combinaison la plus courte DU BAC : c'est elle qui sert de
+         barre pour « au plus juste », et c'est elle qu'on montre. */
+      item.solution = resoudre(item.bac, item.cible) || [];
       return item;
     },
 
@@ -1016,19 +1025,22 @@ Jeu.Exercices = Jeu.Exercices || [];
       else afficherPoser(item, outils);
     },
 
-    /* Exposé pour les vérifications : ces fonctions sont le cœur
-       arithmétique, et elles se testent sans navigateur. */
+    /* Exposé pour les vérifications : le cœur arithmétique se teste
+       sans navigateur. */
     _verif: {
       VALEURS: VALEURS,
       DISPO: DISPO,
       PLAFOND: PLAFOND,
       ecrire: ecrire,
       dire: dire,
-      minJetons: minJetons,
+      resoudre: resoudre,
       faisable: faisable,
       glouton: glouton,
+      decomposer: decomposer,
       etapeDe: etapeDe,
-      formePour: formePour
+      formePour: formePour,
+      faireJeton: faireJeton,
+      nomJeton: nomJeton
     }
   });
 

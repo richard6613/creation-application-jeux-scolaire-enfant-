@@ -1,0 +1,277 @@
+/* ---------------------------------------------------------------
+   heure.css — l'horloge à aiguilles de « Quelle heure est-il ? »
+
+   Aucune couleur n'est écrite dans le JavaScript : tout passe par
+   ces variables, pour que les six fonds de lecture et le mode sombre
+   continuent de fonctionner.
+
+   Les deux aiguilles se distinguent par leur longueur et par leur
+   épaisseur — la petite fait un peu plus du double d'épaisseur et
+   presque la moitié de longueur. La teinte n'est qu'un rappel : un
+   enfant qui ne la perçoit pas joue exactement pareil.
+   --------------------------------------------------------------- */
+
+:root {
+  /* La teinte du jeu : elle ne porte jamais de texte, seulement la
+     pastille du chemin et le liseré de la carte. */
+  --jeu-heure: #5f7a33;
+
+  --heure-cadran: var(--surface);
+  --heure-trait: var(--texte);
+  --heure-gradu: var(--texte-doux);
+  --heure-chiffre: var(--texte);
+  --heure-petite: var(--texte);
+  --heure-grande: var(--accent);
+  --heure-halo: var(--accent-doux);
+}
+
+/* Appareil en mode sombre avant tout choix de fond : même logique
+   que tokens.css, pour que rien ne dépende de l'attribut. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --jeu-heure: #a5c468;
+  }
+}
+html[data-fond="sombre"] {
+  --jeu-heure: #a5c468;
+}
+
+/* ------------------------- La carte ------------------------- */
+
+.heure-carte {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  border-left: 8px solid var(--jeu-heure);
+}
+
+.heure-ecoute,
+.heure-numerique {
+  justify-content: center;
+  gap: 14px;
+}
+
+/* L'horloge à chiffres. Chiffres serrés et non espacés : « 9:45 »
+   doit se lire comme un bloc, pas comme quatre signes séparés. */
+.heure-chiffres-grand {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: normal;
+  word-spacing: normal;
+  padding: 6px 16px;
+  min-height: 62px;
+  display: inline-flex;
+  align-items: center;
+  border: 3px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface-2);
+  color: var(--texte);
+}
+
+/* ------------------------- L'horloge ------------------------- */
+
+.horloge {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* La taille suit le réglage de confort, mais ne dépasse jamais la
+   largeur disponible : à 320 px, rien ne débordera. */
+.horloge-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: calc(200px + var(--taille-texte) * 3);
+  aspect-ratio: 1 / 1;
+}
+
+.horloge-disque {
+  fill: var(--heure-cadran);
+  stroke: var(--heure-trait);
+  stroke-width: 4;
+}
+
+.gradu {
+  stroke: var(--heure-gradu);
+  stroke-width: 1.8;
+}
+.gradu-cinq {
+  stroke: var(--heure-trait);
+  stroke-width: 4.2;
+}
+
+.horloge-chiffres text {
+  fill: var(--heure-chiffre);
+  font-family: var(--police);
+  font-size: 19px;      /* unités du dessin : l'horloge grandit avec lui */
+  font-weight: 700;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
+.aiguille {
+  fill: none;
+  stroke-linecap: round;
+}
+.aiguille-petite {
+  stroke: var(--heure-petite);
+  stroke-width: 11;
+}
+.aiguille-grande {
+  stroke: var(--heure-grande);
+  stroke-width: 6;
+}
+.horloge-axe { fill: var(--heure-trait); }
+
+/* L'aiguille que l'on déplace : plus épaisse, et nommée par le
+   bouton enfoncé juste dessous. L'ordre des épaisseurs est conservé,
+   la petite reste la plus épaisse des deux. */
+.aiguille-petite.aiguille-choisie { stroke-width: 14; }
+.aiguille-grande.aiguille-choisie { stroke-width: 9; }
+.aiguille-choisie { filter: drop-shadow(0 0 3px var(--heure-halo)); }
+
+/* Toute la surface carrée reçoit le doigt : viser le bord de
+   l'horloge ne doit pas tomber dans le vide. */
+.horloge-prise {
+  fill: transparent;
+  pointer-events: all;
+}
+
+.horloge-jouable .horloge-svg {
+  touch-action: none;        /* glisser une aiguille ne fait pas défiler */
+  cursor: pointer;
+}
+.horloge-jouable.horloge-saisie .horloge-svg { cursor: grabbing; }
+.horloge-figee .horloge-prise { pointer-events: none; }
+
+/* Après une erreur, le cadran reste sous les yeux, mieux marqué.
+   Le marquage est une épaisseur, pas une couleur. */
+.horloge-montree .aiguille-petite { stroke-width: 14; }
+.horloge-montree .aiguille-grande { stroke-width: 9; }
+.horloge-montree .horloge-disque { stroke-width: 6; }
+
+/* L'horloge dans un bouton de réponse. */
+.horloge-petite .horloge-svg { max-width: 230px; }
+
+.heure-choix-horloges {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.heure-choix-horloges .choix-btn {
+  justify-content: center;
+  padding: 12px;
+}
+
+/* ------------------------- Les propositions ------------------------- */
+
+/* Les heures en toutes lettres sont longues (« quatre heures moins le
+   quart »). On garde une taille qui tient sur un écran de 320 px
+   même avec le texte au maximum, et on coupe en dernier recours. */
+.heure-choix-mots {
+  font-size: 1rem;
+  overflow-wrap: break-word;
+}
+.heure-choix-chiffres {
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
+/* ------------------------- Les deux poignées ------------------------- */
+
+.heure-poignees {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(188px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.heure-poignee {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.3;
+  letter-spacing: inherit;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  text-align: left;
+  border: 3px solid var(--bordure);
+  border-radius: var(--rayon);
+  background: var(--surface);
+  color: var(--texte);
+  box-shadow: var(--ombre);
+  cursor: pointer;
+}
+/* Le bouton choisi : un liseré épais à gauche et un texte plus gras.
+   Jamais la couleur toute seule. */
+.heure-poignee[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-doux);
+  box-shadow: inset 8px 0 0 var(--accent);
+  padding-left: 22px;
+  font-weight: 700;
+}
+.heure-poignee:active { transform: translateY(2px); box-shadow: none; }
+.heure-poignee[disabled] { opacity: 0.5; cursor: default; }
+
+.heure-poignee-nom {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.heure-echantillon {
+  width: 72px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+/* ------------------------- La légende ------------------------- */
+
+.heure-legende {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+.heure-legende-ligne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.heure-legende-ligne .petit { margin: 0; max-width: var(--largeur-ligne); }
+
+/* ------------------------- Le mouvement -------------------------
+
+   Rien ne bouge pendant qu'il faut réfléchir : aucune aiguille ne
+   tourne toute seule, aucune animation sans fin. La seule animation
+   du jeu arrive APRÈS la réponse, dure une demi-seconde et ne se
+   répète pas. Elle est coupée par le réglage parent comme par la
+   préférence du système.
+   --------------------------------------------------------------- */
+
+html[data-animations="oui"] .horloge-montree .horloge-svg {
+  animation: heure-montree 500ms ease-out 1 both;
+}
+
+@keyframes heure-montree {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+html[data-animations="non"] .horloge-montree .horloge-svg {
+  animation: none !important;
+  transform: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .horloge-montree .horloge-svg {
+    animation: none !important;
+    transform: none !important;
+  }
+}
