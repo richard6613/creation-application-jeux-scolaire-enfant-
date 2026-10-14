@@ -894,7 +894,10 @@ Jeu.Exercices = Jeu.Exercices || [];
 
     function conclure(sansAide, message) {
       fini = true;
-      jetons.forEach(function (j) { j.classList.add('mo-figee'); });
+      jetons.forEach(function (j) {
+        j.classList.add('mo-figee');
+        j.setAttribute('tabindex', '-1');
+      });
       posees.forEach(function (p) {
         p.noeud.classList.add('mo-figee');
         p.noeud.removeAttribute('tabindex');
