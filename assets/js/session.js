@@ -134,8 +134,23 @@ Jeu.Session = (function () {
     var bas = Jeu.Ui.vider(zoneBas());
     bas.hidden = true;
 
-    // La scène en haut : elle se remplit à mesure des réussites.
-    zone.appendChild(s.scene.noeud);
+    /* LA BARRE EN HAUT, LA SCÈNE EN BAS.
+
+       La scène décorative était en haut, et c'était une faute de
+       conception sérieuse. Elle occupe 150 à 250 pixels, et au
+       premier exercice elle est VIDE — un grand rectangle coloré
+       sans rien dedans. Mesuré sur un iPhone de 844 px : le premier
+       bouton que l'enfant devait toucher se trouvait entre 563 et
+       902 pixels de haut, selon l'exercice. Autrement dit le jeu
+       commençait sous le pli, et sur « Construis le mot » il fallait
+       carrément faire défiler avant de pouvoir jouer.
+
+       Aucun jeu de téléphone ne fait ça : l'action est au milieu de
+       l'écran, sous le pouce, tout de suite. La scène reste — elle
+       se remplit à chaque bonne réponse et c'est une vraie
+       récompense — mais elle passe DERRIÈRE l'exercice, et elle
+       s'affiche en grand sur l'écran de fin, là où elle se regarde
+       vraiment. */
     zone.appendChild(Jeu.Ui.barreSeance(s.programme.length, s.index, s.resultats));
 
     if (Jeu.Reglages.get('chrono')) zone.appendChild(chronoDoux());
@@ -177,6 +192,12 @@ Jeu.Session = (function () {
     };
 
     s.exercice.afficher(item, contexte);
+
+    /* La scène vient après l'exercice : tout ce que l'enfant doit
+       lire et toucher passe devant. */
+    s.scene.noeud.classList.add('scene-en-dessous');
+    zone.appendChild(s.scene.noeud);
+
     zone.scrollIntoView({ block: 'start', behavior: 'auto' });
   }
 
@@ -350,6 +371,7 @@ Jeu.Session = (function () {
 
     // La scène terminée est le vrai trophée : on la montre en grand.
     if (s.scene) {
+      s.scene.noeud.classList.remove('scene-en-dessous');
       zone.appendChild(s.scene.noeud);
       s.scene.feter();
     }

@@ -670,3 +670,15 @@ html[data-animations="non"] .monde-comete,
   overflow: hidden;
   box-shadow: var(--ombre), inset 0 0 0 2px var(--m-cadre);
 }
+
+/* ------------------------- La scène pendant l'exercice -------------------------
+
+   Pendant qu'il travaille, la scène est une bande, pas un tableau :
+   elle montre que le royaume se remplit sans voler la place du jeu.
+   Sur l'écran de fin, la classe est retirée et elle reprend toute sa
+   hauteur — c'est là qu'on la regarde. */
+.scene.scene-en-dessous {
+  height: 96px;
+  margin-top: 18px;
+  opacity: .92;
+}
