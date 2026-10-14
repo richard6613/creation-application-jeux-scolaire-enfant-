@@ -61,6 +61,42 @@ Jeu.Ui = (function () {
     return span;
   }
 
+  /* ------------------------- Une illustration -------------------------
+     Le dessin maison quand il existe, l'emoji sinon. Un seul endroit
+     décide, donc l'atelier peut se remplir à son rythme sans qu'un
+     exercice ait à savoir ce qui a déjà été dessiné.
+
+     Toujours décoratif pour un lecteur d'écran : le mot est écrit
+     juste à côté, et annoncer « image » couperait la phrase que
+     l'enfant est en train d'écouter. */
+  function illustration(cle, taille) {
+    var t = taille || 64;
+
+    /* La tuile fait exactement la taille demandée, et c'est l'image
+       qui rapetissit dedans : une illustration encadrée ne doit
+       jamais coûter un pixel de hauteur à l'exercice. */
+    var tuile = el('span', 'vignette');
+    tuile.style.width = t + 'px';
+    tuile.style.height = t + 'px';
+    tuile.setAttribute('aria-hidden', 'true');
+
+    var dedans = null;
+    if (Jeu.Dessins && Jeu.Dessins.connait(cle)) dedans = Jeu.Dessins.pour(cle, t);
+    if (dedans) {
+      tuile.appendChild(dedans);
+      return tuile;
+    }
+
+    /* Pas de dessin maison pour ce mot : on montre l'emoji, et sur
+       l'iPhone de l'enfant c'est une vraie illustration d'Apple. Il
+       n'occupe qu'environ 72 % de sa taille de police, d'où le
+       rattrapage — sans quoi il flotterait dans sa tuile. */
+    var span = el('span', 'illustration-emoji', cle);
+    span.style.fontSize = Math.round(t * 0.74 / 0.72) + 'px';
+    tuile.appendChild(span);
+    return tuile;
+  }
+
   /* Rangée de boutons de réponse, larges et bien espacés. */
   function choix(options, surChoix, config) {
     config = config || {};
@@ -69,9 +105,12 @@ Jeu.Ui = (function () {
       var b = el('button', 'choix-btn');
       b.type = 'button';
       if (o.img && Jeu.Reglages.get('aideVisuelle')) {
-        var i = el('span', 'emoji', o.img);
-        i.setAttribute('aria-hidden', 'true');
-        b.appendChild(i);
+        b.appendChild(illustration(o.img, 40));
+        /* La feuille de style a besoin de savoir qu'il y a une image
+           dans ce bouton pour empiler l'image et le mot sur un écran
+           étroit. On le dit par une classe plutôt que par :has(),
+           qui manque encore sur les appareils un peu anciens. */
+        b.classList.add('avec-image');
       }
       if (o.noeud) {
         b.appendChild(o.noeud);
@@ -142,6 +181,7 @@ Jeu.Ui = (function () {
     figerChoix: figerChoix,
     perles: perles,
     barreSeance: barreSeance,
-    bouton: bouton
+    bouton: bouton,
+    illustration: illustration
   };
 })();

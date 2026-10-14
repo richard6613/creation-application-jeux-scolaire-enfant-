@@ -71,10 +71,7 @@ Jeu.Exercices.push({
     carte.style.alignItems = 'center';
 
     if (it.img && ctx.reglages.aideVisuelle && !item.sansImage) {
-      var img = Jeu.Ui.el('div', null, it.img);
-      img.style.fontSize = '3.4rem';
-      img.setAttribute('aria-hidden', 'true');
-      carte.appendChild(img);
+      carte.appendChild(Jeu.Ui.illustration(it.img, 92));
     }
 
     // Le mot à trou, écrit grand, avec un espace net à la place du manque.

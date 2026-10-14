@@ -129,7 +129,7 @@ Jeu.Exercices = Jeu.Exercices || [];
       zone.appendChild(carte);
 
       var options = item.options.map(function (o) {
-        var noeud = Jeu.Ui.el('span', 'image-choix', o.img);
+        var noeud = Jeu.Ui.illustration(o.img, 58);
         noeud.setAttribute('aria-hidden', 'true');
         return { noeud: noeud, ref: o, texte: o.mot };
       });
