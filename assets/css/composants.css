@@ -109,7 +109,27 @@ html[data-audio="non"] .depend-audio { display: none; }
 }
 .choix.deux { grid-template-columns: repeat(2, 1fr); }
 
+/* Sur un écran étroit, deux colonnes ne laissent que 137 px par
+   bouton. Un mot de cinq lettres écrit à 30 px avec l'interlettrage
+   au maximum en réclame 147 : il sortait de l'écran de quelques
+   pixels, et la page se mettait à glisser latéralement — ce qui est
+   le pire défaut possible pour un enfant qui suit sa ligne du doigt.
+   On reprend la place sur les marges du bouton, jamais sur sa hauteur
+   ni sur l'espace entre les réponses : la cible reste aussi grande à
+   viser. */
+@media (max-width: 400px) {
+  .choix.deux .choix-btn { padding-left: 8px; padding-right: 8px; }
+}
+
 .choix-btn {
+  /* Une case de grille fait au moins la largeur de son contenu le
+     plus large : un mot long, avec l'interlettrage au maximum, pousse
+     donc sa colonne et fait déborder l'écran. On lui retire ce
+     plancher et on autorise la coupure en dernier recours — un mot
+     qui tient n'est jamais coupé, et la grille reste dans le cadre à
+     320 px quel que soit le réglage de confort. */
+  min-width: 0;
+  overflow-wrap: break-word;
   font-family: inherit;
   font-size: 1.25rem;
   min-height: 78px;

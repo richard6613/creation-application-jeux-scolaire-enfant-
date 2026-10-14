@@ -163,9 +163,15 @@
 .heros-seance .filou-calque { display: none; }
 
 /* ------------------------- Son calme -------------------------
-   Les animations d'humeur de filou.css ne s'appliquent pas ici :
-   pendant un exercice, le héros ne se balance pas et ne se penche
-   pas. L'enfant lit. */
+   filou.css fait réagir la boîte à l'humeur qu'elle porte : « salut »
+   se balance, « bravo » saute deux fois, « courage » se penche. Rien
+   de tout cela ici, ni dans la barre ni dans le bloc de retour, et
+   « courage » est la raison principale : à l'erreur, le héros change
+   d'expression et c'est TOUT. Un personnage qui se dandine quand on
+   vient de se tromper, c'est un commentaire — et le contrat est qu'il
+   ne commente pas. Pour « bravo », le saut est déclenché à la main
+   par session.js, juste en dessous : un seul mouvement, voulu, au
+   moment voulu. */
 
 html:not([data-animations="non"]) .heros-seance .filou-boite.filou-humeur-salut,
 html:not([data-animations="non"]) .heros-seance .filou-boite.filou-humeur-reflechit,
@@ -175,13 +181,39 @@ html:not([data-animations="non"]) .heros-seance .filou-boite.filou-humeur-fete {
   animation: none;
 }
 
-/* Les points de réflexion et les bulles montent et s'effacent en
-   boucle juste à côté de la tête. Ils restent dessinés, immobiles.
-   « animation: none » et pas une durée nulle : la première image-clé
-   de f-monte est transparente, une durée nulle les effacerait. */
-html:not([data-animations="non"]) .heros-seance .filou .f-point,
-html:not([data-animations="non"]) .heros-seance .filou .f-bulle {
-  animation: none;
+/* ------------------------- Et immobile, pendant qu'il cherche -------------------------
+   PENDANT QUE L'ENFANT TRAVAILLE, LE HÉROS NE BOUGE PAS DU TOUT.
+
+   C'est la règle 7 de DESIGN.md, prise au mot : « Pendant qu'il faut
+   lire ou réfléchir, rien ne bouge, rien ne clignote, aucun
+   personnage ne gigote. Le spectacle vient APRÈS la réponse. »
+
+   On a hésité à lui laisser sa respiration, qui ne fait que 2,5 %
+   d'échelle. Deux choses ont tranché. D'abord, chaque personnage a
+   ses propres boucles, et elles ne sont pas toutes discrètes : le
+   robot a un souffle de réacteur à 1,1 s, le dragon bat des ailes et
+   sa braise pulse, les cinq ont des points de réflexion qui montent
+   et s'effacent à côté de leur tête. Trier boucle par boucle, c'est
+   se tromper au prochain personnage ajouté. Ensuite, c'est à cet
+   instant précis — celui où l'enfant déchiffre — que le moindre
+   mouvement en haut à gauche coûte le plus cher.
+
+   Il est donc arrêté net tant qu'il est dans la barre. Il reprend vie
+   dans le bloc de retour (.heros-retour), c'est-à-dire après la
+   réponse, là où le spectacle a sa place : il respire de nouveau, il
+   a ses étincelles de joie, et il saute.
+
+   « animation: none » et jamais une durée ramenée à zéro : parmi ces
+   boucles, f-monte, d-monte, rn-monte, rb-monte et vox-monte ont une
+   première image-clé transparente. Une durée nulle ne les
+   arrêterait pas, elle les effacerait. */
+
+.heros-seance:not(.heros-retour) .filou-boite,
+.heros-seance:not(.heros-retour) .filou-boite *,
+.heros-seance:not(.heros-retour) .filou,
+.heros-seance:not(.heros-retour) .filou * {
+  animation: none !important;
+  transition: none !important;
 }
 
 /* Le saut de la bonne réponse, lui, reste : c'est le seul mouvement

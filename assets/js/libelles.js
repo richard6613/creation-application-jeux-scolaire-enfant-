@@ -47,7 +47,17 @@ Jeu.Libelles = (function () {
     'en.animaux':    'Anglais : les animaux',
     'en.nourriture': 'Anglais : la nourriture',
     'en.famille':    'Anglais : la famille et le corps',
-    'en.maison':     'Anglais : l\'école et la maison'
+    'en.maison':     'Anglais : l\'école et la maison',
+    'heure.cadran':           'Lire l\'heure sur un cadran',
+    'heure.aiguilles':        'Placer les aiguilles',
+    'heure.aiguillesChiffres': 'Placer les aiguilles à l\'heure écrite',
+    'heure.associer':         'Associer une heure à son cadran',
+    'heure.duree':            'Calculer une durée',
+    'monnaie.euros':    'Compter des euros',
+    'monnaie.centimes': 'Compter des centimes',
+    'monnaie.melange':  'Compter euros et centimes',
+    'monnaie.juste':    'Payer au plus juste',
+    'monnaie.rendre':   'Rendre la monnaie'
   };
 
   Jeu.Data.confusions.forEach(function (s) {
@@ -81,7 +91,9 @@ Jeu.Libelles = (function () {
     ponctuation: 'Le bon signe',
     anglais: 'English',
     calcul: 'Compte avec moi',
-    dictee: 'Les mots de la dictée'
+    dictee: 'Les mots de la dictée',
+    heure: 'Quelle heure est-il ?',
+    monnaie: 'Compte les sous'
   };
   function nomJeu(id) { return jeux[id] || id; }
 

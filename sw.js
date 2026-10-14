@@ -9,7 +9,7 @@
    récupérée en arrière-plan quand il y en a une.
    --------------------------------------------------------------- */
 
-var VERSION = 'mes-jeux-2db2cd8e1ffb';
+var VERSION = 'mes-jeux-869ec6163425';
 
 var FICHIERS = [
   './',
@@ -28,6 +28,7 @@ var FICHIERS = [
   './assets/css/compagnon-seance.css',
   './assets/css/calcul.css',
   './assets/css/monnaie.css',
+  './assets/css/heure.css',
   './assets/css/recreation-mm.css',
   './assets/css/recreation-p4.css',
   './assets/css/recreation-gemmes.css',
@@ -71,6 +72,7 @@ var FICHIERS = [
   './assets/js/data/anglais.js',
   './assets/js/data/dictee.js',
   './assets/js/data/monnaie.js',
+  './assets/js/data/heure.js',
   './assets/js/libelles.js',
   './assets/js/niveaux.js',
   './assets/js/panneau-reglages.js',
@@ -87,6 +89,7 @@ var FICHIERS = [
   './assets/js/exercices/anglais.js',
   './assets/js/exercices/dictee.js',
   './assets/js/exercices/monnaie.js',
+  './assets/js/exercices/heure.js',
   './assets/js/recreation/memory.js',
   './assets/js/recreation/morpion.js',
   './assets/js/recreation/puissance4.js',
