@@ -9,7 +9,7 @@
    récupérée en arrière-plan quand il y en a une.
    --------------------------------------------------------------- */
 
-var VERSION = 'mes-jeux-869ec6163425';
+var VERSION = 'mes-jeux-8a62d808a4a0';
 
 var FICHIERS = [
   './',
@@ -29,6 +29,7 @@ var FICHIERS = [
   './assets/css/calcul.css',
   './assets/css/monnaie.css',
   './assets/css/heure.css',
+  './assets/css/dessins.css',
   './assets/css/recreation-mm.css',
   './assets/css/recreation-p4.css',
   './assets/css/recreation-gemmes.css',
@@ -46,6 +47,7 @@ var FICHIERS = [
   './assets/js/voix.js',
   './assets/js/sons.js',
   './assets/js/adaptatif.js',
+  './assets/js/dessins.js',
   './assets/js/ui.js',
   './assets/js/heros.js',
   './assets/js/heros/blocky.js',

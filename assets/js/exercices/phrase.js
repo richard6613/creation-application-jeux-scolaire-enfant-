@@ -44,10 +44,7 @@ Jeu.Exercices.push({
     var carte = Jeu.Ui.el('div', 'ligne');
     carte.style.justifyContent = 'center';
     if (p.img && ctx.reglages.aideVisuelle) {
-      var img = Jeu.Ui.el('span', null, p.img);
-      img.style.fontSize = '2.8rem';
-      img.setAttribute('aria-hidden', 'true');
-      carte.appendChild(img);
+      carte.appendChild(Jeu.Ui.illustration(p.img, 54));
     }
     carte.appendChild(Jeu.Voix.bouton(texte, 'Écouter la phrase'));
     zone.appendChild(carte);

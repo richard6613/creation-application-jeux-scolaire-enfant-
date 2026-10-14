@@ -1,0 +1,220 @@
+/* ---------------------------------------------------------------
+   dessins.css — la palette de l'atelier d'illustrations.
+
+   Aucune couleur n'est écrite dans le JavaScript : les dessins ne
+   posent que des variables, et tout ce qui est teinte vit ici.
+   C'est ce qui permet au mode sombre et aux six fonds de lecture de
+   continuer de fonctionner sur 151 images sans en retoucher une.
+
+   LA PALETTE EST COMMUNE, PAS UNE PAR OBJET
+
+   Une pomme, une tomate et une fraise partagent le même rouge. Ça
+   n'est pas de l'économie : c'est ce qui fait que les 151 dessins
+   ont l'air de sortir du même atelier plutôt que d'un catalogue.
+   Chaque teinte vient par trois — la face, la lumière en haut,
+   l'ombre en bas — parce que c'est ce relief en trois aplats qui
+   fait le papier découpé, et jamais un dégradé.
+
+   LA COULEUR NE PORTE JAMAIS L'INFORMATION
+
+   Un enfant qui ne distingue pas le rouge du vert doit reconnaître
+   la pomme à sa forme, à sa queue et à sa feuille. La teinte est un
+   rappel, elle n'est jamais le seul indice — sauf dans l'exercice
+   d'anglais sur les couleurs, où la couleur EST la leçon et où le
+   mot est écrit juste en dessous.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Le détourage : un halo clair qui détache l'image du fond comme
+     une marge de papier, puis une arête sombre. */
+  --d-halo: #fdfaf2;
+  --d-trait: #33302b;
+
+  /* Rouge — pomme, tomate, fraise, toit, cœur, voiture de pompier */
+  --d-rouge: #c7462f;
+  --d-rouge-clair: #e0765c;
+  --d-rouge-fonce: #8f2e1d;
+
+  /* Orange — carotte, citrouille, renard, ballon */
+  --d-orange: #d9772a;
+  --d-orange-clair: #f0a159;
+  --d-orange-fonce: #9c4f12;
+
+  /* Jaune — citron, banane, soleil, fromage, étoile */
+  --d-jaune: #e3b13c;
+  --d-jaune-clair: #f5d077;
+  --d-jaune-fonce: #a87a17;
+
+  /* Vert — feuille, arbre, salade, grenouille */
+  --d-vert: #4f8f4a;
+  --d-vert-clair: #7fb878;
+  --d-vert-fonce: #2f6230;
+
+  /* Bleu — eau, ciel, mer, jean, poisson */
+  --d-bleu: #3a76a8;
+  --d-bleu-clair: #74a6cf;
+  --d-bleu-fonce: #23506f;
+
+  /* Violet — raisin, aubergine, nuit, prune */
+  --d-violet: #7a528f;
+  --d-violet-clair: #a582b6;
+  --d-violet-fonce: #533364;
+
+  /* Brun — bois, terre, pain, chocolat, ours, cheval */
+  --d-brun: #8a5c36;
+  --d-brun-clair: #b5885e;
+  --d-brun-fonce: #5d3a1d;
+
+  /* Rose — cochon, fleur, langue, joue */
+  --d-rose: #d98aa0;
+  --d-rose-clair: #efb3c3;
+  --d-rose-fonce: #a85a72;
+
+  /* Gris — pierre, métal, souris, éléphant, nuage */
+  --d-gris: #8a8d91;
+  --d-gris-clair: #b4b7bb;
+  --d-gris-fonce: #5c6064;
+
+  /* Crème — papier, lait, œuf, dent, os, ventre d'animal */
+  --d-creme: #f0e3c8;
+  --d-creme-clair: #faf2e0;
+  --d-creme-fonce: #cbb795;
+
+  /* Noir doux — pneu, pupille, corbeau. Jamais du noir pur :
+     un aplat #000 fait un trou dans la page. */
+  --d-noir: #3b3833;
+  --d-noir-clair: #5e5a53;
+  --d-noir-fonce: #221f1b;
+
+  /* Chair — mains, visages. Une seule teinte neutre, chaude. */
+  --d-chair: #e0b08a;
+  --d-chair-clair: #f0cdb0;
+  --d-chair-fonce: #b07f58;
+}
+
+/* En sombre, le halo devient l'arête et l'arête devient le halo :
+   c'est le même dessin, détaché d'un fond foncé au lieu d'un fond
+   clair. Les teintes, elles, s'éclaircissent juste assez pour
+   garder leur contraste sans devenir fluorescentes. */
+html[data-fond="sombre"] {
+  --d-halo: #1d2126;
+  --d-trait: #e8e4dc;
+
+  --d-rouge: #e06b53;        --d-rouge-clair: #f2947f;   --d-rouge-fonce: #a8402b;
+  --d-orange: #ec9450;       --d-orange-clair: #f8b87c;  --d-orange-fonce: #b06526;
+  --d-jaune: #ecc461;        --d-jaune-clair: #f8de94;   --d-jaune-fonce: #b08c2c;
+  --d-vert: #76b870;         --d-vert-clair: #a0d49a;    --d-vert-fonce: #478247;
+  --d-bleu: #6ba2d0;         --d-bleu-clair: #9bc4e6;    --d-bleu-fonce: #3f6f96;
+  --d-violet: #a582b6;       --d-violet-clair: #c4a8d1;  --d-violet-fonce: #72528a;
+  --d-brun: #b3875c;         --d-brun-clair: #d0ab83;    --d-brun-fonce: #7d5634;
+  --d-rose: #e3a0b3;         --d-rose-clair: #f2c4d1;    --d-rose-fonce: #b87189;
+  --d-gris: #a8abaf;         --d-gris-clair: #c8cbcf;    --d-gris-fonce: #74787c;
+  --d-creme: #e6d8bd;        --d-creme-clair: #f5ecd8;   --d-creme-fonce: #bda888;
+  --d-noir: #4e4a44;         --d-noir-clair: #726d64;    --d-noir-fonce: #332f2a;
+  --d-chair: #dcac86;        --d-chair-clair: #efcbad;   --d-chair-fonce: #ab7a53;
+}
+
+/* Le même jeu quand le téléphone est en sombre et que le parent n'a
+   rien choisi lui-même. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --d-halo: #1d2126;
+    --d-trait: #e8e4dc;
+
+    --d-rouge: #e06b53;      --d-rouge-clair: #f2947f;   --d-rouge-fonce: #a8402b;
+    --d-orange: #ec9450;     --d-orange-clair: #f8b87c;  --d-orange-fonce: #b06526;
+    --d-jaune: #ecc461;      --d-jaune-clair: #f8de94;   --d-jaune-fonce: #b08c2c;
+    --d-vert: #76b870;       --d-vert-clair: #a0d49a;    --d-vert-fonce: #478247;
+    --d-bleu: #6ba2d0;       --d-bleu-clair: #9bc4e6;    --d-bleu-fonce: #3f6f96;
+    --d-violet: #a582b6;     --d-violet-clair: #c4a8d1;  --d-violet-fonce: #72528a;
+    --d-brun: #b3875c;       --d-brun-clair: #d0ab83;    --d-brun-fonce: #7d5634;
+    --d-rose: #e3a0b3;       --d-rose-clair: #f2c4d1;    --d-rose-fonce: #b87189;
+    --d-gris: #a8abaf;       --d-gris-clair: #c8cbcf;    --d-gris-fonce: #74787c;
+    --d-creme: #e6d8bd;      --d-creme-clair: #f5ecd8;   --d-creme-fonce: #bda888;
+    --d-noir: #4e4a44;       --d-noir-clair: #726d64;    --d-noir-fonce: #332f2a;
+    --d-chair: #dcac86;      --d-chair-clair: #efcbad;   --d-chair-fonce: #ab7a53;
+  }
+}
+
+/* Le dessin remplit son cadre, contrairement à un emoji qui n'en
+   occupe qu'environ 70 % — c'est la moitié du gain visuel. */
+.dessin {
+  display: block;
+  flex: none;
+}
+
+/* L'emoji, pour un mot dont le dessin n'est pas encore fait —
+   c'est-à-dire aujourd'hui pour tous. */
+.illustration-emoji {
+  display: inline-block;
+  line-height: 1;
+}
+
+/* ------------------------- LA VIGNETTE -------------------------
+
+   C'est le vrai changement visible, et il ne tient pas au dessin
+   lui-même.
+
+   Les images flottaient nues au milieu de la page : une pomme posée
+   sur le fond, sans cadre, sans ancrage, à une taille qui changeait
+   d'un exercice à l'autre (3,4 rem ici, 2,8 rem là, 4 rem ailleurs).
+   C'est ce qui faisait « brouillon » — pas la pomme, son absence de
+   cadre. Dans un jeu, une image est TOUJOURS posée sur quelque
+   chose : une tuile, une carte, un socle.
+
+   La vignette est donc un morceau de papier découpé de plus : coins
+   arrondis, teinte très douce, une arête en bas comme sur les
+   cartes et les boutons du reste de l'application. L'image s'y pose
+   au centre, toujours à la même taille relative.
+
+   ELLE NE COÛTE PAS UN PIXEL DE HAUTEUR. La vignette fait
+   exactement la taille demandée par l'exercice, et c'est l'image
+   qui rapetissit à l'intérieur. Le premier bouton à toucher ne
+   descend donc pas — c'est la contrainte qui prime sur tout le
+   reste ici, et elle n'est pas négociable. */
+
+.vignette {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  box-sizing: border-box;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  border-radius: 18px;
+  box-shadow: var(--ombre);
+  /* L'image occupe 74 % de la tuile : assez d'air pour que le cadre
+     se voie, assez d'image pour qu'elle reste lisible à 34 px. */
+  padding: 13%;
+}
+
+.vignette .dessin { width: 100%; height: 100%; }
+
+/* Dans un bouton de réponse, la tuile serait un cadre dans un
+   cadre : le bouton EST déjà la tuile. On n'en remet pas une. */
+.choix-btn .vignette {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Dans un bouton de réponse à deux colonnes, l'image partage la
+   largeur avec le mot. Sur un écran étroit avec le texte au
+   maximum, il n'y a pas la place pour les deux en grand : l'image
+   rapetissit, parce que c'est le MOT qu'il faut pouvoir lire. */
+@media (max-width: 400px) {
+  .choix.deux .choix-btn .dessin { width: 34px; height: 34px; }
+  .choix.deux .choix-btn .illustration-emoji { font-size: 34px; }
+
+  /* Côte à côte, l'image et le mot ne tiennent plus : « poule » écrit
+     à 30 px avec l'interlettrage au maximum réclame déjà toute la
+     colonne. On les empile — l'image au-dessus, le mot en dessous, qui
+     récupère alors la largeur entière. La cible à viser ne change pas,
+     elle grandit même en hauteur. */
+  .choix.deux .choix-btn.avec-image {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+}

@@ -715,7 +715,8 @@ Jeu.Exercices = Jeu.Exercices || [];
     var etal = Jeu.Ui.el('div', 'mo-etal');
 
     if (outils.reglages.aideVisuelle && item.objet.emoji) {
-      var ic = Jeu.Ui.el('span', 'mo-image', item.objet.emoji);
+      var ic = Jeu.Ui.illustration(item.objet.emoji, 46);
+      ic.classList.add('mo-image');
       ic.setAttribute('aria-hidden', 'true');
       etal.appendChild(ic);
     }

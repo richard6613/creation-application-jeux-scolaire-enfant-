@@ -121,7 +121,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     }
 
     var options = item.options.map(function (o) {
-      var noeud = Jeu.Ui.el('span', 'image-choix', o.img);
+      var noeud = Jeu.Ui.illustration(o.img, 58);
       noeud.setAttribute('aria-hidden', 'true');
       return { noeud: noeud, ref: o, texte: o.fr };
     });
@@ -158,10 +158,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     var carte = Jeu.Ui.el('div', 'carte pile');
     carte.style.alignItems = 'center';
 
-    var img = Jeu.Ui.el('div', null, m.img);
-    img.style.fontSize = '4rem';
-    img.setAttribute('aria-hidden', 'true');
-    carte.appendChild(img);
+    carte.appendChild(Jeu.Ui.illustration(m.img, 104));
     carte.appendChild(Jeu.Ui.el('p', 'petit zone-sourdine', m.fr));
     ctx.zone.appendChild(carte);
 
