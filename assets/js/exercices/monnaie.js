@@ -141,13 +141,20 @@ Jeu.Exercices = Jeu.Exercices || [];
      respecté — un euro, un centime.
      -------------------------------------------------------------- */
 
+  /* Les espaces d'une somme sont INSÉCABLES. « 1 € 85 » coupé en fin
+     de ligne donne « 1 € » puis « 85 » à la ligne suivante : deux
+     nombres là où il n'y en a qu'un. C'est illisible pour n'importe
+     qui, et pour un enfant dyslexique c'est pire que ça — il lit ce
+     qu'il voit, et ce qu'il voit est faux. */
+  var INSEC = '\u00A0';
+
   function ecrire(centimes) {
     var c = Math.round(centimes);
-    if (c < 100) return c + ' c';
+    if (c < 100) return c + INSEC + 'c';
     var e = Math.floor(c / 100);
     var r = c % 100;
-    if (r === 0) return e + ' €';
-    return e + ' € ' + (r < 10 ? '0' + r : String(r));
+    if (r === 0) return e + INSEC + '€';
+    return e + INSEC + '€' + INSEC + (r < 10 ? '0' + r : String(r));
   }
 
   function enMots(n) {
@@ -327,26 +334,32 @@ Jeu.Exercices = Jeu.Exercices || [];
       focusable: 'false'
     });
 
-    /* Le bord cranté : douze encoches en papier découpé. Elles disent
-       « pièce » sans rien imiter. */
+    svg.appendChild(svgEl('circle', { 'class': 'mo-anneau', cx: '50', cy: '50', r: '46' }));
+
+    /* La tranche striée. Vingt petites encoches posées SUR l'anneau,
+       pas débordant de lui : la première version, avec douze grosses
+       billes qui dépassaient, donnait une capsule de bouteille. */
     var g = svgEl('g', { 'class': 'mo-crans' });
-    for (var i = 0; i < 12; i++) {
-      var a = (i * 30) * Math.PI / 180;
-      g.appendChild(svgEl('circle', {
-        cx: (50 + Math.cos(a) * 46).toFixed(2),
-        cy: (50 + Math.sin(a) * 46).toFixed(2),
-        r: '5.2'
+    for (var i = 0; i < 20; i++) {
+      var a = (i * 18) * Math.PI / 180;
+      g.appendChild(svgEl('rect', {
+        x: '-2.2', y: '-5.4', width: '4.4', height: '10.8', rx: '2.1',
+        transform: 'translate(' + (50 + Math.cos(a) * 42.5).toFixed(2) + ',' +
+                   (50 + Math.sin(a) * 42.5).toFixed(2) + ') rotate(' + (i * 18) + ')'
       }));
     }
     svg.appendChild(g);
 
-    svg.appendChild(svgEl('circle', { 'class': 'mo-anneau', cx: '50', cy: '50', r: '47' }));
     svg.appendChild(svgEl('circle', { 'class': 'mo-coeur', cx: '50', cy: '50', r: '37' }));
-    /* Le biseau : une chute de papier posée en haut à gauche du
-       disque. C'est ce qui donne les deux plans. */
+    /* Les deux plans du papier découpé : une chute claire posée en
+       haut à gauche du disque, son ombre en bas à droite. */
     svg.appendChild(svgEl('path', {
       'class': 'mo-biseau',
-      d: 'M 50 13 A 37 37 0 0 0 13 50 L 20 50 A 30 30 0 0 1 50 20 Z'
+      d: 'M 50 13 A 37 37 0 0 0 13 50 L 21 50 A 29 29 0 0 1 50 21 Z'
+    }));
+    svg.appendChild(svgEl('path', {
+      'class': 'mo-creux',
+      d: 'M 50 87 A 37 37 0 0 0 87 50 L 79 50 A 29 29 0 0 1 50 79 Z'
     }));
     return svg;
   }
@@ -364,14 +377,14 @@ Jeu.Exercices = Jeu.Exercices || [];
       'class': 'mo-anneau', x: '0', y: '0', width: '200', height: '120', rx: '16'
     }));
     svg.appendChild(svgEl('rect', {
-      'class': 'mo-coeur', x: '8', y: '8', width: '184', height: '104', rx: '10'
+      'class': 'mo-coeur', x: '11', y: '11', width: '178', height: '98', rx: '9'
     }));
     /* La bande de gauche et ses trois pastilles : un motif
        géométrique inventé pour l'application, qui ne renvoie à aucune
        coupure existante. Il sert surtout à ce que la zone du chiffre
        soit toujours la même, à droite. */
     svg.appendChild(svgEl('rect', {
-      'class': 'mo-bande', x: '8', y: '8', width: '48', height: '104', rx: '10'
+      'class': 'mo-bande', x: '11', y: '11', width: '45', height: '98', rx: '9'
     }));
     var g = svgEl('g', { 'class': 'mo-motif' });
     for (var i = 0; i < 3; i++) {
@@ -383,11 +396,11 @@ Jeu.Exercices = Jeu.Exercices || [];
     /* Biseau du haut et pli du coin : les deux plans du papier. */
     svg.appendChild(svgEl('path', {
       'class': 'mo-biseau',
-      d: 'M 8 18 A 10 10 0 0 1 18 8 L 182 8 A 10 10 0 0 1 192 18 L 192 26 L 8 26 Z'
+      d: 'M 11 20 A 9 9 0 0 1 20 11 L 180 11 A 9 9 0 0 1 189 20 L 189 27 L 11 27 Z'
     }));
     svg.appendChild(svgEl('path', {
       'class': 'mo-pli',
-      d: 'M 192 84 L 192 102 A 10 10 0 0 1 182 112 L 164 112 Z'
+      d: 'M 189 83 L 189 100 A 9 9 0 0 1 180 109 L 163 109 Z'
     }));
     return svg;
   }
@@ -499,11 +512,19 @@ Jeu.Exercices = Jeu.Exercices || [];
   /* Les pièces en trop dans le bac : il faut choisir, et plusieurs
      combinaisons deviennent possibles — ce qui est exactement ce
      qu'on veut faire sentir. Rien de plus gros que la cible : un
-     billet de 50 € devant un croissant est du bruit. */
+     billet de 50 € devant un croissant est du bruit.
+
+     Le bac ne dépasse jamais neuf jetons. Ce n'est pas un chiffre en
+     l'air : à 320 px, trois jetons tiennent par rangée, et au-delà de
+     trois rangées le bac et le porte-monnaie ne sont plus visibles
+     ensemble sur un petit téléphone — il faudrait faire défiler
+     l'écran au milieu d'un glissé. */
+  var BAC_MAX = 9;
+
   function garnir(bac, dispo, combien, cible) {
     var utiles = dispo.filter(function (v) { return v <= cible; });
     if (!utiles.length) return bac;
-    for (var i = 0; i < combien && bac.length < 11; i++) {
+    for (var i = 0; i < combien && bac.length < BAC_MAX; i++) {
       bac.push(piocher(utiles));
     }
     return bac;
@@ -532,7 +553,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     if (!solution) solution = glouton(cible, dispo);
 
     var bac = solution ? solution.slice() : [];
-    garnir(bac, dispo, palier >= 3 ? hasard(3, 4) : hasard(2, 3), cible);
+    garnir(bac, dispo, palier >= 3 ? hasard(2, 3) : hasard(2, 2), cible);
     Jeu.Adaptatif.melanger(bac);
 
     return { forme: forme, objet: objet, cible: cible, bac: bac };
@@ -583,7 +604,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     var rendu = donne - prix;
     var solution = decomposer(rendu, dispo, maxJetons) || glouton(rendu, dispo);
     var bac = solution ? solution.slice() : [];
-    garnir(bac, dispo, hasard(3, 4), rendu);
+    garnir(bac, dispo, hasard(2, 3), rendu);
     Jeu.Adaptatif.melanger(bac);
 
     return {
@@ -659,7 +680,17 @@ Jeu.Exercices = Jeu.Exercices || [];
         detail: 'compter ' + ecrire(total) + (bon ? '' : ' (a répondu ' + ecrire(o.ref) + ')'),
         bonneReponse: bon ? '' : 'Il y a ' + dire(total) + '.'
       });
-    }, { deuxColonnes: true });
+    });
+    /* Une somme d'argent est un nombre : elle se lit au centre du
+       bouton et en gros, comme les résultats de « Compte avec moi ».
+       Sans cela « 6 € 50 » dépasse les trois caractères qui
+       déclenchent ce traitement et se retrouve en petit, à gauche.
+
+       Une seule colonne, et pas deux comme pour les calculs : « 12 €
+       50 » en gros tient 132 px à lui seul, deux colonnes débordaient
+       de 320 px dès que le texte montait. Et une somme ne se coupe
+       jamais en deux lignes — c'est elle qu'on compare. */
+    grille.classList.add('mo-choix');
     outils.zone.appendChild(grille);
   }
 
@@ -675,7 +706,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     var cible = item.cible;
     var auPlusJuste = (item.forme === 'juste');
 
-    outils.consigne(auPlusJuste ? 'Paie avec le moins de pièces possible.'
+    outils.consigne(auPlusJuste ? 'Paie avec le moins de pièces.'
       : item.forme === 'rendre' ? 'Pose la monnaie qu\'on doit rendre.'
       : 'Pose ce qu\'il faut pour payer.');
 
@@ -689,9 +720,14 @@ Jeu.Exercices = Jeu.Exercices || [];
       etal.appendChild(ic);
     }
 
-    var phrase = (item.forme === 'rendre')
+    /* Majuscule en tête : la phrase prononcée est une vraie phrase, et
+       certains moteurs de parole donnent une intonation de début de
+       phrase à ce qui commence par une capitale. */
+    function majuscule(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
+
+    var phrase = majuscule((item.forme === 'rendre')
       ? item.objet.sujet + ' coûte ' + dire(item.prix) + '. Il donne ' + dire(item.donne) + '.'
-      : item.objet.sujet + ' coûte ' + dire(cible) + '.';
+      : item.objet.sujet + ' coûte ' + dire(cible) + '.');
 
     var bloc = Jeu.Ui.el('div', 'mo-prix-bloc');
     var hautLigne = Jeu.Ui.el('div', 'ligne mo-ligne-son');
@@ -701,11 +737,11 @@ Jeu.Exercices = Jeu.Exercices || [];
 
     if (item.forme === 'rendre') {
       var t = Jeu.Ui.el('div', 'mo-compte');
+      /* Deux cellules par ligne, posées dans une grille : les deux
+         sommes s'alignent l'une sous l'autre, comme au cahier. */
       [['ça coûte', item.prix], ['il donne', item.donne]].forEach(function (paire) {
-        var l = Jeu.Ui.el('div', 'mo-compte-ligne');
-        l.appendChild(Jeu.Ui.el('span', 'mo-compte-quoi', paire[0]));
-        l.appendChild(Jeu.Ui.el('span', 'mo-compte-combien', ecrire(paire[1])));
-        t.appendChild(l);
+        t.appendChild(Jeu.Ui.el('span', 'mo-compte-quoi', paire[0]));
+        t.appendChild(Jeu.Ui.el('span', 'mo-compte-combien', ecrire(paire[1])));
       });
       bloc.appendChild(t);
     } else {
@@ -729,14 +765,28 @@ Jeu.Exercices = Jeu.Exercices || [];
     porte.appendChild(dedans);
     outils.zone.appendChild(porte);
 
+    /* Le compteur, et juste en dessous la somme à atteindre. Les deux
+       vivent collés au bac : sur un téléphone, l'étal a déjà défilé
+       hors de l'écran quand l'enfant choisit ses pièces, et il ne
+       doit pas avoir à remonter pour se rappeler le prix. */
     var total = Jeu.Ui.el('div', 'mo-total');
+    var lignes = Jeu.Ui.el('div', 'mo-total-lignes');
     var totalTexte = Jeu.Ui.el('p', 'mo-total-texte', 'Tu as posé : rien');
     totalTexte.setAttribute('role', 'status');
     totalTexte.setAttribute('aria-live', 'polite');
+    lignes.appendChild(totalTexte);
+    lignes.appendChild(Jeu.Ui.el('p', 'mo-total-faut', 'il faut ' + ecrire(cible)));
+    /* L'écart chiffré vient se poser ici, et nulle part ailleurs :
+       les chiffres d'une somme vivent dans ce bloc, qui a son propre
+       bouton d'écoute et sa propre phrase prononcée. */
+    var aide = Jeu.Ui.el('p', 'mo-total-aide', '');
+    aide.hidden = true;
+    lignes.appendChild(aide);
     total.appendChild(Jeu.Voix.bouton(function () {
-      return 'Tu as posé ' + dire(sommePosee()) + '. Il faut ' + dire(cible) + '.';
+      return 'Tu as posé ' + dire(sommePosee()) + '. Il faut ' + dire(cible) + '.' +
+             (aideDite ? ' ' + aideDite : '');
     }, 'Écouter ce que tu as posé'));
-    total.appendChild(totalTexte);
+    total.appendChild(lignes);
     outils.zone.appendChild(total);
 
     /* ---- Le bac : ce qu'il a dans la poche ---- */
@@ -753,6 +803,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     var posees = [];      // { valeur, noeud, source }
     var essais = 0;
     var fini = false;
+    var aideDite = '';    // la phrase d'aide, telle qu'elle se prononce
 
     function sommePosee() {
       var t = 0;
@@ -792,13 +843,34 @@ Jeu.Exercices = Jeu.Exercices || [];
     function poser(valeur, sourceJeton) {
       var n = faireJeton(valeur, 'pose');
       n.classList.add('mo-arrive');
+      /* On retire la classe dès que le petit saut est fini : tant
+         qu'elle reste, la pièce garde l'état figé de l'animation (et
+         une cible tactile mesurée à 46 px au lieu de 64 quand les
+         animations sont en pause), et la reposer plus tard ne
+         relancerait rien. */
+      n.addEventListener('animationend', function () { n.classList.remove('mo-arrive'); });
+      setTimeout(function () { n.classList.remove('mo-arrive'); }, 400);
       n.setAttribute('tabindex', '0');
       n.setAttribute('role', 'button');
       var entree = { valeur: valeur, noeud: n, source: sourceJeton };
 
       function reprendre(ev) {
-        /* Sans cela, reprendre une pièce vaudrait aussi un clic sur le
-           porte-monnaie, qui reposerait la pièce sélectionnée. */
+        /* UNE PIÈCE EN MAIN SE POSE, TOUJOURS.
+
+           Le porte-monnaie se remplit, et sa surface finit par être
+           couverte par les pièces déjà posées. L'enfant qui a choisi
+           une pièce d'un appui et qui vise le porte-monnaie tombe
+           alors forcément sur l'une d'elles. S'il reprenait cette
+           pièce-là au lieu de poser la sienne, le geste ferait le
+           contraire de ce qu'il voulait — et c'est précisément le
+           mode dont dépend une main qui tremble.
+
+           Donc : si une pièce est sélectionnée dans le bac, on laisse
+           l'événement remonter jusqu'au porte-monnaie, qui la pose.
+           Reprendre ne vaut que les mains vides. */
+        if (bac.querySelector('.mo-jeton.choisie')) return;
+        /* Sinon, reprendre une pièce vaudrait AUSSI un clic sur le
+           porte-monnaie : on arrête là. */
         if (ev && ev.stopPropagation) ev.stopPropagation();
         if (fini) return;
         var i = posees.indexOf(entree);
@@ -870,37 +942,59 @@ Jeu.Exercices = Jeu.Exercices || [];
       nettoyerIndices();
     }
 
+    /* La pièce du bac qui remplit exactement le manque, ou, à défaut,
+       la plus grosse qui tient dedans — c'est le geste suivant, et
+       c'est aussi la stratégie qu'on veut lui faire prendre : on
+       commence par la plus grosse pièce qui tient. */
+    function jetonAprendre(manque) {
+      var exact = null, plusGrosse = null, vg = -1;
+      for (var i = 0; i < jetons.length; i++) {
+        if (jetons[i].classList.contains('posee')) continue;
+        var v = parseInt(jetons[i].getAttribute('data-valeur'), 10);
+        if (v === manque) exact = jetons[i];
+        if (v <= manque && v > vg) { vg = v; plusGrosse = jetons[i]; }
+      }
+      return exact || plusGrosse;
+    }
+
+    /* La pièce posée dont on peut se passer : celle qui vaut
+       exactement ce qu'il y a en trop, sinon la plus grosse qui
+       tienne dans l'excédent — l'enlever rapproche toujours. */
+    function jetonAenlever(trop) {
+      var exact = null, plusGrosse = null, vg = -1;
+      for (var i = 0; i < posees.length; i++) {
+        var v = posees[i].valeur;
+        if (v === trop) exact = posees[i].noeud;
+        if (v <= trop && v > vg) { vg = v; plusGrosse = posees[i].noeud; }
+      }
+      return exact || plusGrosse;
+    }
+
     /* L'aide gestuelle : on montre LA pièce à prendre, ou LA pièce à
-       enlever. Un repère, pas une couleur : un anneau épais. */
+       enlever. Un repère de forme, pas une couleur : un anneau épais
+       et immobile. */
     function indiquer(ecart) {
       nettoyerIndices();
-      var i;
+      var i, cible2;
       if (ecart < 0) {
-        for (i = 0; i < jetons.length; i++) {
-          if (!jetons[i].classList.contains('posee') &&
-              parseInt(jetons[i].getAttribute('data-valeur'), 10) === -ecart) {
-            jetons[i].classList.add('mo-indique');
-            return;
-          }
-        }
-      } else if (ecart > 0) {
-        for (i = 0; i < posees.length; i++) {
-          if (posees[i].valeur === ecart) {
-            posees[i].noeud.classList.add('mo-indique');
-            return;
-          }
-        }
-      } else {
-        /* Bonne somme, trop de pièces : on entoure celles dont on
-           peut se passer. */
-        var trop = enTropParRapportA(valeursPosees(), item.solution);
-        var reste = trop.slice();
-        for (i = 0; i < posees.length; i++) {
-          var j = reste.indexOf(posees[i].valeur);
-          if (j >= 0) {
-            reste.splice(j, 1);
-            posees[i].noeud.classList.add('mo-indique');
-          }
+        cible2 = jetonAprendre(-ecart);
+        if (cible2) cible2.classList.add('mo-indique');
+        return;
+      }
+      if (ecart > 0) {
+        cible2 = jetonAenlever(ecart);
+        if (cible2) cible2.classList.add('mo-indique');
+        return;
+      }
+      /* Bonne somme, trop de pièces : on entoure celles dont on peut
+         se passer — la différence entre ce qu'il a posé et la
+         combinaison la plus courte. */
+      var reste = enTropParRapportA(valeursPosees(), item.solution);
+      for (i = 0; i < posees.length; i++) {
+        var j = reste.indexOf(posees[i].valeur);
+        if (j >= 0) {
+          reste.splice(j, 1);
+          posees[i].noeud.classList.add('mo-indique');
         }
       }
     }
@@ -925,7 +1019,12 @@ Jeu.Exercices = Jeu.Exercices || [];
         /* La bonne somme est sous ses yeux : on ne lui dit pas « pas
            tout à fait » devant un porte-monnaie juste. */
         message: sansAide ? '' : message,
-        bonneReponse: sansAide ? '' : 'Il fallait ' + dire(cible) + '.'
+        /* « en tout » n'est pas un remplissage : il évite de terminer
+           la phrase sur le nom du nombre. Le bloc de retour de la
+           séance ne coupe pas les mots, et « cinquante. » — dix
+           signes — est le seul mot de tout l'exercice qui déborde de
+           320 px quand le texte est à 30 px. */
+        bonneReponse: sansAide ? '' : 'Il fallait ' + dire(cible) + ' en tout.'
       });
     }
 
@@ -935,8 +1034,8 @@ Jeu.Exercices = Jeu.Exercices || [];
 
       if (posees.length === 0) {
         /* Un porte-monnaie vide n'est pas un essai raté : il n'a rien
-           tenté. On redit juste ce qu'il faut. */
-        outils.remplacerConsigne('Il faut ' + ecrire(cible) + '. Pose des pièces.');
+           tenté. On redit juste quoi faire. */
+        outils.remplacerConsigne('Pose des pièces dans le porte-monnaie.');
         return;
       }
 
@@ -953,23 +1052,57 @@ Jeu.Exercices = Jeu.Exercices || [];
          on la nomme, et on passe. Jamais de série sans fin. */
       if (essais >= 3) {
         montrerSolution();
-        conclure(false, 'Regarde : voilà ' + dire(cible) + '. Compte avec moi.');
+        conclure(false, 'Regarde le porte-monnaie : il y a ' + dire(cible) + ' en tout.');
         return;
       }
 
-      var mot;
-      if (t === cible) {
-        mot = 'C\'est la bonne somme. Essaie d\'en poser moins : il en faut ' +
-              item.solution.length + '.';
-      } else if (t > cible) {
-        mot = 'Tu as ' + ecrire(t) + '. Il faut ' + ecrire(cible) +
-              '. Enlève ' + ecrire(t - cible) + '.';
+      /* DEUX ENDROITS, DEUX RÔLES, ET C'EST VOULU.
+
+         La consigne nomme le GESTE, et ne contient aucun chiffre :
+         « tu en as trop, enlève une pièce ». Elle est lue à voix
+         haute automatiquement, et une consigne sans chiffre se
+         prononce juste à tous les coups.
+
+         L'écart CHIFFRÉ va dans le bloc du total, qui a son propre
+         bouton d'écoute et sa propre phrase. Pourquoi ne pas tout
+         mettre dans la consigne ? Parce que « 1 € 85 » est la
+         meilleure chose à LIRE et la pire à FAIRE LIRE : le moteur
+         de parole en tire « un euros quatre-vingt-cinq », et « 15 c »
+         devient « quinze cé ». Les chiffres restent donc à l'écran
+         sous leur forme du cahier, et la voix dit « un euro
+         quatre-vingt-cinq ». C'est déjà la façon de faire de
+         « Compte avec moi » : la consigne est générale, le calcul a
+         son propre bouton. */
+      var ecart = t - cible;
+      var geste, chiffre, chiffreDit;
+
+      /* AUCUN MOT DE PLUS DE SEPT LETTRES dans une consigne. Ce n'est
+         pas une coquetterie : à 320 px, avec le texte à 30 px et
+         l'espacement des lettres au maximum, il reste 172 px pour le
+         texte à droite du haut-parleur, soit sept caractères. Le
+         huitième déborde de l'écran. « entourée » en faisait neuf. */
+      if (ecart === 0) {
+        geste = (essais >= 2) ? 'Enlève celles qui ont un cercle.'
+                              : 'C\'est la bonne somme. Essaie avec moins de pièces.';
+        chiffre = 'il en faut ' + item.solution.length;
+        chiffreDit = 'Il en faut ' + item.solution.length + '.';
+      } else if (ecart > 0) {
+        geste = (essais >= 2) ? 'Enlève celle qui a un cercle.'
+                              : 'Tu en as trop. Enlève une pièce.';
+        chiffre = 'tu as ' + ecrire(ecart) + ' de trop';
+        chiffreDit = 'Tu as ' + dire(ecart) + ' de trop.';
       } else {
-        mot = 'Tu as ' + ecrire(t) + '. Il faut ' + ecrire(cible) +
-              '. Ajoute ' + ecrire(cible - t) + '.';
+        geste = (essais >= 2) ? 'Prends celle qui a un cercle.'
+                              : 'Il n\'y en a pas assez. Ajoute une pièce.';
+        chiffre = 'il manque ' + ecrire(-ecart);
+        chiffreDit = 'Il manque ' + dire(-ecart) + '.';
       }
-      outils.remplacerConsigne(mot);
-      if (essais >= 2) indiquer(t - cible);
+
+      aide.textContent = chiffre;
+      aide.hidden = false;
+      aideDite = chiffreDit;
+      outils.remplacerConsigne(geste);
+      if (essais >= 2) indiquer(ecart);
     }
 
     outils.actionBas(item.forme === 'rendre' ? 'C\'est la bonne monnaie' : 'C\'est payé',
@@ -984,7 +1117,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     id: 'monnaie',
     nom: 'Compte les sous',
     quoi: 'Pièces, billets et prix',
-    emoji: '🪙',
+    emoji: '💰',
     teinte: '--jeu-monnaie',
 
     /* Les cinq étapes s'ouvrent l'une après l'autre. On ne met pas
@@ -1028,7 +1161,7 @@ Jeu.Exercices = Jeu.Exercices || [];
          insoluble. */
       if (!faisable(item.bac, item.cible)) {
         var secours = glouton(item.cible, DISPO[etape]) || [];
-        item.bac = secours.concat(item.bac).slice(0, 11);
+        item.bac = secours.concat(item.bac).slice(0, BAC_MAX + 2);
       }
       /* La combinaison la plus courte DU BAC : c'est elle qui sert de
          barre pour « au plus juste », et c'est elle qu'on montre. */

@@ -272,7 +272,12 @@ html[data-audio="non"] .depend-audio { display: none; }
 }
 .retour.bravo { background: var(--succes-doux); border-color: var(--succes); }
 .retour.aide  { background: var(--attention-doux); border-color: var(--attention); }
-.retour p { margin: 0; font-weight: 600; }
+/* Un mot plus large que l'écran doit se couper plutôt que de sortir
+   du cadre : « cinquante-trois » avec l'interlettrage au maximum fait
+   dix signes de plus que la place disponible à 320 px. On ne coupe
+   qu'en dernier recours (overflow-wrap et pas word-break), donc un
+   mot qui tient n'est jamais coupé. */
+.retour p { margin: 0; font-weight: 600; overflow-wrap: break-word; }
 
 /* ------------------------- Réglages ------------------------- */
 

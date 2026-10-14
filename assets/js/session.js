@@ -130,13 +130,16 @@ Jeu.Session = (function () {
      Le héros est donc là du début à la fin de l'exercice. Trois règles
      tiennent tout ce qui suit, et aucune n'est négociable :
 
-     1. IL NE REPOUSSE RIEN. Il se loge DANS la carte de consigne, qui
-        existe déjà et dont la hauteur est fixée par le bouton
-        haut-parleur (64 px). Un héros de 56 px y tient sans la faire
-        grandir : le coût vertical est de zéro pixel, et le premier
-        bouton que l'enfant doit toucher ne descend pas d'un pixel.
-        On vient de remonter ce bouton de 563-902 px à 397-740 px sur
-        un écran de 844 : le reperdre serait pire que ne rien faire.
+     1. IL NE REPOUSSE RIEN. On vient de remonter le premier bouton à
+        toucher de 563-902 px à 397-740 px sur un écran de 844 : le
+        reperdre serait pire que ne rien faire. La carte de consigne
+        paraissait la bonne place ; mesure faite, elle coûte 36 à
+        72 px sur sept exercices sur onze, parce que le texte y occupe
+        déjà toute la largeur disponible et qu'une ligne de plus
+        apparaît dès qu'on lui en prend 38 — et cela à N'IMPORTE
+        QUELLE taille de héros, jusqu'à 24 px. Le héros se pose donc
+        dans la bande de la barre de progression, en absolu, et la
+        barre garde exactement sa hauteur : zéro pixel, mesuré.
 
      2. IL NE PRESSE PAS. Au repos il ne fait rien d'autre que
         respirer. Aucune relance au bout de x secondes, aucune
@@ -164,21 +167,19 @@ Jeu.Session = (function () {
     return 'salut';
   }
 
-  /* 56 px dans une carte dont le bouton fait 64 : il reste de la
-     marge. Sur un écran de 320 px la consigne n'a plus la place, et un
-     héros qui fait passer la consigne de deux à quatre lignes
-     repousserait l'exercice — c'est exactement ce qu'on refuse. Il
-     rapetissit donc au lieu de bousculer le texte. */
+  /* La bande libre autour de la barre de progression fait 67 px de
+     haut sur un iPhone : à 60 px le héros y tient tout entier, avec
+     quelques pixels de marge au-dessus et en dessous. Sur un écran de
+     320 px la bande est la même, mais la jauge et le compteur y sont
+     bien plus serrés : il rapetissit pour ne pas écraser le « 3 / 8 »,
+     qui dit à l'enfant où il en est. */
   function tailleHeros() {
     var l = window.innerWidth || 390;
-    if (l < 360) return 40;
-    return 56;
+    if (l < 360) return 48;
+    return 60;
   }
 
-  /* Le héros est fabriqué une fois par exercice, puis DÉPLACÉ de carte
-     en carte : appendChild déplace un nœud au lieu de le copier, donc
-     il n'y en a jamais deux à l'écran, même quand un exercice remplace
-     sa consigne en cours de route. */
+  /* Un seul héros, fabriqué une fois par exercice. */
   function creerHeros() {
     var s = courante;
     if (!s) return null;
@@ -191,35 +192,28 @@ Jeu.Session = (function () {
 
     var hote = document.createElement('span');
     hote.className = 'heros-seance';
-    /* Décoratif pour un lecteur d'écran : la consigne juste à côté dit
-       déjà tout, et annoncer « image, héros » couperait la phrase que
-       l'enfant est en train d'écouter. */
+    /* Décoratif pour un lecteur d'écran : la consigne juste en dessous
+       dit déjà tout, et annoncer « image, héros » couperait la phrase
+       que l'enfant est en train d'écouter. */
     hote.setAttribute('aria-hidden', 'true');
     hote.appendChild(boite);
     s.heros = hote;
     return hote;
   }
 
-  function poserHeros(carte) {
+  /* Il se pose dans la barre de progression — une ligne de 32 px qui
+     ne contient qu'une jauge et un compteur, donc rien à recouvrir et
+     rien à bloquer — et il en déborde en absolu, de sorte que la barre
+     garde exactement sa hauteur. */
+  function poserHeros(barre) {
     var h = creerHeros();
-    if (!h || !carte) return;
-    carte.appendChild(h);
-    carte.classList.add('consigne-heros');
+    if (!h || !barre) return;
+    barre.classList.add('barre-seance-heros');
+    barre.appendChild(h);
   }
 
-  /* Aucune consigne à l'écran — aucun exercice n'est dans ce cas
-     aujourd'hui, mais un exercice à venir pourrait l'être. Plutôt que
-     de laisser l'enfant sans personne, le héros se pose en vignette
-     dans le coin bas, hors du flux : là non plus il ne repousse rien,
-     et pointer-events: none l'empêche d'avaler un appui. */
-  function herosFlottant() {
-    var h = creerHeros();
-    if (!h) return;
-    h.classList.add('heros-flottant');
-    zoneJeu().appendChild(h);
-  }
-
-  /* L'expression change, les accessoires restent en place. */
+  /* Seule l'expression change : on ne refabrique pas le héros, sans
+     quoi on perdrait la boîte sur laquelle porte l'animation du saut. */
   function humeurHeros(humeur) {
     var s = courante;
     if (!s || !s.heros) return;
@@ -264,9 +258,20 @@ Jeu.Session = (function () {
        récompense — mais elle passe DERRIÈRE l'exercice, et elle
        s'affiche en grand sur l'écran de fin, là où elle se regarde
        vraiment. */
-    zone.appendChild(Jeu.Ui.barreSeance(s.programme.length, s.index, s.resultats));
+    var barre = Jeu.Ui.barreSeance(s.programme.length, s.index, s.resultats);
+    zone.appendChild(barre);
+    poserHeros(barre);
 
-    if (Jeu.Reglages.get('chrono')) zone.appendChild(chronoDoux());
+    if (Jeu.Reglages.get('chrono')) {
+      var ch = chronoDoux();
+      /* Le chrono se range juste sous la barre, c'est-à-dire sous les
+         pieds du héros, qui en déborde. Il se décale une fois pour
+         toutes : le décalage ne doit pas dépendre de la présence du
+         héros dans la barre, sans quoi la ligne sauterait de 68 px au
+         moment où il descend réagir. */
+      if (s.heros) ch.classList.add('chrono-decale');
+      zone.appendChild(ch);
+    }
 
     var notion = s.programme[s.index];
     var item = s.exercice.creerItem(notion, Jeu.Adaptatif.palier(notion));
@@ -279,7 +284,6 @@ Jeu.Session = (function () {
       repondre: repondre,
       consigne: function (texte) {
         var c = Jeu.Ui.consigne(texte);
-        poserHeros(c);
         zone.appendChild(c);
         return c;
       },
@@ -288,9 +292,6 @@ Jeu.Session = (function () {
       remplacerConsigne: function (texte) {
         var anciennes = zone.querySelectorAll('.consigne');
         var neuve = Jeu.Ui.consigne(texte);
-        /* Le héros suit la consigne qui remplace l'ancienne, sinon il
-           partirait à la poubelle avec elle au milieu de l'exercice. */
-        poserHeros(neuve);
         if (anciennes.length) {
           anciennes[0].parentNode.replaceChild(neuve, anciennes[0]);
           for (var i = 1; i < anciennes.length; i++) anciennes[i].remove();
@@ -309,11 +310,6 @@ Jeu.Session = (function () {
     };
 
     s.exercice.afficher(item, contexte);
-
-    if (!s.heros) {
-      var carte = zone.querySelector('.consigne');
-      if (carte) poserHeros(carte); else herosFlottant();
-    }
 
     /* La scène vient après l'exercice : tout ce que l'enfant doit
        lire et toucher passe devant. */
@@ -412,19 +408,37 @@ Jeu.Session = (function () {
       texte = 'Pas tout à fait. Regarde la bonne réponse.';
     }
 
-    /* LE HÉROS RÉAGIT, ET IL RÉAGIT LÀ OÙ IL ÉTAIT.
+    /* LE HÉROS RÉAGIT, ET C'EST LE MÊME HÉROS.
 
        Celui qui était avec l'enfant pendant qu'il cherchait est celui
-       qui se réjouit ou qui le rassure : c'est le même personnage, au
-       même endroit, et c'est précisément ce qui fait de lui quelqu'un
-       plutôt qu'une vignette. On n'en remet donc pas un second dans le
-       bloc de retour — deux fois le même héros à deux tailles, c'est
-       du décor, et ça ferait redescendre le bouton « Continuer ».
+       qui se réjouit ou qui le rassure. On n'en fabrique donc pas un
+       second : on DÉPLACE celui de la barre dans le bloc de retour,
+       parce qu'appendChild déplace un nœud au lieu de le copier. Deux
+       fois le même personnage à deux tailles sur le même écran, ce
+       serait du décor ; un seul qui vous suit, c'est quelqu'un.
+
+       Il descend au lieu de réagir en haut parce que le bloc de
+       retour est ramené sous les yeux de l'enfant : sur un exercice
+       un peu long, la barre de progression est alors sortie de
+       l'écran, et un héros qui se réjouit hors du champ ne se réjouit
+       pour personne.
 
        Bonne réponse : « bravo » et un saut. Erreur : « courage » et
        rien d'autre. Pas de secousse, pas de penché, pas de mine
        déconfite — cette humeur a été dessinée pour ce moment précis
        sur les cinq personnages, il n'y a rien à ajouter. */
+    var ligne = Jeu.Ui.el('div', 'bulle-filou');
+    if (s.heros) {
+      var barre = zone.querySelector('.barre-seance');
+      if (barre) barre.classList.remove('barre-seance-heros');
+      s.heros.className = 'heros-seance heros-retour';
+      ligne.appendChild(s.heros);
+    } else {
+      /* Personnage introuvable : plutôt que de laisser l'enfant sans
+         réaction du tout, le bloc en dessine un. */
+      ligne.appendChild(Jeu.Compagnon.habille(reponse.juste ? 'bravo' : 'courage', 64));
+    }
+
     if (reponse.juste) {
       humeurHeros('bravo');
       if (s.heros) Jeu.Compagnon.sauter(s.heros);
@@ -432,11 +446,6 @@ Jeu.Session = (function () {
       humeurHeros('courage');
     }
 
-    var ligne = Jeu.Ui.el('div', 'bulle-filou');
-    /* Le héros manque à l'appel (exercice sans consigne, personnage
-       introuvable) : le bloc de retour le montre alors lui-même,
-       plutôt que de laisser l'enfant sans réaction du tout. */
-    if (!s.heros) ligne.appendChild(Jeu.Compagnon.habille(reponse.juste ? 'bravo' : 'courage', 64));
     var dit = Jeu.Ui.el('div', 'ligne');
     dit.appendChild(Jeu.Voix.bouton(function () {
       return texte + (reponse.bonneReponse ? '. ' + reponse.bonneReponse : '');

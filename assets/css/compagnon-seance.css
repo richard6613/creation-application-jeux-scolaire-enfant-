@@ -5,96 +5,162 @@
 
    L'enfant choisit son héros parmi cinq, et pendant qu'il travaillait
    il n'y en avait aucun à l'écran : le compagnon ne se montrait
-   qu'après une réponse et à la fin de la séance. C'est-à-dire que
+   qu'APRÈS une réponse et à la fin de la séance. Autrement dit,
    pendant presque tout le temps passé dans l'application, il était
-   seul devant un formulaire. Les applications commerciales vendent
-   exactement l'inverse.
+   seul devant un formulaire. C'est ce qui rendait l'écran terne.
 
    Le héros est donc là du début à la fin de l'exercice. Tout ce
    fichier existe pour qu'il y soit SANS RIEN REPOUSSER et SANS JAMAIS
    PRESSER L'ENFANT.
 
-   LA CONTRAINTE DE PLACE, QUI COMMANDE TOUT
+   OÙ IL SE MET, ET POURQUOI PAS AILLEURS
 
-   Le premier bouton que l'enfant doit toucher vient d'être remonté de
-   563-902 px à 397-740 px sur un écran de 844. Un héros qui ferait
-   redescendre ces chiffres serait une régression, pas une
-   amélioration. Il se loge donc DANS la carte de consigne, dont la
-   hauteur est déjà fixée par le bouton haut-parleur (64 px de haut,
-   voir .btn-son). Un héros de 56 px y entre sans la faire grandir :
-   le coût vertical est de zéro pixel, mesuré.
+   Le premier bouton à toucher vient d'être remonté de 563-902 px à
+   397-740 px sur un écran de 844. Un héros qui ferait redescendre ces
+   chiffres serait une régression, pas une amélioration.
 
-   LE MOUVEMENT, QUI COMMANDE LE RESTE
+   La carte de consigne semblait la bonne place : elle est déjà là,
+   elle est haute de 108 à 144 px, et son bouton haut-parleur en fixe
+   la hauteur minimale à 64 px. Mesure faite, c'est faux. Le texte de
+   la consigne y occupe DÉJÀ toute la largeur disponible (280 px sur
+   390), et il est pile à la limite du retour à la ligne : lui en
+   prendre 38 lui coûte une ligne, soit 36 px de hauteur. Mesuré sur
+   les onze exercices, un héros dans la carte repousse le premier
+   bouton de 36 à 72 px sur SEPT d'entre eux — et cela à toutes les
+   tailles essayées, jusqu'à 24 px, parce que le coût vient du
+   principe, pas de la taille.
 
-   Au repos, le héros ne fait rien que respirer — et encore, très
-   peu : c'est le dessin qui respire (f-respire, 2,5 % d'échelle),
-   jamais la boîte. Aucune relance au bout de x secondes, aucune
-   impatience, aucune minuterie : un enfant dyslexique met du temps,
-   et un personnage qui s'agite pendant qu'il cherche est une
-   pression. On annule donc ici les animations d'humeur que filou.css
-   déclenche ailleurs (le balancement de « salut », le penché de
-   « courage »), et les points de réflexion qui montent et s'effacent
-   en boucle : ils attirent l'œil pile pendant la lecture.
+   La vignette flottante dans un coin bas ne coûte rien non plus, mais
+   elle se pose par-dessus la page et finit tôt ou tard sur un bouton
+   de réponse.
+
+   Reste la barre de progression, et c'est la bonne. Elle ne contient
+   qu'une jauge et un compteur — rien à recouvrir, rien à bloquer — et
+   la bande qui l'entoure est vide sur 67 px de haut, pour une barre
+   qui n'en fait que 32. Le héros s'y pose à gauche, en position
+   absolue, centré sur cette bande : il déborde de la barre sans la
+   faire grandir d'un pixel, et la jauge, qui est élastique, se
+   raccourcit pour lui faire de la place en largeur. Coût vertical : zéro, sur les onze
+   exercices. Il est en haut de l'écran, donc toujours visible dès que
+   l'exercice commence.
+
+   LE MOUVEMENT
+
+   Au repos, le héros ne fait rien d'autre que respirer — et c'est son
+   dessin qui respire (f-respire, 2,5 % d'échelle), jamais sa boîte.
+   Aucune relance au bout de x secondes, aucune impatience, aucune
+   minuterie : un enfant dyslexique met du temps, et un personnage qui
+   s'agite pendant qu'il cherche est une pression de plus. L'absence
+   de minuterie ici est une décision, pas un oubli.
+
+   On annule donc les animations d'humeur que filou.css déclenche
+   ailleurs (le balancement de « salut », le penché de « courage »),
+   ainsi que les points de réflexion qui montent et s'effacent en
+   boucle : c'est le seul détail du dessin qui attire vraiment l'œil,
+   et il le ferait pendant la lecture.
 
    Le seul mouvement du héros pendant un exercice est le saut de la
-   bonne réponse, déclenché explicitement par session.js, et il arrive
-   APRÈS la réponse.
+   bonne réponse, déclenché par session.js, et il arrive APRÈS la
+   réponse.
 
    LA COUPURE
 
    filou.css coupe déjà tout le personnage sous
    html[data-animations="non"] et sous prefers-reduced-motion, avec
-   « animation: none » et non une durée ramenée à zéro. C'est la bonne
-   façon : ce fichier n'ajoute donc AUCUNE animation d'apparition, et
-   surtout aucune dont la première image-clé serait transparente. Un
-   héros dont l'arrivée se joue en opacité devient invisible quand les
-   animations sont coupées — le piège est connu, il ne doit pas être
-   retendu ici. Héros arrêté = héros entier, et toujours visible.
+   « animation: none » et non une durée ramenée à 0,001 ms. C'est la
+   bonne façon, et c'est pour cela que ce fichier n'ajoute AUCUNE
+   animation d'apparition : une arrivée jouée en opacité, dont la
+   première image-clé est transparente, laisserait un héros invisible
+   dès que les animations sont coupées. Le piège est connu ; il ne
+   doit pas être retendu ici. Héros arrêté = héros entier, et visible.
    --------------------------------------------------------------- */
 
 /* ------------------------- Sa place -------------------------
-   À l'autre bout de la carte de consigne : le bouton pour écouter,
-   la phrase, puis lui. L'ordre de lecture reste le même, et il ne
-   s'insère jamais entre l'enfant et le texte. */
+   La barre reste une ligne de 32 px : le héros en sort par le haut et
+   par le bas, dans du vide. Le padding de gauche est la seule chose
+   qu'il prend vraiment — de la largeur, dont la jauge a de reste.
 
-.consigne.consigne-heros {
-  /* La carte garde exactement la hauteur que lui donne son bouton. */
-  align-items: center;
+   À gauche, et pas à droite, pour deux raisons vérifiées en image :
+   il s'aligne alors sur le bord gauche des cartes, donc il a l'air
+   posé là plutôt que coincé dans un coin ; et il ne vient pas
+   bousculer le « 1 / 8 », qui est ce qui dit à l'enfant où il en est
+   et qui doit rester le plus lisible des deux. */
+
+.barre-seance.barre-seance-heros {
+  position: relative;
+  padding-left: 68px;
 }
 
 .heros-seance {
-  /* Le héros est un <span> : sans conteneur flexe, la boîte intérieure
-     resterait en ligne et ignorerait la taille demandée. */
+  position: absolute;
+  left: 0;
+  /* Centré sur la barre, puis descendu de quelques pixels : la bande
+     libre est un peu plus large en dessous (16 px) qu'au-dessus
+     (18 px), mais c'est le trait de l'en-tête qui se remarquerait si
+     une oreille ou une antenne venait le toucher. Mesuré : le héros
+     occupe 97 à 157 px, pour une bande qui va de 92 à 159. */
+  top: 50%;
+  transform: translateY(-44%);
+
+  /* Le héros est un <span> : sans conteneur flexe, sa boîte
+     intérieure resterait en ligne et ignorerait la taille demandée. */
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 auto;
-  /* Il se pousse au bout de la carte, et laisse la consigne respirer. */
-  margin-left: auto;
-  /* Garde-fou : quoi qu'on lui demande plus tard comme taille, il ne
-     peut pas faire grandir la carte de consigne et repousser
-     l'exercice vers le bas. */
-  max-height: 64px;
   line-height: 0;
-  /* Il ne doit jamais avaler un appui destiné à ce qui est derrière
-     ou autour de lui. Il est là pour accompagner, pas pour gêner. */
+
+  /* Il ne doit jamais avaler un appui, ni gêner un doigt qui vise la
+     jauge ou ce qu'il y a dessous. Il accompagne, il n'intercepte
+     rien. */
   pointer-events: none;
 }
 
-/* ------------------------- Le filet de sécurité -------------------------
-   Un exercice sans consigne — il n'y en a aucun aujourd'hui, mais il
-   pourrait en arriver un. Le héros se pose alors en vignette dans le
-   coin bas, hors du flux : coût vertical nul là aussi, et au-dessus
-   de la barre d'action pour ne jamais recouvrir le bouton principal. */
+/* Le chrono que le parent peut activer vient se ranger juste sous la
+   barre, c'est-à-dire sous les pieds du héros. Il se décale, parce
+   qu'un texte à moitié caché par un personnage est un défaut, et que
+   la place en largeur ne manque pas sur cette ligne-là. */
+.chrono-decale { margin-left: 68px; }
 
-.heros-seance.heros-flottant {
-  position: fixed;
-  left: 12px;
-  bottom: calc(104px + env(safe-area-inset-bottom));
-  /* Sous la barre d'action (z-index 25), jamais devant elle. */
-  z-index: 18;
-  margin-left: 0;
+@media (max-width: 359px) {
+  .chrono-decale { margin-left: 54px; }
 }
+
+/* ------------------------- Quand il descend réagir -------------------------
+   Après la réponse, session.js déplace le MÊME héros dans le bloc de
+   retour, qui est ramené sous les yeux de l'enfant. Il reprend alors
+   une place ordinaire dans la ligne : plus d'absolu, plus de
+   débordement. Tout le reste de ses règles le suit — il reste calme,
+   il reste décoratif pour un lecteur d'écran, et le saut de la bonne
+   réponse reste son seul mouvement. */
+
+.heros-seance.heros-retour {
+  position: static;
+  transform: none;
+}
+
+/* ------------------------- Sans ses affaires, ici -------------------------
+   Le héros se montre ici tel quel, sans ce qu'il porte, et c'est une
+   décision prise après mesure.
+
+   Un accessoire ne tient pas dans le cadre du héros : il déborde. Un
+   chapeau monte de 31 px au-dessus d'un héros de 56, une cape descend
+   de 18 px en dessous. Un héros habillé de pied en cap réclame donc
+   105 px de haut — la bande n'en offre que 67. Il faudrait soit le
+   réduire à 36 px, où ce n'est plus un personnage mais une vignette,
+   soit laisser le chapeau traverser le trait de l'en-tête et la cape
+   passer sous la carte de consigne. Les deux ont été regardés en
+   image : les deux font désordre.
+
+   Deux autres raisons achèvent de trancher : l'aura tourne en boucle,
+   et une boucle n'a rien à faire sur un écran qu'on est en train de
+   lire ; et six accessoires empilés dans 56 px ne se lisent plus.
+
+   Ce qu'il porte reste visible partout ailleurs — l'accueil, la
+   boutique, la garde-robe, l'écran de fin de séance — c'est-à-dire
+   partout où l'enfant le regarde vraiment. Pendant l'exercice, c'est
+   lui qu'on montre, pas sa garde-robe. */
+
+.heros-seance .filou-calque { display: none; }
 
 /* ------------------------- Son calme -------------------------
    Les animations d'humeur de filou.css ne s'appliquent pas ici :
@@ -109,23 +175,28 @@ html:not([data-animations="non"]) .heros-seance .filou-boite.filou-humeur-fete {
   animation: none;
 }
 
-/* Les points de réflexion montent et s'effacent en boucle : c'est le
-   seul détail du dessin qui attire vraiment l'œil, et il le ferait
-   pendant que l'enfant déchiffre. Ils restent dessinés, immobiles.
+/* Les points de réflexion et les bulles montent et s'effacent en
+   boucle juste à côté de la tête. Ils restent dessinés, immobiles.
    « animation: none » et pas une durée nulle : la première image-clé
    de f-monte est transparente, une durée nulle les effacerait. */
 html:not([data-animations="non"]) .heros-seance .filou .f-point,
-html:not([data-animations="non"]) .heros-seance .filou .f-bulle,
-html:not([data-animations="non"]) .heros-seance .filou .f-eclat {
+html:not([data-animations="non"]) .heros-seance .filou .f-bulle {
   animation: none;
 }
 
-/* Le saut de la bonne réponse, lui, reste. C'est le seul mouvement du
-   héros pendant une séance, il est déclenché par session.js, et il
-   arrive après la réponse — jamais pendant la recherche. Déclaré
-   après les annulations ci-dessus, et à la même spécificité, pour
-   reprendre la main sur elles. */
+/* Le saut de la bonne réponse, lui, reste : c'est le seul mouvement
+   du héros pendant une séance, et il arrive après la réponse, jamais
+   pendant la recherche. Déclaré après les annulations ci-dessus et à
+   la même spécificité, pour reprendre la main sur elles. */
 html:not([data-animations="non"]) .heros-seance .filou-boite.filou-anime-saute {
   animation: f-saut 900ms cubic-bezier(0.34, 1.56, 0.64, 1) 1;
 }
 
+/* ------------------------- Les petits écrans -------------------------
+   À 320 px, la jauge et le compteur « 3 / 8 » doivent rester lisibles :
+   le compteur dit à l'enfant où il en est, le héros ne doit pas le
+   manger. Le héros rapetissit, et la place qu'il prend avec. */
+
+@media (max-width: 359px) {
+  .barre-seance.barre-seance-heros { padding-left: 54px; }
+}

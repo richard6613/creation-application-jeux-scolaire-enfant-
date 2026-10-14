@@ -174,8 +174,8 @@ Jeu.Exercices = Jeu.Exercices || [];
      avec leur nom écrit. Rien n'y est distingué par la couleur. */
   function legende() {
     var d = Jeu.Ui.el('div', 'heure-legende');
-    [['petite', 'la petite aiguille montre les heures', LONG_PETITE],
-     ['grande', 'la grande aiguille montre les minutes', LONG_GRANDE]
+    [['petite', 'la petite aiguille : les heures', LONG_PETITE],
+     ['grande', 'la grande aiguille : les minutes', LONG_GRANDE]
     ].forEach(function (l) {
       var ligne = Jeu.Ui.el('div', 'heure-legende-ligne');
       var svg = svgEl('svg', { viewBox: '0 0 80 24', 'class': 'heure-echantillon' });
@@ -209,9 +209,14 @@ Jeu.Exercices = Jeu.Exercices || [];
 
      L'exception est voulue : à douze heures d'écart, le cadran est
      exactement le même, et c'est le moment de la journée annoncé qui
-     tranche. C'est tout l'objet du dernier palier. */
-  function distinctes(h1, m1, h2, m2) {
-    if (Math.abs(h1 - h2) === 12) return true;
+     tranche. C'est tout l'objet du dernier palier.
+
+     `cadranSeul` la retire. Il faut la retirer dès que la réponse se
+     lit sur le cadran et nulle part ailleurs — quand ce sont des
+     horloges qu'on propose, par exemple : deux cadrans identiques
+     rendraient la question impossible. */
+  function distinctes(h1, m1, h2, m2, cadranSeul) {
+    if (!cadranSeul && Math.abs(h1 - h2) === 12) return true;
     var dm = Math.abs(m1 - m2) % 60;
     dm = Math.min(dm, 60 - dm);
     if (dm >= 5) return true;
@@ -221,7 +226,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     return Math.min(dh, 720 - dh) >= 30;
   }
 
-  function leurres(cible, p, combien, dire, garder) {
+  function leurres(cible, p, combien, dire, garder, cadranSeul) {
     var vus = {};
     var sortie = [];
     vus[dire(cible.h, cible.m)] = true;
@@ -234,9 +239,9 @@ Jeu.Exercices = Jeu.Exercices || [];
       /* Chaque proposition doit se distinguer de la bonne réponse ET
          des autres : une liste où deux cadrans se ressemblent n'est
          plus un exercice de lecture. */
-      if (!distinctes(h, m, cible.h, cible.m)) return;
+      if (!distinctes(h, m, cible.h, cible.m, cadranSeul)) return;
       for (var k = 0; k < sortie.length; k++) {
-        if (!distinctes(h, m, sortie[k].h, sortie[k].m)) return;
+        if (!distinctes(h, m, sortie[k].h, sortie[k].m, cadranSeul)) return;
       }
       if (garder && !garder(h, m)) return;
       var t = dire(h, m);
@@ -246,22 +251,58 @@ Jeu.Exercices = Jeu.Exercices || [];
     }
 
     var pas = Math.max(5, p.pas);
-    var candidats = [
-      [cible.h + 1, cible.m],                 // la petite aiguille a avancé
-      [cible.h - 1, cible.m],
-      [cible.h + 12, cible.m],                // le matin pris pour l'après-midi
-      [cible.h - 12, cible.m],
-      [cible.h, 60 - cible.m],                // « et » pris pour « moins »
-      [cible.h, cible.m + pas],               // une graduation de trop
+
+    /* Les minutes bougent, l'heure ne bouge pas : « et quart » pris
+       pour « moins le quart », une graduation de trop. */
+    var surLesMinutes = melanger([
+      [cible.h, 60 - cible.m],
+      [cible.h, (cible.m + 30) % 60],
+      [cible.h, cible.m + pas],
       [cible.h, cible.m - pas],
-      [Math.round(cible.m / 5) || 12, (cible.h % 12) * 5],   // aiguilles échangées
-      [cible.h + 1, 60 - cible.m],
-      [cible.h + 2, cible.m],
-      [cible.h - 2, cible.m],
       [cible.h, cible.m + 2 * pas],
       [cible.h, cible.m - 2 * pas]
-    ];
-    melanger(candidats).forEach(function (c) { tenter(c[0], c[1]); });
+    ]);
+    /* L'heure bouge, les minutes ne bougent pas : la petite aiguille
+       a déjà avancé, ou le matin a été pris pour l'après-midi. */
+    var surLesHeures = melanger([
+      [cible.h + 1, cible.m],
+      [cible.h - 1, cible.m],
+      [cible.h + 2, cible.m],
+      [cible.h - 2, cible.m],
+      [cible.h + 12, cible.m],
+      [cible.h - 12, cible.m]
+    ]);
+    /* Et les deux à la fois, dont les aiguilles échangées. */
+    var lesDeux = melanger([
+      [cible.h + 1, 60 - cible.m],
+      [Math.round(cible.m / 5) || 12, (cible.h % 12) * 5]
+    ]);
+
+    /* On écarte d'abord ce que le palier ne connaît pas : au palier
+       des quarts, « et vingt » n'existe pas. Sans ce tri, l'alternance
+       qui suit dépenserait ses tours sur des heures impossibles et
+       finirait quand même par ne proposer que des variantes d'heure. */
+    function possible(c) {
+      var m = ((Math.round(c[1]) % 60) + 60) % 60;
+      return p.minutes.indexOf(m) >= 0;
+    }
+    surLesMinutes = surLesMinutes.filter(possible);
+    surLesHeures = surLesHeures.filter(possible);
+
+    /* On alterne les deux familles au lieu de tirer au hasard dans le
+       tas : sans cela, les trois mauvaises réponses se retrouvent
+       souvent toutes sur la même aiguille, et l'enfant n'a plus qu'une
+       aiguille à lire. En alternant, chaque question fait travailler
+       la petite ET la grande. Laquelle vient en premier est tirée au
+       sort, pour que l'habitude ne s'installe pas. */
+    var dabord = (Math.random() < 0.5) ? surLesMinutes : surLesHeures;
+    var ensuite = (dabord === surLesMinutes) ? surLesHeures : surLesMinutes;
+    var candidats = [];
+    for (var i = 0; i < Math.max(dabord.length, ensuite.length); i++) {
+      if (dabord[i]) candidats.push(dabord[i]);
+      if (ensuite[i]) candidats.push(ensuite[i]);
+    }
+    candidats.concat(lesDeux).forEach(function (c) { tenter(c[0], c[1]); });
 
     /* Repli : n'importe quelle autre heure du palier. On ne rend
        jamais une liste incomplète. */
@@ -309,8 +350,15 @@ Jeu.Exercices = Jeu.Exercices || [];
     var officiel = p.h24 && Math.random() < 0.5;
 
     if (officiel) {
+      /* L'après-midi et le soir d'abord : c'est là que la leçon mord.
+         Le matin, « huit heures dix » se dit pareil dans les deux
+         registres, il n'y a rien à convertir. */
       var heures = [];
-      for (var h = 1; h <= 23; h++) { if (h !== 12) heures.push(h); }
+      var deLApresMidi = Math.random() < 0.7;
+      for (var h = 1; h <= 23; h++) {
+        if (h === 12) continue;
+        if (deLApresMidi ? (h >= 13) : (h <= 11)) heures.push(h);
+      }
       var c = H().tirer(p.rang, { heures: heures });
       var dire = function (hh, mm) { return H().enMotsOfficiel(hh, mm); };
       var garder = function (hh) { return hh !== 0 && hh !== 12; };
@@ -327,12 +375,12 @@ Jeu.Exercices = Jeu.Exercices || [];
     return {
       forme: 'lire', palier: p.rang, officiel: false,
       h: cible.h, m: cible.m, moment: '',
-      options: optionsDe(cible, p, p.rang >= 3 ? 4 : 3, direC, garderC)
+      options: optionsDe(cible, p, p.rang >= 3 ? 4 : 3, direC, garderC, true)
     };
   }
 
-  function optionsDe(cible, p, combien, dire, garder) {
-    var liste = leurres(cible, p, combien - 1, dire, garder);
+  function optionsDe(cible, p, combien, dire, garder, cadranSeul) {
+    var liste = leurres(cible, p, combien - 1, dire, garder, cadranSeul);
     liste.push({ h: cible.h, m: cible.m, texte: dire(cible.h, cible.m), bon: true });
     return melanger(liste);
   }
@@ -383,7 +431,12 @@ Jeu.Exercices = Jeu.Exercices || [];
          chiffres sont en 24 h, le moment est annoncé. Dans l'autre
          sens, les chiffres suffisent, il n'y a rien à deviner. */
       moment: (h24 && versChiffres) ? momentDit(cible.h) : '',
-      options: optionsDe(cible, p, p.rang >= 3 ? 4 : 3, dire, garder)
+      /* Quand ce sont des horloges qu'on propose, deux cadrans ne
+         peuvent pas se ressembler : la réponse se lit là et nulle
+         part ailleurs. Dans l'autre sens, avec le moment annoncé,
+         deux cadrans identiques sont justement la leçon. */
+      options: optionsDe(cible, p, p.rang >= 3 ? 4 : 3, dire, garder,
+        !(versChiffres && h24))
     };
   }
 
@@ -397,7 +450,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     var cible = { h: Math.floor(total / 60), m: total % 60 };
 
     var dire = function (hh, mm) { return H().enMots(hh, mm); };
-    var liste = leurres(cible, p, (p.rang >= 4 ? 3 : 2), dire, null);
+    var liste = leurres(cible, p, (p.rang >= 4 ? 3 : 2), dire, null, true);
     /* L'erreur la plus fréquente : oublier d'ajouter la durée. Elle a
        sa place dans les propositions, et c'est une heure juste. */
     var texteDepart = dire(depart.h, depart.m);
@@ -442,15 +495,16 @@ Jeu.Exercices = Jeu.Exercices || [];
       : function (h, m) { return H().enMots(h, m); };
     var bon = dire(item.h, item.m);
 
-    outils.consigne(item.moment
+    marquerConsigne(outils.consigne(item.moment
       ? 'C\'est ' + item.moment + '. Quelle heure est-il\u00a0?'
-      : 'Quelle heure est-il\u00a0?');
+      : 'Quelle heure est-il\u00a0?'));
 
     var bloc = carteHorloge({ h: item.h, m: item.m });
+    /* Les deux aiguilles se nomment, dans la carte même, sous le
+       cadran : les premiers paliers s'appuient dessus, et l'aide
+       donnée après une erreur les désigne par leur nom. */
+    if (item.palier <= 2) bloc.carte.appendChild(legende());
     outils.zone.appendChild(bloc.carte);
-    /* Les deux aiguilles se nomment : les premiers paliers s'appuient
-       dessus, et l'aide donnée après une erreur les désigne. */
-    if (item.palier <= 2) outils.zone.appendChild(legende());
 
     var options = item.options.map(function (o) { return { texte: o.texte, ref: o }; });
     var grille = Jeu.Ui.choix(options, function (o, btn) {
@@ -463,22 +517,42 @@ Jeu.Exercices = Jeu.Exercices || [];
         });
         /* Les aiguilles s'épaississent : le cadran qu'il a mal lu
            reste sous ses yeux, mieux marqué. */
-        bloc.horloge.svg.classList.add('horloge-montree');
+        bloc.horloge.noeud.classList.add('horloge-montree');
       }
       outils.repondre({
         juste: juste,
         element: btn,
         typeErreur: (!juste && erreurDeLecture(o.ref.texte, bon)) ? 'lecture' : 'notion',
         detail: 'lire ' + bon + (juste ? '' : ' (a choisi « ' + o.ref.texte + ' »)'),
-        bonneReponse: juste ? '' : 'Il est ' + bon + '.',
+        bonneReponse: juste ? '' : phraseBonne(item, bon),
         aide: juste ? '' : aideLecture(item, o.ref)
       });
+      /* La leçon du dernier palier, dite aussi quand c'est juste :
+         les deux façons de nommer la même heure, côte à côte. */
+      if (juste && item.officiel) {
+        bloc.carte.appendChild(Jeu.Ui.el('p', 'petit zone-sourdine',
+          bon + ', c\'est ' + H().enMotsAvecMoment(item.h, item.m) + '.'));
+      }
     });
     habillerChoix(grille, 'heure-choix-mots');
     outils.zone.appendChild(grille);
   }
 
+  function phraseBonne(item, bon) {
+    if (!item.officiel) return 'Il est ' + bon + '.';
+    return 'Il est ' + bon + ', c\'est-à-dire ' +
+      H().enMotsAvecMoment(item.h, item.m) + '.';
+  }
+
   function aideLecture(item, choisi) {
+    /* Douze heures d'écart : le cadran est le même, ce n'est pas la
+       lecture des aiguilles qui a manqué, c'est le moment annoncé.
+       Lui dire de mieux regarder la petite aiguille serait faux. */
+    if (item.moment && Math.abs(choisi.h - item.h) === 12) {
+      return item.moment === 'le matin'
+        ? 'C\'était le matin : l\'heure est celle du cadran.'
+        : 'C\'était ' + item.moment + ' : on ajoute douze à l\'heure du cadran.';
+    }
     if (choisi.m === item.m && choisi.h !== item.h) {
       return 'Regarde la petite aiguille : c\'est elle qui donne l\'heure.';
     }
@@ -486,9 +560,18 @@ Jeu.Exercices = Jeu.Exercices || [];
       return 'Regarde la grande aiguille : c\'est elle qui donne les minutes.';
     }
     if (item.moment) {
-      return 'C\'était ' + item.moment + ' : après midi, on continue à compter.';
+      return 'Lis d\'abord le cadran, puis pense au moment de la journée.';
     }
     return 'Repère d\'abord la petite aiguille, puis la grande.';
+  }
+
+  /* Avec le texte à 30 px et les espacements au maximum, sur un écran
+     de 320 px, « l'après-midi » ne tient pas sur une ligne. On
+     autorise la coupure, mais seulement sur les consignes de ce jeu :
+     ailleurs, l'application coupe déjà au trait d'union. */
+  function marquerConsigne(bloc) {
+    if (bloc && bloc.classList) bloc.classList.add('heure-consigne');
+    return bloc;
   }
 
   function habillerChoix(grille, classe) {
@@ -503,11 +586,9 @@ Jeu.Exercices = Jeu.Exercices || [];
     var mots = H().enMots(item.h, item.m);
     var chiffres = H().enChiffres(item.h, item.m, item.h24);
 
-    if (item.parChiffres) {
-      outils.consigne('Montre la même heure sur l\'horloge.');
-    } else {
-      outils.consigne('Montre ' + mots + '.');
-    }
+    marquerConsigne(item.parChiffres
+      ? outils.consigne('Montre la même heure.')
+      : outils.consigne('Montre ' + mots + '.'));
 
     var carte = Jeu.Ui.el('div', 'carte heure-carte');
 
@@ -590,14 +671,22 @@ Jeu.Exercices = Jeu.Exercices || [];
       if (fini) return;
       var pt = coordonnees(ev);
       if (!pt) return;
-      /* On attrape l'aiguille dont le bout est le plus proche du
-         doigt. Loin des deux, c'est celle qui est déjà choisie qui se
-         déplace : un appui puis un dépôt, comme ailleurs dans le jeu. */
+      /* On ne change d'aiguille que si le doigt se pose franchement
+         sur l'autre : tout près de son bout, et nettement plus près
+         d'elle que de celle qu'on tient déjà. Partout ailleurs, c'est
+         l'aiguille choisie qui se déplace — un appui puis un dépôt,
+         comme ailleurs dans le jeu. Sans cette prudence, viser le 11
+         pour l'aiguille des heures attrape celle des minutes, qui
+         passe par là. */
       var dP = distanceAuBout(pt, (etat.h % 12) * 30, LONG_PETITE);
       var dG = distanceAuBout(pt, etat.m * 6, LONG_GRANDE);
-      if (Math.min(dP, dG) <= 34) choisie = (dP <= dG) ? 'petite' : 'grande';
+      var dTenue = (choisie === 'petite') ? dP : dG;
+      var dAutre = (choisie === 'petite') ? dG : dP;
+      if (dAutre <= 26 && dAutre < dTenue - 8) {
+        choisie = (choisie === 'petite') ? 'grande' : 'petite';
+      }
       saisie = true;
-      h.svg.classList.add('horloge-saisie');
+      h.noeud.classList.add('horloge-saisie');
       try { h.svg.setPointerCapture(ev.pointerId); } catch (e) { /* rien */ }
       poser(pt);
       ev.preventDefault();
@@ -612,7 +701,7 @@ Jeu.Exercices = Jeu.Exercices || [];
 
     function lacher() {
       saisie = false;
-      h.svg.classList.remove('horloge-saisie');
+      h.noeud.classList.remove('horloge-saisie');
     }
     h.svg.addEventListener('pointerup', lacher);
     h.svg.addEventListener('pointercancel', lacher);
@@ -680,7 +769,11 @@ Jeu.Exercices = Jeu.Exercices || [];
     function valider() {
       if (fini) return;
       fini = true;
-      h.svg.classList.add('horloge-figee');
+      h.noeud.classList.add('horloge-figee');
+      /* Une fois répondu, les poignées ne servent plus : on les ferme
+         plutôt que de laisser l'enfant agir sans effet. */
+      boutons.petite.disabled = true;
+      boutons.grande.disabled = true;
 
       var hVoulu = (item.h % 12) || 12;
       var justeH = (etat.h === hVoulu);
@@ -697,7 +790,11 @@ Jeu.Exercices = Jeu.Exercices || [];
             'Sur une vraie horloge, la petite aiguille avance un peu entre deux chiffres.'));
         }
       } else {
+        /* L'horloge se remet elle-même à l'heure demandée, bien
+           marquée : l'enfant repart avec l'image juste, jamais avec
+           celle qu'il a manquée. */
         h.regler(sur24(hVoulu), item.m, 'Horloge : ' + mots);
+        h.svg.parentNode.classList.add('horloge-montree');
         etat.h = hVoulu;
         etat.m = item.m;
       }
@@ -738,9 +835,9 @@ Jeu.Exercices = Jeu.Exercices || [];
     var bon = H().enChiffres(item.h, item.m, item.h24);
 
     if (item.versChiffres) {
-      outils.consigne(item.moment
+      marquerConsigne(outils.consigne(item.moment
         ? 'C\'est ' + item.moment + '. Trouve la même heure en chiffres.'
-        : 'Trouve la même heure en chiffres.');
+        : 'Trouve la même heure en chiffres.'));
 
       var bloc = carteHorloge({ h: item.h, m: item.m });
       outils.zone.appendChild(bloc.carte);
@@ -764,6 +861,7 @@ Jeu.Exercices = Jeu.Exercices || [];
           aide: juste ? '' : 'Avant les deux points, les heures. Après, les minutes.'
         });
       }, { deuxColonnes: options.length === 4 });
+      grille.classList.add('heure-grille-chiffres');
       habillerChoix(grille, 'heure-choix-chiffres');
       Array.prototype.forEach.call(grille.querySelectorAll('.choix-btn'), function (b, i) {
         /* « 3:15 » lu caractère par caractère ne veut rien dire : on
@@ -775,7 +873,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     }
 
     /* L'autre sens : les chiffres sont donnés, on choisit le cadran. */
-    outils.consigne('Quelle horloge montre cette heure\u00a0?');
+    marquerConsigne(outils.consigne('Quelle horloge montre cette heure\u00a0?'));
 
     var carte = Jeu.Ui.el('div', 'carte heure-carte');
     var tete = Jeu.Ui.el('div', 'ligne heure-numerique');
@@ -820,15 +918,15 @@ Jeu.Exercices = Jeu.Exercices || [];
     var bon = H().enMots(item.h, item.m);
     var duree = H().dureeEnMots(item.duree);
 
-    outils.consigne(item.enArriere
-      ? 'Il y a ' + duree + ', quelle heure était-il\u00a0?'
-      : 'Dans ' + duree + ', quelle heure sera-t-il\u00a0?');
+    marquerConsigne(outils.consigne(item.enArriere
+      ? 'Il y a ' + duree + ', il était quelle heure\u00a0?'
+      : 'Dans ' + duree + ', il sera quelle heure\u00a0?'));
 
     var bloc = carteHorloge({ h: item.depart.h, m: item.depart.m });
     bloc.carte.insertBefore(
       ligneEcoute('Il est ' + departMots + '. ' + (item.enArriere
-        ? 'Il y a ' + duree + ', quelle heure était-il\u00a0?'
-        : 'Dans ' + duree + ', quelle heure sera-t-il\u00a0?'), 'Écouter la question'),
+        ? 'Il y a ' + duree + ', il était quelle heure\u00a0?'
+        : 'Dans ' + duree + ', il sera quelle heure\u00a0?'), 'Écouter la question'),
       bloc.carte.firstChild);
     outils.zone.appendChild(bloc.carte);
 

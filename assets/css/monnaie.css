@@ -67,7 +67,8 @@
 
   /* L'encre du chiffre : la même partout, toujours sur du clair. */
   --mo-encre: #2a2317;
-  --mo-lueur: rgba(255, 255, 255, 0.42);     /* le biseau */
+  --mo-lueur: rgba(255, 255, 255, 0.42);     /* le biseau, la tranche */
+  --mo-creux-couleur: rgba(42, 35, 23, 0.09); /* l'ombre du second plan */
   --mo-pli-ombre: rgba(42, 35, 23, 0.20);    /* le pli du coin */
   --mo-ombre-jeton: rgba(80, 62, 34, 0.26);
 }
@@ -106,6 +107,13 @@ html[data-fond="sombre"] {
 }
 .mo-jeton.mo-billet { border-radius: 16px; }
 
+/* Le dessin ne reçoit AUCUN événement, et c'est important : sans
+   cela, un doigt qui se pose sur le SVG touche un élément dont le
+   `touch-action` vaut `auto`, le navigateur garde la possibilité d'y
+   voir un début de défilement, et il lui arrive d'annuler le pointeur
+   avant le relâché — l'appui est alors perdu une fois sur trois. En
+   rendant le dessin transparent aux événements, c'est toujours le
+   jeton lui-même qui est touché, avec son `touch-action: none`. */
 .mo-forme {
   position: absolute;
   top: 0; left: 0;
@@ -113,7 +121,9 @@ html[data-fond="sombre"] {
   height: 100%;
   display: block;
   overflow: visible;
+  pointer-events: none;
 }
+.mo-jeton * { touch-action: none; }
 
 /* Le chiffre. En HTML et pas en <text> SVG : la police est réglable
    par l'enfant, et un flex centré tombe juste avec les six polices
@@ -126,7 +136,7 @@ html[data-fond="sombre"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 0.09em;
   letter-spacing: normal;
   word-spacing: normal;
   line-height: 1;
@@ -135,7 +145,15 @@ html[data-fond="sombre"] {
   pointer-events: none;
 }
 .mo-nombre { font-variant-numeric: tabular-nums; }
-.mo-unite { font-size: 0.55em; font-weight: 700; align-self: center; }
+/* L'unité est plus petite que le chiffre, et posée un peu plus bas :
+   collée au milieu elle se lisait comme un exposant, et « 1 € »
+   ressemblait à une puissance. */
+.mo-unite {
+  font-size: 0.52em;
+  font-weight: 700;
+  align-self: center;
+  transform: translateY(0.22em);
+}
 
 /* ---- Les tailles. Elles croissent avec la valeur : c'est le second
    indice, celui qui tient tout seul en niveaux de gris. Le plus petit
@@ -159,13 +177,15 @@ html[data-fond="sombre"] {
 
 /* ---- Les aplats, famille par famille ---- */
 .mo-biseau { fill: var(--mo-lueur); }
+.mo-creux { fill: var(--mo-creux-couleur); }
+/* La tranche striée : une nuance plus claire que l'anneau, posée
+   dessus. C'est elle qui fait « pièce » plutôt que « pastille ». */
+.mo-crans { fill: var(--mo-lueur); }
 
-.mo-v1 .mo-anneau,  .mo-v2 .mo-anneau,  .mo-v5 .mo-anneau,
-.mo-v1 .mo-crans,   .mo-v2 .mo-crans,   .mo-v5 .mo-crans   { fill: var(--mo-cuivre); }
+.mo-v1 .mo-anneau,  .mo-v2 .mo-anneau,  .mo-v5 .mo-anneau  { fill: var(--mo-cuivre); }
 .mo-v1 .mo-coeur,   .mo-v2 .mo-coeur,   .mo-v5 .mo-coeur   { fill: var(--mo-cuivre-clair); }
 
-.mo-v10 .mo-anneau, .mo-v20 .mo-anneau, .mo-v50 .mo-anneau,
-.mo-v10 .mo-crans,  .mo-v20 .mo-crans,  .mo-v50 .mo-crans  { fill: var(--mo-laiton); }
+.mo-v10 .mo-anneau, .mo-v20 .mo-anneau, .mo-v50 .mo-anneau { fill: var(--mo-laiton); }
 .mo-v10 .mo-coeur,  .mo-v20 .mo-coeur,  .mo-v50 .mo-coeur  { fill: var(--mo-laiton-clair); }
 
 /* Les deux pièces en euros sont bicolores, et inversées l'une de
@@ -174,9 +194,9 @@ html[data-fond="sombre"] {
    sépare des centimes au premier regard, avant qu'on lise le
    chiffre — et c'est un contraste d'agencement, qui survit aux
    niveaux de gris, pas une nuance de couleur. */
-.mo-v100 .mo-anneau, .mo-v100 .mo-crans { fill: var(--mo-laiton); }
+.mo-v100 .mo-anneau { fill: var(--mo-laiton); }
 .mo-v100 .mo-coeur { fill: var(--mo-argent-clair); }
-.mo-v200 .mo-anneau, .mo-v200 .mo-crans { fill: var(--mo-argent); }
+.mo-v200 .mo-anneau { fill: var(--mo-argent); }
 .mo-v200 .mo-coeur { fill: var(--mo-laiton-clair); }
 
 /* ---- Les coupures ---- */
@@ -226,7 +246,7 @@ html[data-fond="sombre"] {
    2. L'ÉTAL, LE TAS, LE PORTE-MONNAIE
    ================================================================= */
 
-.mo-carte { padding: 16px 14px; }
+.mo-carte { padding: 14px; margin-bottom: 4px; }
 
 .mo-ligne-son { justify-content: flex-start; }
 .mo-etiquette { color: var(--texte-doux); margin: 0; }
@@ -235,31 +255,72 @@ html[data-fond="sombre"] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 .mo-image { font-size: 3rem; line-height: 1; }
 .mo-prix-bloc { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .mo-objet { margin: 0; font-weight: 700; }
 
 /* Le prix, écrit « 6 € 50 » et jamais « 6,50 € » : c'est la notation
-   du cahier, et elle n'a aucune virgule à interpréter. */
+   du cahier, et elle n'a aucune virgule à interpréter. Posé sur une
+   étiquette, comme en magasin : c'est le nombre que l'enfant doit
+   retrouver dix fois pendant l'exercice, il doit se repérer d'un
+   coup d'œil au milieu du reste. */
 .mo-prix {
   margin: 0;
-  font-size: 2.1rem;
+  align-self: flex-start;
+  padding: 4px 16px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  /* Plafonné : 1 rem suit le réglage de confort et monte à 30 px, ce
+     qui donnerait un prix de 63 px — « 4 € 50 » se cassait alors en
+     trois lignes à 320 px. 44 px reste bien au-dessus du texte réglé
+     au maximum, et la somme tient toujours d'un seul tenant. */
+  font-size: min(2.1rem, 44px);
   font-weight: 700;
   letter-spacing: normal;
+  word-spacing: normal;
+  white-space: nowrap;
   color: var(--texte);
 }
 
 /* « ça coûte / il donne » : deux lignes alignées, comme une addition
    posée. Les deux sommes tombent les unes sous les autres. */
-.mo-compte { display: flex; flex-direction: column; gap: 4px; }
-.mo-compte-ligne { display: flex; align-items: baseline; gap: 10px; }
-.mo-compte-quoi { color: var(--texte-doux); min-width: 7ch; }
+/* Une grille à deux colonnes plutôt que deux lignes indépendantes :
+   les deux sommes tombent exactement l'une sous l'autre, comme une
+   soustraction posée au cahier. Alignées à un pixel près, c'est la
+   soustraction qui saute aux yeux. */
+.mo-compte {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-items: center;
+  gap: 6px 10px;
+}
+.mo-compte-quoi { color: var(--texte-doux); }
 .mo-compte-combien {
-  font-size: 1.6rem;
+  padding: 2px 12px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  font-size: min(1.6rem, 34px);
   font-weight: 700;
   letter-spacing: normal;
+  word-spacing: normal;
+  white-space: nowrap;
+}
+
+/* Les réponses du comptage : des sommes, donc des nombres. Au
+   centre, en gros, comme dans « Compte avec moi ». */
+.mo-choix { grid-template-columns: 1fr; }
+.mo-choix .choix-btn { justify-content: center; }
+.mo-choix .libelle {
+  font-size: min(1.8rem, 38px);
+  font-weight: 700;
+  letter-spacing: normal;
+  word-spacing: normal;
+  white-space: nowrap;
 }
 
 .mo-tas {
@@ -271,9 +332,9 @@ html[data-fond="sombre"] {
 }
 
 .mo-porte {
-  margin: 16px 0 10px;
+  margin: 12px 0 8px;
   padding: 12px;
-  min-height: 104px;
+  min-height: 96px;
   box-sizing: border-box;
   border: 3px dashed var(--bordure);
   border-radius: 20px;
@@ -295,7 +356,8 @@ html[data-fond="sombre"] {
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  min-height: 76px;
+  justify-content: flex-start;
+  min-height: 68px;
 }
 .mo-vide { margin: 0; color: var(--texte-doux); }
 
@@ -304,13 +366,32 @@ html[data-fond="sombre"] {
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
+.mo-total-lignes { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+/* La somme à atteindre, en rappel discret juste sous le compteur :
+   une mémoire de travail n'a pas à retenir un prix pendant qu'on
+   fouille dans ses pièces. */
+.mo-total-faut {
+  margin: 0;
+  color: var(--texte-doux);
+  font-size: min(1rem, 22px);
+  word-spacing: normal;
+}
+/* L'écart chiffré après un essai. Il se distingue par le poids et la
+   place, pas seulement par la couleur. */
+.mo-total-aide {
+  margin: 2px 0 0;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: min(1.05rem, 24px);
+  word-spacing: normal;
+}
+.mo-total-aide[hidden] { display: none; }
 .mo-total-texte {
   margin: 0;
-  font-size: 1.3rem;
+  font-size: min(1.3rem, 30px);
   font-weight: 700;
-  letter-spacing: normal;
 }
 
 .mo-bac {
@@ -341,6 +422,12 @@ html[data-fond="sombre"] {
   .mo-porte, .mo-bac { padding: 10px; }
   .mo-tas, .mo-dedans, .mo-bac { gap: 8px; }
   .mo-image { font-size: 2.4rem; }
+  /* « ça coûte / il donne » passe sur une seule colonne : les deux
+     sommes restent l'une sous l'autre et toujours alignées, mais la
+     mention passe au-dessus. À 320 px avec le texte à 30 px, les
+     deux côte à côte débordaient de 3 px. */
+  .mo-compte { grid-template-columns: auto; gap: 2px; }
+  .mo-compte-quoi { margin-top: 6px; }
 }
 
 /* =================================================================

@@ -13,8 +13,12 @@
 
 :root {
   /* La teinte du jeu : elle ne porte jamais de texte, seulement la
-     pastille du chemin et le liseré de la carte. */
-  --jeu-heure: #5f7a33;
+     pastille du chemin et le liseré de la carte. Elle est choisie
+     dans le plus grand trou de teinte encore libre : les onze autres
+     jeux occupent les bleus, les verts, les ocres et les rouges, et
+     la monnaie a pris l'olive. Un violet profond ne ressemble à
+     aucun d'eux, même réduit à une pastille de chemin. */
+  --jeu-heure: #9a3f9c;
 
   --heure-cadran: var(--surface);
   --heure-trait: var(--texte);
@@ -29,11 +33,11 @@
    que tokens.css, pour que rien ne dépende de l'attribut. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-fond]) {
-    --jeu-heure: #a5c468;
+    --jeu-heure: #d49ad6;
   }
 }
 html[data-fond="sombre"] {
-  --jeu-heure: #a5c468;
+  --jeu-heure: #d49ad6;
 }
 
 /* ------------------------- La carte ------------------------- */
@@ -58,7 +62,7 @@ html[data-fond="sombre"] {
 /* L'horloge à chiffres. Chiffres serrés et non espacés : « 9:45 »
    doit se lire comme un bloc, pas comme quatre signes séparés. */
 .heure-chiffres-grand {
-  font-size: 1.9rem;
+  font-size: 1.7rem;
   font-weight: 700;
   letter-spacing: normal;
   word-spacing: normal;
@@ -147,6 +151,7 @@ html[data-fond="sombre"] {
   cursor: pointer;
 }
 .horloge-jouable.horloge-saisie .horloge-svg { cursor: grabbing; }
+.horloge-jouable.horloge-figee .horloge-svg { cursor: default; }
 .horloge-figee .horloge-prise { pointer-events: none; }
 
 /* Après une erreur, le cadran reste sous les yeux, mieux marqué.
@@ -179,11 +184,27 @@ html[data-fond="sombre"] {
    même avec le texte au maximum, et on coupe en dernier recours. */
 .heure-choix-mots {
   font-size: 1rem;
+  min-width: 0;
   overflow-wrap: break-word;
 }
+
+/* La consigne de ce jeu peut couper un mot plutôt que de déborder de
+   l'écran — cas limite : 320 px de large, texte à 30 px, espacements
+   au maximum. On ne touche pas à la largeur minimale du bloc, de
+   sorte que la coupure reste le dernier recours et non la règle. */
+.heure-consigne p { overflow-wrap: break-word; }
+/* Deux colonnes seulement si deux colonnes tiennent : à 320 px avec
+   le texte au maximum, « 15:45 » occupe toute la largeur. La classe
+   est doublée pour passer devant « .choix.deux », qui impose sinon
+   deux colonnes quelle que soit la largeur. */
+.choix.heure-grille-chiffres {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+.heure-grille-chiffres .choix-btn { min-width: 0; }
+
 .heure-choix-chiffres {
   justify-content: center;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: normal;
   word-spacing: normal;
@@ -251,7 +272,8 @@ html[data-fond="sombre"] {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin: 0 0 18px;
+  width: 100%;
+  margin: 0;
 }
 .heure-legende-ligne {
   display: flex;
