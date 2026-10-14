@@ -117,6 +117,109 @@ Jeu.Session = (function () {
     afficherItem();
   }
 
+  /* ================================================================
+     LE HÉROS, PENDANT TOUTE LA SÉANCE
+
+     L'application a cinq héros, dessinés avec soin, et c'est l'enfant
+     qui choisit le sien. Pendant un exercice il n'y en avait aucun à
+     l'écran : le compagnon n'apparaissait qu'APRÈS une réponse et à la
+     fin de la séance. Pendant qu'il cherche — c'est-à-dire pendant la
+     quasi-totalité du temps passé dans l'application — l'enfant était
+     seul devant un formulaire. C'est ce qui rendait l'écran terne.
+
+     Le héros est donc là du début à la fin de l'exercice. Trois règles
+     tiennent tout ce qui suit, et aucune n'est négociable :
+
+     1. IL NE REPOUSSE RIEN. On vient de remonter le premier bouton à
+        toucher de 563-902 px à 397-740 px sur un écran de 844 : le
+        reperdre serait pire que ne rien faire. La carte de consigne
+        paraissait la bonne place ; mesure faite, elle coûte 36 à
+        72 px sur sept exercices sur onze, parce que le texte y occupe
+        déjà toute la largeur disponible et qu'une ligne de plus
+        apparaît dès qu'on lui en prend 38 — et cela à N'IMPORTE
+        QUELLE taille de héros, jusqu'à 24 px. Le héros se pose donc
+        dans la bande de la barre de progression, en absolu, et la
+        barre garde exactement sa hauteur : zéro pixel, mesuré.
+
+     2. IL NE PRESSE PAS. Au repos il ne fait rien d'autre que
+        respirer. Aucune relance au bout de x secondes, aucune
+        impatience, aucun chronomètre : un enfant dyslexique met du
+        temps, et un personnage qui s'agite pendant qu'il cherche est
+        une pression de plus. L'absence de minuterie ici est une
+        décision, pas un oubli.
+
+     3. IL NE JUGE PAS. À l'erreur, il prend l'humeur « courage » — qui
+        a été dessinée exactement pour ce moment sur les cinq
+        personnages, rassurante et jamais déçue — et RIEN d'autre : pas
+        de secousse, pas de penché, pas de son. Le mouvement n'arrive
+        qu'à la bonne réponse, et c'est un saut.
+     ================================================================ */
+
+  /* Au repos, l'humeur « reflechit » quand le personnage la connaît —
+     tous ne connaissent pas toutes les humeurs — et « salut » sinon.
+     On ne demande jamais une humeur sans vérifier : un héros qui ne
+     sait pas la dessiner se rabattrait seul, mais la boîte, elle,
+     garderait le nom demandé et donc la mauvaise animation. */
+  function humeurRepos() {
+    try {
+      if (Jeu.Compagnon.connait && Jeu.Compagnon.connait('reflechit')) return 'reflechit';
+    } catch (e) { /* registre incomplet : « salut » est connu de tous */ }
+    return 'salut';
+  }
+
+  /* La bande libre autour de la barre de progression fait 67 px de
+     haut sur un iPhone : à 60 px le héros y tient tout entier, avec
+     quelques pixels de marge au-dessus et en dessous. Sur un écran de
+     320 px la bande est la même, mais la jauge et le compteur y sont
+     bien plus serrés : il rapetissit pour ne pas écraser le « 3 / 8 »,
+     qui dit à l'enfant où il en est. */
+  function tailleHeros() {
+    var l = window.innerWidth || 390;
+    if (l < 360) return 48;
+    return 60;
+  }
+
+  /* Un seul héros, fabriqué une fois par exercice. */
+  function creerHeros() {
+    var s = courante;
+    if (!s) return null;
+    if (s.heros) return s.heros;
+
+    var boite;
+    try { boite = Jeu.Compagnon.habille(humeurRepos(), tailleHeros()); }
+    catch (e) { return null; }   /* pas de héros : l'exercice passe avant tout */
+    if (!boite) return null;
+
+    var hote = document.createElement('span');
+    hote.className = 'heros-seance';
+    /* Décoratif pour un lecteur d'écran : la consigne juste en dessous
+       dit déjà tout, et annoncer « image, héros » couperait la phrase
+       que l'enfant est en train d'écouter. */
+    hote.setAttribute('aria-hidden', 'true');
+    hote.appendChild(boite);
+    s.heros = hote;
+    return hote;
+  }
+
+  /* Il se pose dans la barre de progression — une ligne de 32 px qui
+     ne contient qu'une jauge et un compteur, donc rien à recouvrir et
+     rien à bloquer — et il en déborde en absolu, de sorte que la barre
+     garde exactement sa hauteur. */
+  function poserHeros(barre) {
+    var h = creerHeros();
+    if (!h || !barre) return;
+    barre.classList.add('barre-seance-heros');
+    barre.appendChild(h);
+  }
+
+  /* Seule l'expression change : on ne refabrique pas le héros, sans
+     quoi on perdrait la boîte sur laquelle porte l'animation du saut. */
+  function humeurHeros(humeur) {
+    var s = courante;
+    if (!s || !s.heros) return;
+    try { Jeu.Compagnon.changer(s.heros, humeur); } catch (e) { /* rien */ }
+  }
+
   function zoneJeu() { return document.getElementById('zone-jeu'); }
   function zoneBas() { return document.getElementById('barre-bas'); }
 
@@ -133,6 +236,10 @@ Jeu.Session = (function () {
     var zone = Jeu.Ui.vider(zoneJeu());
     var bas = Jeu.Ui.vider(zoneBas());
     bas.hidden = true;
+
+    /* Vider la zone a retiré le héros du document : on en refabrique un
+       pour le nouvel exercice, ce qui le remet d'office au repos. */
+    s.heros = null;
 
     /* LA BARRE EN HAUT, LA SCÈNE EN BAS.
 
@@ -151,9 +258,20 @@ Jeu.Session = (function () {
        récompense — mais elle passe DERRIÈRE l'exercice, et elle
        s'affiche en grand sur l'écran de fin, là où elle se regarde
        vraiment. */
-    zone.appendChild(Jeu.Ui.barreSeance(s.programme.length, s.index, s.resultats));
+    var barre = Jeu.Ui.barreSeance(s.programme.length, s.index, s.resultats);
+    zone.appendChild(barre);
+    poserHeros(barre);
 
-    if (Jeu.Reglages.get('chrono')) zone.appendChild(chronoDoux());
+    if (Jeu.Reglages.get('chrono')) {
+      var ch = chronoDoux();
+      /* Le chrono se range juste sous la barre, c'est-à-dire sous les
+         pieds du héros, qui en déborde. Il se décale une fois pour
+         toutes : le décalage ne doit pas dépendre de la présence du
+         héros dans la barre, sans quoi la ligne sauterait de 68 px au
+         moment où il descend réagir. */
+      if (s.heros) ch.classList.add('chrono-decale');
+      zone.appendChild(ch);
+    }
 
     var notion = s.programme[s.index];
     var item = s.exercice.creerItem(notion, Jeu.Adaptatif.palier(notion));
@@ -290,9 +408,44 @@ Jeu.Session = (function () {
       texte = 'Pas tout à fait. Regarde la bonne réponse.';
     }
 
-    // Filou réagit : content, ou rassurant. Jamais déçu.
+    /* LE HÉROS RÉAGIT, ET C'EST LE MÊME HÉROS.
+
+       Celui qui était avec l'enfant pendant qu'il cherchait est celui
+       qui se réjouit ou qui le rassure. On n'en fabrique donc pas un
+       second : on DÉPLACE celui de la barre dans le bloc de retour,
+       parce qu'appendChild déplace un nœud au lieu de le copier. Deux
+       fois le même personnage à deux tailles sur le même écran, ce
+       serait du décor ; un seul qui vous suit, c'est quelqu'un.
+
+       Il descend au lieu de réagir en haut parce que le bloc de
+       retour est ramené sous les yeux de l'enfant : sur un exercice
+       un peu long, la barre de progression est alors sortie de
+       l'écran, et un héros qui se réjouit hors du champ ne se réjouit
+       pour personne.
+
+       Bonne réponse : « bravo » et un saut. Erreur : « courage » et
+       rien d'autre. Pas de secousse, pas de penché, pas de mine
+       déconfite — cette humeur a été dessinée pour ce moment précis
+       sur les cinq personnages, il n'y a rien à ajouter. */
     var ligne = Jeu.Ui.el('div', 'bulle-filou');
-    ligne.appendChild(Jeu.Compagnon.habille(reponse.juste ? 'bravo' : 'courage', 64));
+    if (s.heros) {
+      var barre = zone.querySelector('.barre-seance');
+      if (barre) barre.classList.remove('barre-seance-heros');
+      s.heros.className = 'heros-seance heros-retour';
+      ligne.appendChild(s.heros);
+    } else {
+      /* Personnage introuvable : plutôt que de laisser l'enfant sans
+         réaction du tout, le bloc en dessine un. */
+      ligne.appendChild(Jeu.Compagnon.habille(reponse.juste ? 'bravo' : 'courage', 64));
+    }
+
+    if (reponse.juste) {
+      humeurHeros('bravo');
+      if (s.heros) Jeu.Compagnon.sauter(s.heros);
+    } else {
+      humeurHeros('courage');
+    }
+
     var dit = Jeu.Ui.el('div', 'ligne');
     dit.appendChild(Jeu.Voix.bouton(function () {
       return texte + (reponse.bonneReponse ? '. ' + reponse.bonneReponse : '');

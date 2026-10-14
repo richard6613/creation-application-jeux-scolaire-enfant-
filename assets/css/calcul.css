@@ -1,0 +1,296 @@
+/* ---------------------------------------------------------------
+   calcul.css — l'énoncé dessiné de « Compte avec moi »
+
+   Aucune couleur n'est écrite dans le JavaScript : le dessin ne
+   pose que des classes, et tout ce qui est teinte vit ici. C'est
+   ce qui permet aux six fonds de lecture et au mode sombre de
+   continuer de fonctionner.
+
+   Chaque teinte vient par trois : la face, la lumière (en haut) et
+   l'arête (en bas). C'est le relief en aplats du papier découpé —
+   trois couleurs posées l'une sur l'autre, jamais un dégradé ni un
+   filtre, pour que ça reste net à toutes les tailles.
+
+   La couleur ne porte JAMAIS une information. Les deux groupes
+   d'une addition sont faits des mêmes objets, de la même teinte :
+   seul leur nombre diffère. Les teintes des nombres ne servent qu'à
+   séparer les termes de l'œil, et un enfant qui ne les perçoit pas
+   joue exactement pareil.
+   --------------------------------------------------------------- */
+
+:root {
+  /* La plaque sur laquelle l'énoncé est posé : une couche de papier
+     de plus, prise dans les couleurs du fond choisi. */
+  --calc-plaque: var(--surface);
+  --calc-plaque-bord: var(--bordure);
+
+  /* Le premier nombre : bleu d'encre. */
+  --calc-n1: #2a6496;
+  --calc-n1-haut: #5c9ccb;
+  --calc-n1-bas: #1a4367;
+
+  /* Le second : terre cuite. */
+  --calc-n2: #b35521;
+  --calc-n2-haut: #de8a4c;
+  --calc-n2-bas: #803a13;
+
+  /* Le troisième — le total d'un complément, la fin d'une suite. */
+  --calc-n3: #2b7250;
+  --calc-n3-haut: #5aa37c;
+  --calc-n3-bas: #1c4e36;
+
+  /* Les signes : prune, pour ne ressembler à aucun des nombres. */
+  --calc-signe: #71487f;
+  --calc-signe-haut: #a076ac;
+  --calc-signe-bas: #4e2f59;
+
+  /* Les objets à compter. Un objet = une forme + une teinte, et la
+     teinte est la même pour tous les objets d'un même énoncé. */
+  --calc-caillou: #857a6b;
+  --calc-caillou-haut: #b2a797;
+  --calc-caillou-bas: #5f564a;
+  --calc-pomme: #bc4330;
+  --calc-pomme-haut: #e37f69;
+  --calc-pomme-bas: #8a2c1e;
+  --calc-pomme-queue: #6b4a2a;
+  --calc-pomme-feuille: #3f8b4a;
+  --calc-etoile: #a5700b;
+  --calc-etoile-haut: #d7a63f;
+  --calc-etoile-bas: #744d03;
+
+  /* La barre des compléments et les plateaux du partage. */
+  --calc-case: var(--surface-2);
+  --calc-case-bord: var(--bordure);
+  --calc-case-pleine: #2a6496;
+  --calc-plateau: var(--surface-2);
+}
+
+/* Appareil en mode sombre avant tout choix de fond : même logique
+   que tokens.css, pour qu'aucune couleur ne dépende de la présence
+   de l'attribut. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --calc-n1: #7fb7e2;
+    --calc-n1-haut: #a9d1f0;
+    --calc-n1-bas: #4b7fa8;
+    --calc-n2: #e8905c;
+    --calc-n2-haut: #f6b48a;
+    --calc-n2-bas: #a85f33;
+    --calc-n3: #74c295;
+    --calc-n3-haut: #9ed9b5;
+    --calc-n3-bas: #448a63;
+    --calc-signe: #c197cf;
+    --calc-signe-haut: #dcbfe5;
+    --calc-signe-bas: #8a649a;
+    --calc-caillou: #b1a795;
+    --calc-caillou-haut: #d3cabb;
+    --calc-caillou-bas: #7d7465;
+    --calc-pomme: #e7816c;
+    --calc-pomme-haut: #f5aa9a;
+    --calc-pomme-bas: #a8503c;
+    --calc-pomme-queue: #a8814f;
+    --calc-pomme-feuille: #68c077;
+    --calc-etoile: #e3b352;
+    --calc-etoile-haut: #f2d08b;
+    --calc-etoile-bas: #a67e24;
+    --calc-case-pleine: #7fb7e2;
+  }
+}
+html[data-fond="sombre"] {
+  --calc-n1: #7fb7e2;
+  --calc-n1-haut: #a9d1f0;
+  --calc-n1-bas: #4b7fa8;
+  --calc-n2: #e8905c;
+  --calc-n2-haut: #f6b48a;
+  --calc-n2-bas: #a85f33;
+  --calc-n3: #74c295;
+  --calc-n3-haut: #9ed9b5;
+  --calc-n3-bas: #448a63;
+  --calc-signe: #c197cf;
+  --calc-signe-haut: #dcbfe5;
+  --calc-signe-bas: #8a649a;
+  --calc-caillou: #b1a795;
+  --calc-caillou-haut: #d3cabb;
+  --calc-caillou-bas: #7d7465;
+  --calc-pomme: #e7816c;
+  --calc-pomme-haut: #f5aa9a;
+  --calc-pomme-bas: #a8503c;
+  --calc-pomme-queue: #a8814f;
+  --calc-pomme-feuille: #68c077;
+  --calc-etoile: #e3b352;
+  --calc-etoile-haut: #f2d08b;
+  --calc-etoile-bas: #a67e24;
+  --calc-case-pleine: #7fb7e2;
+}
+
+/* ------------------------- Le bloc de l'énoncé -------------------------
+
+   HAUTEUR FIXE, ET C'EST LE POINT LE PLUS IMPORTANT DE CE FICHIER.
+   112 px, c'est exactement ce que mesurait l'ancienne carte de
+   texte (le bouton haut-parleur de 64 px plus son cadre). Le dessin
+   ne repousse donc RIEN : le premier bouton que l'enfant doit
+   toucher reste là où il est. Le dessin ne grandit jamais pour
+   faire tenir son contenu — son viewBox est fixe et c'est le
+   contenu qui s'y plie.
+
+   La hauteur ne suit pas la taille du texte : ce n'est pas du
+   texte. Quand l'enfant met le texte au maximum, la consigne
+   grandit, le dessin reste, et l'écran ne se dérègle pas.
+   ---------------------------------------------------------------------- */
+
+.calc-tableau {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 112px;
+}
+
+.calc-dessin {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  display: block;
+}
+
+/* Un écran de 320 px : moins de largeur, donc moins de hauteur
+   utile — autant la reprendre plutôt que de laisser du vide. */
+@media (max-width: 360px) {
+  .calc-tableau { height: 96px; gap: 8px; }
+}
+
+/* La plaque de papier posée derrière l'énoncé. */
+.calc-plaque {
+  fill: var(--calc-plaque);
+  stroke: var(--calc-plaque-bord);
+  stroke-width: 2;
+}
+
+/* ------------------------- Les chiffres dessinés -------------------------
+   Trois couches : l'arête sombre, la face, la lumière. Les trois
+   suivent le même tracé, décalé, ce qui donne du volume sans un
+   seul dégradé.
+   ------------------------------------------------------------------------ */
+
+.calc-trait,
+.calc-trait-bas,
+.calc-trait-haut {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.calc-trait, .calc-trait-bas { stroke-width: 10; }
+.calc-trait-haut { stroke-width: 3.6; }
+
+.calc-t1 .calc-trait, .calc-t1.calc-trait { stroke: var(--calc-n1); }
+.calc-t1 .calc-trait-bas, .calc-t1.calc-trait-bas { stroke: var(--calc-n1-bas); }
+.calc-t1 .calc-trait-haut, .calc-t1.calc-trait-haut { stroke: var(--calc-n1-haut); }
+.calc-t1.calc-aplat { fill: var(--calc-n1); }
+.calc-t1.calc-aplat-bas { fill: var(--calc-n1-bas); }
+.calc-t1.calc-aplat-haut { fill: var(--calc-n1-haut); }
+
+.calc-t2.calc-trait { stroke: var(--calc-n2); }
+.calc-t2.calc-trait-bas { stroke: var(--calc-n2-bas); }
+.calc-t2.calc-trait-haut { stroke: var(--calc-n2-haut); }
+.calc-t2.calc-aplat { fill: var(--calc-n2); }
+.calc-t2.calc-aplat-bas { fill: var(--calc-n2-bas); }
+.calc-t2.calc-aplat-haut { fill: var(--calc-n2-haut); }
+
+.calc-t3.calc-trait { stroke: var(--calc-n3); }
+.calc-t3.calc-trait-bas { stroke: var(--calc-n3-bas); }
+.calc-t3.calc-trait-haut { stroke: var(--calc-n3-haut); }
+.calc-t3.calc-aplat { fill: var(--calc-n3); }
+.calc-t3.calc-aplat-bas { fill: var(--calc-n3-bas); }
+.calc-t3.calc-aplat-haut { fill: var(--calc-n3-haut); }
+
+.calc-ts.calc-trait { stroke: var(--calc-signe); }
+.calc-ts.calc-trait-bas { stroke: var(--calc-signe-bas); }
+.calc-ts.calc-trait-haut { stroke: var(--calc-signe-haut); }
+.calc-ts.calc-aplat { fill: var(--calc-signe); }
+.calc-ts.calc-aplat-bas { fill: var(--calc-signe-bas); }
+.calc-ts.calc-aplat-haut { fill: var(--calc-signe-haut); }
+
+/* La case vide de l'inconnue : un carré ouvert, qui dit « c'est ici
+   que ça manque » sans rien à lire. */
+.calc-trou {
+  fill: var(--calc-case);
+  stroke: var(--calc-n2);
+  stroke-width: 7;
+  stroke-linejoin: round;
+}
+.calc-trou-bas {
+  fill: var(--calc-n2-bas);
+  stroke: var(--calc-n2-bas);
+  stroke-width: 7;
+  stroke-linejoin: round;
+}
+
+/* ------------------------- Les objets à compter ------------------------- */
+
+.calc-objet-caillou .calc-aplat { fill: var(--calc-caillou); }
+.calc-objet-caillou .calc-aplat-bas { fill: var(--calc-caillou-bas); }
+.calc-objet-caillou .calc-aplat-haut { fill: var(--calc-caillou-haut); }
+
+.calc-objet-pomme .calc-aplat { fill: var(--calc-pomme); }
+.calc-objet-pomme .calc-aplat-bas { fill: var(--calc-pomme-bas); }
+.calc-objet-pomme .calc-aplat-haut { fill: var(--calc-pomme-haut); }
+.calc-objet-pomme .calc-queue { fill: var(--calc-pomme-queue); }
+.calc-objet-pomme .calc-feuille { fill: var(--calc-pomme-feuille); }
+
+.calc-objet-etoile .calc-aplat { fill: var(--calc-etoile); }
+.calc-objet-etoile .calc-aplat-bas { fill: var(--calc-etoile-bas); }
+.calc-objet-etoile .calc-aplat-haut { fill: var(--calc-etoile-haut); }
+
+/* Le trait qui coupe une rangée en deux (la moitié). */
+.calc-coupure { fill: var(--calc-signe); }
+
+/* Les plateaux du partage : on voit les parts, et qu'elles sont
+   égales. */
+.calc-plateau {
+  fill: var(--calc-plateau);
+  stroke: var(--calc-case-bord);
+  stroke-width: 1.5;
+}
+
+/* La barre de dix cases. Une case pleine est pleine, une case vide
+   est vide : c'est la forme qui parle, pas la nuance. */
+.calc-case {
+  fill: var(--calc-case);
+  stroke: var(--calc-case-bord);
+  stroke-width: 1.5;
+}
+.calc-case-pleine { fill: var(--calc-case-pleine); }
+/* Le trait qui coupe une case de dix en deux moitiés de cinq. */
+.calc-demi { fill: var(--calc-case-bord); }
+
+/* ------------------------- Le mouvement -------------------------
+
+   Il n'y en a pas, et c'est voulu : pendant qu'il cherche, rien ne
+   bouge (DESIGN.md, non-négociable n° 7). Les règles ci-dessous
+   sont là pour que ça reste vrai si quelqu'un ajoute un jour une
+   animation au-dessus — et surtout pour qu'une coupure
+   d'animation ne puisse jamais rendre le dessin invisible : le
+   piège du dépôt est que la coupure ramène les durées à 0,001 ms
+   au lieu de supprimer l'animation, donc une image-clé de départ
+   transparente laisserait un écran blanc. Tout ce qui est dessiné
+   ici est opaque et visible SANS animation.
+   ---------------------------------------------------------------- */
+
+.calc-tableau, .calc-dessin, .calc-dessin * {
+  animation: none;
+  transition: none;
+  opacity: 1;
+}
+html[data-animations="non"] .calc-tableau,
+html[data-animations="non"] .calc-dessin,
+html[data-animations="non"] .calc-dessin * {
+  animation: none !important;
+  transition: none !important;
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .calc-tableau, .calc-dessin, .calc-dessin * {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1;
+  }
+}

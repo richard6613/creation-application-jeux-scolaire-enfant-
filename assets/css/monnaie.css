@@ -1,0 +1,455 @@
+/* ---------------------------------------------------------------
+   monnaie.css — « Compte les sous ».
+
+   Des jetons et des coupures en euros, en papier découpé. Tout est
+   dessiné en SVG depuis monnaie.js ; cette feuille donne les
+   couleurs, les tailles, et place le porte-monnaie.
+
+   Quatre partis pris commandent le fichier.
+
+   1. RIEN N'IMITE UNE VRAIE PIÈCE NI UN VRAI BILLET. Pas de face
+      nationale, pas de motif de coupure, aucune reproduction. Des
+      formes simples, des aplats, un biseau. Les familles de couleur
+      évoquent celles qu'on connaît — la coupure de 5 gris-bleu,
+      celle de 10 rouge, celle de 20 bleue, celle de 50 orange —
+      sans copier quoi que ce soit.
+
+   2. UNE VALEUR SE RECONNAÎT À TROIS CHOSES, DANS CET ORDRE : le
+      chiffre, écrit énorme ; la taille du jeton, qui croît avec la
+      valeur ; la couleur, en dernier et seulement en renfort. La
+      planche des douze valeurs reste entièrement identifiable en
+      niveaux de gris — c'est la condition pour qu'un enfant qui
+      distingue mal les couleurs joue exactement comme les autres.
+      Et c'est de toute façon le chiffre énorme qui marche le mieux
+      à huit ans.
+
+   3. LA GÉOMÉTRIE DES JETONS EST EN PIXELS FIXES, et c'est voulu.
+      Deux raisons. Le chiffre d'un jeton fait déjà de 26 à 39 px,
+      au-dessus du texte réglé au maximum (30 px) : le confort de
+      lecture n'a rien à y ajouter. Et une taille fixe est ce qui
+      garantit qu'à 320 px, texte au maximum et espacements au
+      maximum, rien ne déborde jamais — la plus large coupure fait
+      132 px dans 288 px disponibles. Tout le reste (consignes,
+      prix, totaux) suit les réglages comme partout ailleurs.
+
+   4. AUCUNE COULEUR EN DUR AILLEURS QUE DANS LE BLOC DE VARIABLES,
+      déclinée en clair ET en sombre, pour que les six fonds de
+      lecture restent corrects.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Teinte du jeu : pastille et liseré seulement, jamais sous du
+     texte, donc le contraste de lecture n'est pas touché. Un
+     jaune-vert d'olive : aucune des onze autres teintes n'en est
+     proche, la pastille du jeu ne se confond avec rien. */
+  --jeu-monnaie: #6b7a1f;
+
+  /* ---- Les métaux ----
+     Chaque famille a son anneau foncé — le bord cranté, c'est lui qui
+     détache le jeton du fond — et son cœur clair, sur lequel le
+     chiffre se pose à plus de 7:1. */
+  --mo-cuivre: #8f5128;            /* 1 c, 2 c, 5 c */
+  --mo-cuivre-clair: #e3b394;
+  --mo-laiton: #9a7016;            /* 10 c, 20 c, 50 c */
+  --mo-laiton-clair: #f1d79b;
+  --mo-argent: #6f7985;            /* 1 €, 2 € */
+  --mo-argent-clair: #dfe4e9;
+
+  /* ---- Les coupures ----
+     Un cadre coloré, une bande à gauche, et le chiffre sur du papier
+     clair : la couleur entoure le chiffre, elle ne passe jamais
+     dessous. */
+  --mo-papier: #f7f0e0;
+  --mo-b500: #8c9fb6;    --mo-b500-fonce: #5d718a;
+  --mo-b1000: #c0645c;   --mo-b1000-fonce: #91423b;
+  --mo-b2000: #5f84c0;   --mo-b2000-fonce: #3c5c93;
+  --mo-b5000: #dd9b45;   --mo-b5000-fonce: #a96d1c;
+
+  /* L'encre du chiffre : la même partout, toujours sur du clair. */
+  --mo-encre: #2a2317;
+  --mo-lueur: rgba(255, 255, 255, 0.42);     /* le biseau, la tranche */
+  --mo-creux-couleur: rgba(42, 35, 23, 0.09); /* l'ombre du second plan */
+  --mo-pli-ombre: rgba(42, 35, 23, 0.20);    /* le pli du coin */
+  --mo-ombre-jeton: rgba(80, 62, 34, 0.26);
+}
+
+/* Sombre. Les jetons eux-mêmes ne changent presque pas : une pièce
+   est une pièce, et son chiffre doit rester sur du clair. On ne
+   retouche que ce qui dialogue avec le fond — l'ombre portée, et la
+   teinte du jeu, qui doit s'éclaircir pour rester visible. */
+html[data-fond="sombre"] {
+  --jeu-monnaie: #bccb6b;
+  --mo-ombre-jeton: rgba(0, 0, 0, 0.42);
+  --mo-lueur: rgba(255, 255, 255, 0.34);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-fond]) {
+    --jeu-monnaie: #bccb6b;
+    --mo-ombre-jeton: rgba(0, 0, 0, 0.42);
+    --mo-lueur: rgba(255, 255, 255, 0.34);
+  }
+}
+
+/* =================================================================
+   1. LE JETON
+   ================================================================= */
+
+.mo-jeton {
+  position: relative;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  border-radius: 50%;
+  filter: drop-shadow(0 2px 0 var(--mo-ombre-jeton));
+  touch-action: none;        /* le glissé au doigt ne fait pas défiler */
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.mo-jeton.mo-billet { border-radius: 16px; }
+
+/* Le dessin ne reçoit AUCUN événement, et c'est important : sans
+   cela, un doigt qui se pose sur le SVG touche un élément dont le
+   `touch-action` vaut `auto`, le navigateur garde la possibilité d'y
+   voir un début de défilement, et il lui arrive d'annuler le pointeur
+   avant le relâché — l'appui est alors perdu une fois sur trois. En
+   rendant le dessin transparent aux événements, c'est toujours le
+   jeton lui-même qui est touché, avec son `touch-action: none`. */
+.mo-forme {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+.mo-jeton * { touch-action: none; }
+
+/* Le chiffre. En HTML et pas en <text> SVG : la police est réglable
+   par l'enfant, et un flex centré tombe juste avec les six polices
+   là où les métriques d'un <text> ne le feraient pas.
+   `letter-spacing: normal` est indispensable — l'espacement des
+   lettres poussé au maximum ferait sortir « 50 » du disque. */
+.mo-valeur {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.09em;
+  letter-spacing: normal;
+  word-spacing: normal;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--mo-encre);
+  pointer-events: none;
+}
+.mo-nombre { font-variant-numeric: tabular-nums; }
+/* L'unité est plus petite que le chiffre, et posée un peu plus bas :
+   collée au milieu elle se lisait comme un exposant, et « 1 € »
+   ressemblait à une puissance. */
+.mo-unite {
+  font-size: 0.52em;
+  font-weight: 700;
+  align-self: center;
+  transform: translateY(0.22em);
+}
+
+/* ---- Les tailles. Elles croissent avec la valeur : c'est le second
+   indice, celui qui tient tout seul en niveaux de gris. Le plus petit
+   jeton fait 64 px, bien au-delà des 62 px de cible tactile. ---- */
+.mo-v1    { width: 64px; height: 64px; font-size: 26px; }
+.mo-v2    { width: 68px; height: 68px; font-size: 27px; }
+.mo-v5    { width: 72px; height: 72px; font-size: 29px; }
+.mo-v10   { width: 76px; height: 76px; font-size: 29px; }
+.mo-v20   { width: 80px; height: 80px; font-size: 31px; }
+.mo-v50   { width: 84px; height: 84px; font-size: 32px; }
+.mo-v100  { width: 88px; height: 88px; font-size: 36px; }
+.mo-v200  { width: 94px; height: 94px; font-size: 39px; }
+.mo-v500  { width: 108px; height: 66px; font-size: 28px; }
+.mo-v1000 { width: 116px; height: 70px; font-size: 30px; }
+.mo-v2000 { width: 124px; height: 74px; font-size: 32px; }
+.mo-v5000 { width: 132px; height: 78px; font-size: 34px; }
+
+/* Sur une coupure, le chiffre vit à droite de la bande. 24 % = la
+   largeur de la bande dans le viewBox (48 sur 200). */
+.mo-billet .mo-valeur { padding-left: 24%; }
+
+/* ---- Les aplats, famille par famille ---- */
+.mo-biseau { fill: var(--mo-lueur); }
+.mo-creux { fill: var(--mo-creux-couleur); }
+/* La tranche striée : une nuance plus claire que l'anneau, posée
+   dessus. C'est elle qui fait « pièce » plutôt que « pastille ». */
+.mo-crans { fill: var(--mo-lueur); }
+
+.mo-v1 .mo-anneau,  .mo-v2 .mo-anneau,  .mo-v5 .mo-anneau  { fill: var(--mo-cuivre); }
+.mo-v1 .mo-coeur,   .mo-v2 .mo-coeur,   .mo-v5 .mo-coeur   { fill: var(--mo-cuivre-clair); }
+
+.mo-v10 .mo-anneau, .mo-v20 .mo-anneau, .mo-v50 .mo-anneau { fill: var(--mo-laiton); }
+.mo-v10 .mo-coeur,  .mo-v20 .mo-coeur,  .mo-v50 .mo-coeur  { fill: var(--mo-laiton-clair); }
+
+/* Les deux pièces en euros sont bicolores, et inversées l'une de
+   l'autre : la pièce de 1 € a l'anneau doré et le cœur argenté,
+   celle de 2 € l'anneau argenté et le cœur doré. C'est ce qui les
+   sépare des centimes au premier regard, avant qu'on lise le
+   chiffre — et c'est un contraste d'agencement, qui survit aux
+   niveaux de gris, pas une nuance de couleur. */
+.mo-v100 .mo-anneau { fill: var(--mo-laiton); }
+.mo-v100 .mo-coeur { fill: var(--mo-argent-clair); }
+.mo-v200 .mo-anneau { fill: var(--mo-argent); }
+.mo-v200 .mo-coeur { fill: var(--mo-laiton-clair); }
+
+/* ---- Les coupures ---- */
+.mo-billet .mo-coeur { fill: var(--mo-papier); }
+.mo-billet .mo-pli { fill: var(--mo-pli-ombre); }
+
+.mo-v500 .mo-anneau  { fill: var(--mo-b500); }
+.mo-v500 .mo-bande   { fill: var(--mo-b500-fonce); }
+.mo-v1000 .mo-anneau { fill: var(--mo-b1000); }
+.mo-v1000 .mo-bande  { fill: var(--mo-b1000-fonce); }
+.mo-v2000 .mo-anneau { fill: var(--mo-b2000); }
+.mo-v2000 .mo-bande  { fill: var(--mo-b2000-fonce); }
+.mo-v5000 .mo-anneau { fill: var(--mo-b5000); }
+.mo-v5000 .mo-bande  { fill: var(--mo-b5000-fonce); }
+.mo-billet .mo-motif { fill: var(--mo-papier); }
+
+/* ---- États du jeton ---- */
+
+/* Sélectionné par un simple appui, en attente d'une case : le mode
+   qui sauve une main qui tremble. Le repère est une bague épaisse —
+   une présence de forme, pas une nuance de couleur. */
+.mo-jeton.choisie {
+  outline: 4px solid var(--accent);
+  outline-offset: 3px;
+}
+/* Déjà pris : il reste visible à sa place, pour qu'on voie ce qu'on
+   a sorti de sa poche. */
+.mo-jeton.posee { opacity: 0.3; cursor: default; }
+
+.mo-jeton.fantome {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.92;
+}
+
+/* La pièce à prendre, ou celle à enlever : après deux essais on ne
+   laisse pas chercher. */
+.mo-jeton.mo-indique {
+  outline: 4px dashed var(--accent);
+  outline-offset: 4px;
+}
+
+.mo-jeton.mo-figee { pointer-events: none; cursor: default; }
+
+/* =================================================================
+   2. L'ÉTAL, LE TAS, LE PORTE-MONNAIE
+   ================================================================= */
+
+.mo-carte { padding: 14px; margin-bottom: 4px; }
+
+.mo-ligne-son { justify-content: flex-start; }
+.mo-etiquette { color: var(--texte-doux); margin: 0; }
+
+.mo-etal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.mo-image { font-size: 3rem; line-height: 1; }
+.mo-prix-bloc { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.mo-objet { margin: 0; font-weight: 700; }
+
+/* Le prix, écrit « 6 € 50 » et jamais « 6,50 € » : c'est la notation
+   du cahier, et elle n'a aucune virgule à interpréter. Posé sur une
+   étiquette, comme en magasin : c'est le nombre que l'enfant doit
+   retrouver dix fois pendant l'exercice, il doit se repérer d'un
+   coup d'œil au milieu du reste. */
+.mo-prix {
+  margin: 0;
+  align-self: flex-start;
+  padding: 4px 16px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  /* Plafonné : 1 rem suit le réglage de confort et monte à 30 px, ce
+     qui donnerait un prix de 63 px — « 4 € 50 » se cassait alors en
+     trois lignes à 320 px. 44 px reste bien au-dessus du texte réglé
+     au maximum, et la somme tient toujours d'un seul tenant. */
+  font-size: min(2.1rem, 44px);
+  font-weight: 700;
+  letter-spacing: normal;
+  word-spacing: normal;
+  white-space: nowrap;
+  color: var(--texte);
+}
+
+/* « ça coûte / il donne » : deux lignes alignées, comme une addition
+   posée. Les deux sommes tombent les unes sous les autres. */
+/* Une grille à deux colonnes plutôt que deux lignes indépendantes :
+   les deux sommes tombent exactement l'une sous l'autre, comme une
+   soustraction posée au cahier. Alignées à un pixel près, c'est la
+   soustraction qui saute aux yeux. */
+.mo-compte {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-items: center;
+  gap: 6px 10px;
+}
+.mo-compte-quoi { color: var(--texte-doux); }
+.mo-compte-combien {
+  padding: 2px 12px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  font-size: min(1.6rem, 34px);
+  font-weight: 700;
+  letter-spacing: normal;
+  word-spacing: normal;
+  white-space: nowrap;
+}
+
+/* Les réponses du comptage : des sommes, donc des nombres. Au
+   centre, en gros, comme dans « Compte avec moi ». */
+.mo-choix { grid-template-columns: 1fr; }
+.mo-choix .choix-btn { justify-content: center; }
+.mo-choix .libelle {
+  font-size: min(1.8rem, 38px);
+  font-weight: 700;
+  letter-spacing: normal;
+  word-spacing: normal;
+  white-space: nowrap;
+}
+
+.mo-tas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0 2px;
+}
+
+.mo-porte {
+  margin: 12px 0 8px;
+  padding: 12px;
+  min-height: 96px;
+  box-sizing: border-box;
+  border: 3px dashed var(--bordure);
+  border-radius: 20px;
+  background: var(--surface);
+  cursor: pointer;
+}
+.mo-porte.mo-pleine { border-style: solid; background: var(--surface-2); }
+/* Quand une pièce est en main, tout le rectangle se signale : la
+   cible est aussi grande que possible, et le dépôt pardonne tout. */
+.mo-porte.cible, .mo-porte.survol {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-doux);
+}
+.mo-porte.mo-bonne { border-color: var(--succes); border-style: solid; }
+
+.mo-dedans {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 68px;
+}
+.mo-vide { margin: 0; color: var(--texte-doux); }
+
+.mo-total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.mo-total-lignes { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+/* La somme à atteindre, en rappel discret juste sous le compteur :
+   une mémoire de travail n'a pas à retenir un prix pendant qu'on
+   fouille dans ses pièces. */
+.mo-total-faut {
+  margin: 0;
+  color: var(--texte-doux);
+  font-size: min(1rem, 22px);
+  word-spacing: normal;
+}
+/* L'écart chiffré après un essai. Il se distingue par le poids et la
+   place, pas seulement par la couleur. */
+.mo-total-aide {
+  margin: 2px 0 0;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: min(1.05rem, 24px);
+  word-spacing: normal;
+}
+.mo-total-aide[hidden] { display: none; }
+.mo-total-texte {
+  margin: 0;
+  font-size: min(1.3rem, 30px);
+  font-weight: 700;
+}
+
+.mo-bac {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 20px;
+  background: var(--surface-2);
+  border: 2px solid var(--bordure);
+  min-height: 88px;
+  box-sizing: border-box;
+}
+
+/* Le clavier seul doit suffire : on voit toujours où on est. */
+.mo-jeton:focus-visible,
+.mo-porte:focus-visible {
+  outline: 4px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* 320 px, texte à 30 px, espacements au maximum : on resserre les
+   marges intérieures, jamais les jetons — ce sont les cibles
+   tactiles, et elles ne rétrécissent pas. */
+@media (max-width: 400px) {
+  .mo-carte { padding: 14px 10px; }
+  .mo-porte, .mo-bac { padding: 10px; }
+  .mo-tas, .mo-dedans, .mo-bac { gap: 8px; }
+  .mo-image { font-size: 2.4rem; }
+  /* « ça coûte / il donne » passe sur une seule colonne : les deux
+     sommes restent l'une sous l'autre et toujours alignées, mais la
+     mention passe au-dessus. À 320 px avec le texte à 30 px, les
+     deux côte à côte débordaient de 3 px. */
+  .mo-compte { grid-template-columns: auto; gap: 2px; }
+  .mo-compte-quoi { margin-top: 6px; }
+}
+
+/* =================================================================
+   3. LE MOUVEMENT
+
+   Un seul mouvement dans tout l'exercice, et il répond à un geste de
+   l'enfant : la pièce qui tombe dans le porte-monnaie. Rien ne bouge
+   pendant qu'il réfléchit, rien ne clignote, aucun repère ne pulse —
+   ni l'indication après deux essais, qui est une bague fixe.
+   ================================================================= */
+
+@keyframes mo-arrive {
+  0%   { transform: scale(0.72); }
+  60%  { transform: scale(1.07); }
+  100% { transform: scale(1); }
+}
+html[data-animations="oui"] .mo-jeton.mo-arrive {
+  animation: mo-arrive 200ms cubic-bezier(.34, 1.56, .64, 1) both;
+}
+/* Les deux coupures du mouvement, chacune explicite : le réglage
+   parent, et la préférence du système. */
+html[data-animations="non"] .mo-jeton.mo-arrive { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .mo-jeton.mo-arrive { animation: none !important; }
+}
