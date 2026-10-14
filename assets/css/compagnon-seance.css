@@ -1,0 +1,131 @@
+/* ---------------------------------------------------------------
+   compagnon-seance.css — le héros pendant l'exercice.
+
+   POURQUOI CE FICHIER
+
+   L'enfant choisit son héros parmi cinq, et pendant qu'il travaillait
+   il n'y en avait aucun à l'écran : le compagnon ne se montrait
+   qu'après une réponse et à la fin de la séance. C'est-à-dire que
+   pendant presque tout le temps passé dans l'application, il était
+   seul devant un formulaire. Les applications commerciales vendent
+   exactement l'inverse.
+
+   Le héros est donc là du début à la fin de l'exercice. Tout ce
+   fichier existe pour qu'il y soit SANS RIEN REPOUSSER et SANS JAMAIS
+   PRESSER L'ENFANT.
+
+   LA CONTRAINTE DE PLACE, QUI COMMANDE TOUT
+
+   Le premier bouton que l'enfant doit toucher vient d'être remonté de
+   563-902 px à 397-740 px sur un écran de 844. Un héros qui ferait
+   redescendre ces chiffres serait une régression, pas une
+   amélioration. Il se loge donc DANS la carte de consigne, dont la
+   hauteur est déjà fixée par le bouton haut-parleur (64 px de haut,
+   voir .btn-son). Un héros de 56 px y entre sans la faire grandir :
+   le coût vertical est de zéro pixel, mesuré.
+
+   LE MOUVEMENT, QUI COMMANDE LE RESTE
+
+   Au repos, le héros ne fait rien que respirer — et encore, très
+   peu : c'est le dessin qui respire (f-respire, 2,5 % d'échelle),
+   jamais la boîte. Aucune relance au bout de x secondes, aucune
+   impatience, aucune minuterie : un enfant dyslexique met du temps,
+   et un personnage qui s'agite pendant qu'il cherche est une
+   pression. On annule donc ici les animations d'humeur que filou.css
+   déclenche ailleurs (le balancement de « salut », le penché de
+   « courage »), et les points de réflexion qui montent et s'effacent
+   en boucle : ils attirent l'œil pile pendant la lecture.
+
+   Le seul mouvement du héros pendant un exercice est le saut de la
+   bonne réponse, déclenché explicitement par session.js, et il arrive
+   APRÈS la réponse.
+
+   LA COUPURE
+
+   filou.css coupe déjà tout le personnage sous
+   html[data-animations="non"] et sous prefers-reduced-motion, avec
+   « animation: none » et non une durée ramenée à zéro. C'est la bonne
+   façon : ce fichier n'ajoute donc AUCUNE animation d'apparition, et
+   surtout aucune dont la première image-clé serait transparente. Un
+   héros dont l'arrivée se joue en opacité devient invisible quand les
+   animations sont coupées — le piège est connu, il ne doit pas être
+   retendu ici. Héros arrêté = héros entier, et toujours visible.
+   --------------------------------------------------------------- */
+
+/* ------------------------- Sa place -------------------------
+   À l'autre bout de la carte de consigne : le bouton pour écouter,
+   la phrase, puis lui. L'ordre de lecture reste le même, et il ne
+   s'insère jamais entre l'enfant et le texte. */
+
+.consigne.consigne-heros {
+  /* La carte garde exactement la hauteur que lui donne son bouton. */
+  align-items: center;
+}
+
+.heros-seance {
+  /* Le héros est un <span> : sans conteneur flexe, la boîte intérieure
+     resterait en ligne et ignorerait la taille demandée. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  /* Il se pousse au bout de la carte, et laisse la consigne respirer. */
+  margin-left: auto;
+  /* Garde-fou : quoi qu'on lui demande plus tard comme taille, il ne
+     peut pas faire grandir la carte de consigne et repousser
+     l'exercice vers le bas. */
+  max-height: 64px;
+  line-height: 0;
+  /* Il ne doit jamais avaler un appui destiné à ce qui est derrière
+     ou autour de lui. Il est là pour accompagner, pas pour gêner. */
+  pointer-events: none;
+}
+
+/* ------------------------- Le filet de sécurité -------------------------
+   Un exercice sans consigne — il n'y en a aucun aujourd'hui, mais il
+   pourrait en arriver un. Le héros se pose alors en vignette dans le
+   coin bas, hors du flux : coût vertical nul là aussi, et au-dessus
+   de la barre d'action pour ne jamais recouvrir le bouton principal. */
+
+.heros-seance.heros-flottant {
+  position: fixed;
+  left: 12px;
+  bottom: calc(104px + env(safe-area-inset-bottom));
+  /* Sous la barre d'action (z-index 25), jamais devant elle. */
+  z-index: 18;
+  margin-left: 0;
+}
+
+/* ------------------------- Son calme -------------------------
+   Les animations d'humeur de filou.css ne s'appliquent pas ici :
+   pendant un exercice, le héros ne se balance pas et ne se penche
+   pas. L'enfant lit. */
+
+html:not([data-animations="non"]) .heros-seance .filou-boite.filou-humeur-salut,
+html:not([data-animations="non"]) .heros-seance .filou-boite.filou-humeur-reflechit,
+html:not([data-animations="non"]) .heros-seance .filou-boite.filou-humeur-courage,
+html:not([data-animations="non"]) .heros-seance .filou-boite.filou-humeur-bravo,
+html:not([data-animations="non"]) .heros-seance .filou-boite.filou-humeur-fete {
+  animation: none;
+}
+
+/* Les points de réflexion montent et s'effacent en boucle : c'est le
+   seul détail du dessin qui attire vraiment l'œil, et il le ferait
+   pendant que l'enfant déchiffre. Ils restent dessinés, immobiles.
+   « animation: none » et pas une durée nulle : la première image-clé
+   de f-monte est transparente, une durée nulle les effacerait. */
+html:not([data-animations="non"]) .heros-seance .filou .f-point,
+html:not([data-animations="non"]) .heros-seance .filou .f-bulle,
+html:not([data-animations="non"]) .heros-seance .filou .f-eclat {
+  animation: none;
+}
+
+/* Le saut de la bonne réponse, lui, reste. C'est le seul mouvement du
+   héros pendant une séance, il est déclenché par session.js, et il
+   arrive après la réponse — jamais pendant la recherche. Déclaré
+   après les annulations ci-dessus, et à la même spécificité, pour
+   reprendre la main sur elles. */
+html:not([data-animations="non"]) .heros-seance .filou-boite.filou-anime-saute {
+  animation: f-saut 900ms cubic-bezier(0.34, 1.56, 0.64, 1) 1;
+}
+

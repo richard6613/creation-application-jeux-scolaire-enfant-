@@ -20,6 +20,15 @@
    Les prix sont plausibles pour un enfant qui va vraiment faire les
    courses : c'est ce qui fait la différence entre un exercice de
    calcul et un exercice de monnaie.
+
+   UNE CONTRAINTE À TENIR EN AJOUTANT UN PRIX : il doit se payer au
+   plus juste avec SIX jetons au plus. Un prix comme 1 € 99 en demande
+   sept (1 € + 50 c + 20 c + 20 c + 5 c + 2 c + 2 c), parce que le 9
+   des dizaines et celui des unités coûtent trois pièces chacun. Sept
+   jetons dans un porte-monnaie, à huit ans et demi, ce n'est plus un
+   exercice, c'est une corvée. En clair : on évite le 8 et le 9 aux
+   dizaines de centimes ET aux unités en même temps. Le test du moteur
+   le vérifie sur tous les prix du fichier.
    --------------------------------------------------------------- */
 
 window.Jeu = window.Jeu || {};
@@ -86,7 +95,7 @@ Jeu.Data.monnaie = (function () {
     { sujet: 'le jus de fruit', achat: 'un jus de fruit',     emoji: '🧃',  prix: 135 },
     { sujet: 'la salade',       achat: 'une salade',          emoji: '🥬',  prix: 155 },
     { sujet: 'la brioche',      achat: 'une brioche',         emoji: '🥐',  prix: 185 },
-    { sujet: 'le carnet',       achat: 'un carnet',           emoji: '📓',  prix: 199 },
+    { sujet: 'le carnet',       achat: 'un carnet',           emoji: '📓',  prix: 195 },
     { sujet: 'la brosse à dents', achat: 'une brosse à dents', emoji: '🪥', prix: 215 },
     { sujet: 'le pot de confiture', achat: 'un pot de confiture', emoji: '🫙', prix: 285 },
     { sujet: 'le fromage',      achat: 'un fromage',          emoji: '🧀',  prix: 295 },
@@ -95,7 +104,7 @@ Jeu.Data.monnaie = (function () {
     { sujet: 'le pot de miel',  achat: 'un pot de miel',      emoji: '🍯',  prix: 475 },
     { sujet: 'la boîte de feutres', achat: 'des feutres',     emoji: '🖊️',  prix: 625 },
     { sujet: 'le ballon',       achat: 'un ballon',           emoji: '⚽',  prix: 735 },
-    { sujet: 'le livre',        achat: 'un livre',            emoji: '📘',  prix: 895 },
+    { sujet: 'le livre',        achat: 'un livre',            emoji: '📘',  prix: 875 },
     { sujet: 'le cadre',        achat: 'un cadre',            emoji: '🖼️',  prix: 1240 },
     { sujet: 'la boîte à outils', achat: 'une boîte à outils', emoji: '🧰', prix: 1655 }
   ];

@@ -39,6 +39,9 @@ html[data-fond="sombre"] {
 /* ------------------------- La carte ------------------------- */
 
 .heure-carte {
+  /* Le cadran est posé sur un fond un peu plus soutenu que lui :
+     sans cela, un disque de la couleur de la carte ne se voit pas. */
+  background: var(--surface-2);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -55,7 +58,7 @@ html[data-fond="sombre"] {
 /* L'horloge à chiffres. Chiffres serrés et non espacés : « 9:45 »
    doit se lire comme un bloc, pas comme quatre signes séparés. */
 .heure-chiffres-grand {
-  font-size: 2.2rem;
+  font-size: 1.9rem;
   font-weight: 700;
   letter-spacing: normal;
   word-spacing: normal;
@@ -65,7 +68,7 @@ html[data-fond="sombre"] {
   align-items: center;
   border: 3px solid var(--bordure);
   border-radius: var(--rayon);
-  background: var(--surface-2);
+  background: var(--surface);
   color: var(--texte);
 }
 
@@ -161,6 +164,12 @@ html[data-fond="sombre"] {
 .heure-choix-horloges .choix-btn {
   justify-content: center;
   padding: 12px;
+  background: var(--surface-2);
+}
+/* Trois horloges sur deux colonnes : la dernière prend toute la
+   largeur plutôt que de laisser un trou. */
+.heure-choix-horloges .choix-btn:nth-child(3):last-child {
+  grid-column: 1 / -1;
 }
 
 /* ------------------------- Les propositions ------------------------- */
@@ -189,13 +198,17 @@ html[data-fond="sombre"] {
   width: 100%;
 }
 
+/* Le trait d'échantillon passe sous le nom quand l'écran est étroit
+   et le texte au maximum : le nom garde alors toute la largeur. */
 .heure-poignee {
   font-family: inherit;
   font-size: 1rem;
   line-height: 1.3;
   letter-spacing: inherit;
+  overflow-wrap: break-word;
   min-height: 62px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
@@ -222,6 +235,7 @@ html[data-fond="sombre"] {
 .heure-poignee-nom {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   min-width: 0;
 }
 

@@ -117,6 +117,115 @@ Jeu.Session = (function () {
     afficherItem();
   }
 
+  /* ================================================================
+     LE HÉROS, PENDANT TOUTE LA SÉANCE
+
+     L'application a cinq héros, dessinés avec soin, et c'est l'enfant
+     qui choisit le sien. Pendant un exercice il n'y en avait aucun à
+     l'écran : le compagnon n'apparaissait qu'APRÈS une réponse et à la
+     fin de la séance. Pendant qu'il cherche — c'est-à-dire pendant la
+     quasi-totalité du temps passé dans l'application — l'enfant était
+     seul devant un formulaire. C'est ce qui rendait l'écran terne.
+
+     Le héros est donc là du début à la fin de l'exercice. Trois règles
+     tiennent tout ce qui suit, et aucune n'est négociable :
+
+     1. IL NE REPOUSSE RIEN. Il se loge DANS la carte de consigne, qui
+        existe déjà et dont la hauteur est fixée par le bouton
+        haut-parleur (64 px). Un héros de 56 px y tient sans la faire
+        grandir : le coût vertical est de zéro pixel, et le premier
+        bouton que l'enfant doit toucher ne descend pas d'un pixel.
+        On vient de remonter ce bouton de 563-902 px à 397-740 px sur
+        un écran de 844 : le reperdre serait pire que ne rien faire.
+
+     2. IL NE PRESSE PAS. Au repos il ne fait rien d'autre que
+        respirer. Aucune relance au bout de x secondes, aucune
+        impatience, aucun chronomètre : un enfant dyslexique met du
+        temps, et un personnage qui s'agite pendant qu'il cherche est
+        une pression de plus. L'absence de minuterie ici est une
+        décision, pas un oubli.
+
+     3. IL NE JUGE PAS. À l'erreur, il prend l'humeur « courage » — qui
+        a été dessinée exactement pour ce moment sur les cinq
+        personnages, rassurante et jamais déçue — et RIEN d'autre : pas
+        de secousse, pas de penché, pas de son. Le mouvement n'arrive
+        qu'à la bonne réponse, et c'est un saut.
+     ================================================================ */
+
+  /* Au repos, l'humeur « reflechit » quand le personnage la connaît —
+     tous ne connaissent pas toutes les humeurs — et « salut » sinon.
+     On ne demande jamais une humeur sans vérifier : un héros qui ne
+     sait pas la dessiner se rabattrait seul, mais la boîte, elle,
+     garderait le nom demandé et donc la mauvaise animation. */
+  function humeurRepos() {
+    try {
+      if (Jeu.Compagnon.connait && Jeu.Compagnon.connait('reflechit')) return 'reflechit';
+    } catch (e) { /* registre incomplet : « salut » est connu de tous */ }
+    return 'salut';
+  }
+
+  /* 56 px dans une carte dont le bouton fait 64 : il reste de la
+     marge. Sur un écran de 320 px la consigne n'a plus la place, et un
+     héros qui fait passer la consigne de deux à quatre lignes
+     repousserait l'exercice — c'est exactement ce qu'on refuse. Il
+     rapetissit donc au lieu de bousculer le texte. */
+  function tailleHeros() {
+    var l = window.innerWidth || 390;
+    if (l < 360) return 40;
+    return 56;
+  }
+
+  /* Le héros est fabriqué une fois par exercice, puis DÉPLACÉ de carte
+     en carte : appendChild déplace un nœud au lieu de le copier, donc
+     il n'y en a jamais deux à l'écran, même quand un exercice remplace
+     sa consigne en cours de route. */
+  function creerHeros() {
+    var s = courante;
+    if (!s) return null;
+    if (s.heros) return s.heros;
+
+    var boite;
+    try { boite = Jeu.Compagnon.habille(humeurRepos(), tailleHeros()); }
+    catch (e) { return null; }   /* pas de héros : l'exercice passe avant tout */
+    if (!boite) return null;
+
+    var hote = document.createElement('span');
+    hote.className = 'heros-seance';
+    /* Décoratif pour un lecteur d'écran : la consigne juste à côté dit
+       déjà tout, et annoncer « image, héros » couperait la phrase que
+       l'enfant est en train d'écouter. */
+    hote.setAttribute('aria-hidden', 'true');
+    hote.appendChild(boite);
+    s.heros = hote;
+    return hote;
+  }
+
+  function poserHeros(carte) {
+    var h = creerHeros();
+    if (!h || !carte) return;
+    carte.appendChild(h);
+    carte.classList.add('consigne-heros');
+  }
+
+  /* Aucune consigne à l'écran — aucun exercice n'est dans ce cas
+     aujourd'hui, mais un exercice à venir pourrait l'être. Plutôt que
+     de laisser l'enfant sans personne, le héros se pose en vignette
+     dans le coin bas, hors du flux : là non plus il ne repousse rien,
+     et pointer-events: none l'empêche d'avaler un appui. */
+  function herosFlottant() {
+    var h = creerHeros();
+    if (!h) return;
+    h.classList.add('heros-flottant');
+    zoneJeu().appendChild(h);
+  }
+
+  /* L'expression change, les accessoires restent en place. */
+  function humeurHeros(humeur) {
+    var s = courante;
+    if (!s || !s.heros) return;
+    try { Jeu.Compagnon.changer(s.heros, humeur); } catch (e) { /* rien */ }
+  }
+
   function zoneJeu() { return document.getElementById('zone-jeu'); }
   function zoneBas() { return document.getElementById('barre-bas'); }
 
@@ -133,6 +242,10 @@ Jeu.Session = (function () {
     var zone = Jeu.Ui.vider(zoneJeu());
     var bas = Jeu.Ui.vider(zoneBas());
     bas.hidden = true;
+
+    /* Vider la zone a retiré le héros du document : on en refabrique un
+       pour le nouvel exercice, ce qui le remet d'office au repos. */
+    s.heros = null;
 
     /* LA BARRE EN HAUT, LA SCÈNE EN BAS.
 
@@ -166,6 +279,7 @@ Jeu.Session = (function () {
       repondre: repondre,
       consigne: function (texte) {
         var c = Jeu.Ui.consigne(texte);
+        poserHeros(c);
         zone.appendChild(c);
         return c;
       },
@@ -174,6 +288,9 @@ Jeu.Session = (function () {
       remplacerConsigne: function (texte) {
         var anciennes = zone.querySelectorAll('.consigne');
         var neuve = Jeu.Ui.consigne(texte);
+        /* Le héros suit la consigne qui remplace l'ancienne, sinon il
+           partirait à la poubelle avec elle au milieu de l'exercice. */
+        poserHeros(neuve);
         if (anciennes.length) {
           anciennes[0].parentNode.replaceChild(neuve, anciennes[0]);
           for (var i = 1; i < anciennes.length; i++) anciennes[i].remove();
@@ -192,6 +309,11 @@ Jeu.Session = (function () {
     };
 
     s.exercice.afficher(item, contexte);
+
+    if (!s.heros) {
+      var carte = zone.querySelector('.consigne');
+      if (carte) poserHeros(carte); else herosFlottant();
+    }
 
     /* La scène vient après l'exercice : tout ce que l'enfant doit
        lire et toucher passe devant. */
@@ -290,9 +412,31 @@ Jeu.Session = (function () {
       texte = 'Pas tout à fait. Regarde la bonne réponse.';
     }
 
-    // Filou réagit : content, ou rassurant. Jamais déçu.
+    /* LE HÉROS RÉAGIT, ET IL RÉAGIT LÀ OÙ IL ÉTAIT.
+
+       Celui qui était avec l'enfant pendant qu'il cherchait est celui
+       qui se réjouit ou qui le rassure : c'est le même personnage, au
+       même endroit, et c'est précisément ce qui fait de lui quelqu'un
+       plutôt qu'une vignette. On n'en remet donc pas un second dans le
+       bloc de retour — deux fois le même héros à deux tailles, c'est
+       du décor, et ça ferait redescendre le bouton « Continuer ».
+
+       Bonne réponse : « bravo » et un saut. Erreur : « courage » et
+       rien d'autre. Pas de secousse, pas de penché, pas de mine
+       déconfite — cette humeur a été dessinée pour ce moment précis
+       sur les cinq personnages, il n'y a rien à ajouter. */
+    if (reponse.juste) {
+      humeurHeros('bravo');
+      if (s.heros) Jeu.Compagnon.sauter(s.heros);
+    } else {
+      humeurHeros('courage');
+    }
+
     var ligne = Jeu.Ui.el('div', 'bulle-filou');
-    ligne.appendChild(Jeu.Compagnon.habille(reponse.juste ? 'bravo' : 'courage', 64));
+    /* Le héros manque à l'appel (exercice sans consigne, personnage
+       introuvable) : le bloc de retour le montre alors lui-même,
+       plutôt que de laisser l'enfant sans réaction du tout. */
+    if (!s.heros) ligne.appendChild(Jeu.Compagnon.habille(reponse.juste ? 'bravo' : 'courage', 64));
     var dit = Jeu.Ui.el('div', 'ligne');
     dit.appendChild(Jeu.Voix.bouton(function () {
       return texte + (reponse.bonneReponse ? '. ' + reponse.bonneReponse : '');

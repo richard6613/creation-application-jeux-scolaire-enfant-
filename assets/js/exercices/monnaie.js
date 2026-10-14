@@ -538,10 +538,19 @@ Jeu.Exercices = Jeu.Exercices || [];
     return { forme: forme, objet: objet, cible: cible, bac: bac };
   }
 
-  /* Étape 5. Le billet donné est le plus petit billet rond qui couvre
-     le prix — c'est ce qu'on fait vraiment à la caisse. Un cran
-     au-dessus de temps en temps, aux paliers hauts. */
+  /* Étape 5. Le billet donné est un billet rond qui couvre le prix —
+     c'est ce qu'on fait vraiment à la caisse.
+
+     Deux bornes, et elles ne sont pas décoratives : le rendu ne
+     dépasse jamais 10 €, et il se pose toujours avec six jetons au
+     plus. Sans elles, « il donne 50 €, ça coûte 12 € » fait rendre
+     38 € en sept jetons — ce qui n'est plus un exercice de CE2, c'est
+     une corvée. Le plus petit billet qui couvre le prix respecte
+     toujours les deux ; les autres ne sont proposés, aux paliers
+     hauts, que s'ils les respectent aussi. */
   var RONDS = [500, 1000, 2000, 5000];
+  var RENDU_MAX = 1000;
+  var RENDU_JETONS_MAX = 6;
 
   function itemRendre(palier) {
     var dispo = DISPO[5];
@@ -557,15 +566,19 @@ Jeu.Exercices = Jeu.Exercices || [];
     });
     var prix = objet.prix;
 
-    var i, donne = 5000;
+    var i, possibles = [];
     for (i = 0; i < RONDS.length; i++) {
-      if (RONDS[i] > prix) { donne = RONDS[i]; break; }
+      if (RONDS[i] <= prix) continue;
+      var essai = RONDS[i] - prix;
+      if (essai > RENDU_MAX) continue;
+      var court = glouton(essai, dispo);
+      if (court && court.length <= RENDU_JETONS_MAX) possibles.push(RONDS[i]);
     }
-    if (palier >= 4 && Math.random() < 0.35) {
-      for (i = 0; i < RONDS.length; i++) {
-        if (RONDS[i] > donne) { donne = RONDS[i]; break; }
-      }
-    }
+    /* Le plus petit billet qui couvre le prix est toujours dans la
+       liste ; aux paliers hauts on varie parmi ceux qui tiennent. */
+    var donne = possibles.length
+      ? ((palier >= 4) ? piocher(possibles) : possibles[0])
+      : prix + 100;
 
     var rendu = donne - prix;
     var solution = decomposer(rendu, dispo, maxJetons) || glouton(rendu, dispo);

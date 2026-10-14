@@ -43,8 +43,8 @@ Jeu.Exercices = Jeu.Exercices || [];
      presque le double de la petite, et son épaisseur est moitié
      moindre. C'est la forme qui les distingue, pas la couleur — un
      enfant qui confond les teintes doit pouvoir jouer. */
-  var LONG_PETITE = 40;
-  var LONG_GRANDE = 70;
+  var LONG_PETITE = 46;
+  var LONG_GRANDE = 72;
 
   /* Un module absent ne doit jamais empêcher de jouer. */
   function son(nom) {
@@ -200,6 +200,27 @@ Jeu.Exercices = Jeu.Exercices || [];
      quart », les deux aiguilles échangées, une graduation de trop.
      ------------------------------------------------------------------ */
 
+  /* Deux heures se distinguent-elles d'un coup d'œil sur le cadran ?
+     Il suffit que l'une des deux aiguilles s'en aille franchement :
+     cinq minutes pour la grande (une graduation entière), un demi-
+     chiffre pour la petite. « Sept heures une » et « sept heures
+     moins une » échouent à ce test — personne ne les distingue, et
+     l'exercice deviendrait un jeu de hasard.
+
+     L'exception est voulue : à douze heures d'écart, le cadran est
+     exactement le même, et c'est le moment de la journée annoncé qui
+     tranche. C'est tout l'objet du dernier palier. */
+  function distinctes(h1, m1, h2, m2) {
+    if (Math.abs(h1 - h2) === 12) return true;
+    var dm = Math.abs(m1 - m2) % 60;
+    dm = Math.min(dm, 60 - dm);
+    if (dm >= 5) return true;
+    var t1 = ((h1 % 12) * 60 + m1) % 720;
+    var t2 = ((h2 % 12) * 60 + m2) % 720;
+    var dh = Math.abs(t1 - t2);
+    return Math.min(dh, 720 - dh) >= 30;
+  }
+
   function leurres(cible, p, combien, dire, garder) {
     var vus = {};
     var sortie = [];
@@ -210,6 +231,13 @@ Jeu.Exercices = Jeu.Exercices || [];
       h = ((Math.round(h) % 24) + 24) % 24;
       m = ((Math.round(m) % 60) + 60) % 60;
       if (p.minutes.indexOf(m) < 0) return;
+      /* Chaque proposition doit se distinguer de la bonne réponse ET
+         des autres : une liste où deux cadrans se ressemblent n'est
+         plus un exercice de lecture. */
+      if (!distinctes(h, m, cible.h, cible.m)) return;
+      for (var k = 0; k < sortie.length; k++) {
+        if (!distinctes(h, m, sortie[k].h, sortie[k].m)) return;
+      }
       if (garder && !garder(h, m)) return;
       var t = dire(h, m);
       if (vus[t]) return;
@@ -355,7 +383,7 @@ Jeu.Exercices = Jeu.Exercices || [];
          chiffres sont en 24 h, le moment est annoncé. Dans l'autre
          sens, les chiffres suffisent, il n'y a rien à deviner. */
       moment: (h24 && versChiffres) ? momentDit(cible.h) : '',
-      options: optionsDe(cible, p, versChiffres ? (p.rang >= 3 ? 4 : 3) : 3, dire, garder)
+      options: optionsDe(cible, p, p.rang >= 3 ? 4 : 3, dire, garder)
     };
   }
 
@@ -415,8 +443,8 @@ Jeu.Exercices = Jeu.Exercices || [];
     var bon = dire(item.h, item.m);
 
     outils.consigne(item.moment
-      ? 'C\'est ' + item.moment + '. Quelle heure est-il ?'
-      : 'Quelle heure est-il ?');
+      ? 'C\'est ' + item.moment + '. Quelle heure est-il\u00a0?'
+      : 'Quelle heure est-il\u00a0?');
 
     var bloc = carteHorloge({ h: item.h, m: item.m });
     outils.zone.appendChild(bloc.carte);
@@ -644,7 +672,6 @@ Jeu.Exercices = Jeu.Exercices || [];
 
     carte.appendChild(ligneEcoute(motsActuels, 'Écouter mes aiguilles'));
     outils.zone.appendChild(carte);
-    outils.zone.appendChild(legende());
 
     rafraichir();
 
@@ -748,7 +775,7 @@ Jeu.Exercices = Jeu.Exercices || [];
     }
 
     /* L'autre sens : les chiffres sont donnés, on choisit le cadran. */
-    outils.consigne('Quelle horloge montre cette heure ?');
+    outils.consigne('Quelle horloge montre cette heure\u00a0?');
 
     var carte = Jeu.Ui.el('div', 'carte heure-carte');
     var tete = Jeu.Ui.el('div', 'ligne heure-numerique');
@@ -794,14 +821,14 @@ Jeu.Exercices = Jeu.Exercices || [];
     var duree = H().dureeEnMots(item.duree);
 
     outils.consigne(item.enArriere
-      ? 'Il y a ' + duree + ', quelle heure était-il ?'
-      : 'Dans ' + duree + ', quelle heure sera-t-il ?');
+      ? 'Il y a ' + duree + ', quelle heure était-il\u00a0?'
+      : 'Dans ' + duree + ', quelle heure sera-t-il\u00a0?');
 
     var bloc = carteHorloge({ h: item.depart.h, m: item.depart.m });
     bloc.carte.insertBefore(
       ligneEcoute('Il est ' + departMots + '. ' + (item.enArriere
-        ? 'Il y a ' + duree + ', quelle heure était-il ?'
-        : 'Dans ' + duree + ', quelle heure sera-t-il ?'), 'Écouter la question'),
+        ? 'Il y a ' + duree + ', quelle heure était-il\u00a0?'
+        : 'Dans ' + duree + ', quelle heure sera-t-il\u00a0?'), 'Écouter la question'),
       bloc.carte.firstChild);
     outils.zone.appendChild(bloc.carte);
 
